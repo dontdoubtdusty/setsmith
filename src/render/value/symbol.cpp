@@ -26,6 +26,20 @@ void SymbolValueViewer::draw(RotatedDC& dc) {
   // try to load symbol
   if (symbols.empty() && !value().filename.empty()) {
     try {
+      if (is_image_symbol_file(value().filename.toStringForKey())) {
+        // MSE Slim: uploaded image symbol, one preview per variation (common, uncommon, ...)
+        Image source;
+        auto stream = getLocalPackage().openIn(value().filename);
+        image_load_file(source, *stream);
+        double ar = image_symbol_aspect_ratio(source);
+        ar = min(style().max_aspect_ratio, max(style().min_aspect_ratio, ar));
+        FOR_EACH(variation, style().variations) {
+          Image img = render_image_symbol(source, *variation->filter, variation->border_radius, int(200 * ar), 200);
+          Image resampled(int(wh * ar), int(wh), false);
+          resample(img, resampled);
+          symbols.push_back(Bitmap(resampled));
+        }
+      } else {
       // load symbol
       SymbolP symbol = getLocalPackage().readFile<SymbolP>(value().filename);
       // aspect ratio
@@ -37,6 +51,7 @@ void SymbolValueViewer::draw(RotatedDC& dc) {
         Image resampled(int(wh * ar), int(wh), false);
         resample(img, resampled);
         symbols.push_back(Bitmap(resampled));
+      }
       }
     } catch (const Error& e) {
       handle_error(e);

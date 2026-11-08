@@ -465,6 +465,19 @@ Image SymbolToImage::generate(const Options& opt) const {
   // TODO : use opt.width and opt.height?
   Package* package = is_local ? opt.local_package : opt.package;
   if (!package) throw ScriptError(_("Can only load images in a context where an image is expected"));
+  // MSE Slim: an uploaded image symbol, colored for this variation like a vector symbol
+  if (!filename.empty() && is_image_symbol_file(filename.toStringForKey())) {
+    Image source;
+    auto stream = package->openIn(filename);
+    image_load_file(source, *stream);
+    int size = max(100, 3*max(opt.width,opt.height));
+    int width = size, height = size;
+    if (opt.width > 1 && opt.height > 1) {
+      width  = size * opt.width  / max(opt.width,opt.height);
+      height = size * opt.height / max(opt.width,opt.height);
+    }
+    return render_image_symbol(source, *variation->filter, variation->border_radius, width, height);
+  }
   SymbolP the_symbol;
   if (filename.empty()) {
     the_symbol = default_symbol();

@@ -26,6 +26,24 @@ void filter_symbol(Image& symbol, const SymbolFilter& filter);
 /// Render a Symbol to an Image and filter it
 Image render_symbol(const SymbolP& symbol, const SymbolFilter& filter, double border_radius = 0.05, int width = 100, int height = 100, bool edit_hints = false, bool allow_smaller = false);
 
+// MSE Slim: uploaded image symbols (replace the removed symbol editor).
+
+/// Is this symbol file an uploaded image (a .png in the set) rather than a vector .mse-symbol?
+bool is_image_symbol_file(const String& filename);
+
+/// Width / height of the shape in an uploaded symbol image, after trimming empty margins
+double image_symbol_aspect_ratio(const Image& source);
+
+/// Size in pixels of the shape in an uploaded symbol image, after trimming; 0x0 if there is no shape
+wxSize image_symbol_shape_size(const Image& source);
+
+/// Render an uploaded image as a symbol, colored like a vector symbol.
+/** The shape is every non-transparent pixel (or every dark pixel, if the image has no alpha channel).
+ *  Empty margins are trimmed, the shape is fitted into width x height, a border of border_radius
+ *  (as a fraction of the size, like vector symbols) is grown around it, and filter colors the result.
+ */
+Image render_image_symbol(const Image& source, const SymbolFilter& filter, double border_radius, int width, int height);
+
 /// Is a point inside a symbol?
 enum SymbolSet
 {  SYMBOL_INSIDE
