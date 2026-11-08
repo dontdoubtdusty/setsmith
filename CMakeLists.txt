@@ -43,6 +43,17 @@ add_executable(magicseteditor WIN32)
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${HUNSPELL_LIBRARIES})
+if(WIN32)
+  # Theme API used by src/gui/util.cpp. MSVC wxWidgets links it automatically; MinGW does not.
+  target_link_libraries(${PROJECT_NAME} uxtheme)
+endif()
+if(MINGW)
+  # GCC builds load GUI images from resource/ next to the exe instead of embedding them
+  # (see load_resource_image in src/gui/util.cpp), so copy the folder after each build.
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
+    ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/resource" "${PROJECT_BINARY_DIR}/resource"
+  )
+endif()
 
 file(GLOB_RECURSE sources src/*.cpp)
 list(FILTER sources EXCLUDE REGEX win32_cli_wrapper.cpp)
