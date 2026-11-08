@@ -76,10 +76,10 @@ void nag_about_ascii_version() {
 int MSE::OnRun() {
   try {
     #ifdef __WXMSW__
-      SetAppName(_("Magic Set Editor"));
+      SetAppName(_("Setsmith")); // MSE Slim: own settings folder, separate from MSE
     #else
       // Platform friendly appname
-      SetAppName(_("magicseteditor"));
+      SetAppName(_("setsmith"));
     #endif
     wxInitAllImageHandlers();
     init_script_variables();
@@ -112,7 +112,7 @@ int MSE::OnRun() {
           return runGUI();
         } else if (f.GetExt() == _("mse-installer")) {
           // MSE Slim: the package manager was removed.
-          throw Error(_("This build can't install .mse-installer files.\nCopy template folders into the data folder next to magicseteditor.exe instead."));
+          throw Error(_("This build can't install .mse-installer files.\nCopy template folders into the data folder next to setsmith.exe instead."));
         } else if (f.GetExt() == _("mse-script")) {
           // Run a script file
           if (!run_script_file(arg)) return EXIT_FAILURE;
@@ -134,10 +134,10 @@ int MSE::OnRun() {
           return EXIT_SUCCESS;
         } else if (arg == _("--help") || arg == _("-?")) {
           // command line help
-          cli << _("Magic Set Editor\n\n");
+          cli << _("Setsmith (based on Magic Set Editor)\n\n");
           cli << _("Usage: ") << BRIGHT << argv[0] << NORMAL << _(" [") << PARAM << _("OPTIONS") << NORMAL << _("]");
           cli << _("\n\n  no options");
-          cli << _("\n         \tStart the MSE user interface showing the welcome window.");
+          cli << _("\n         \tStart the Setsmith user interface showing the welcome window.");
           cli << _("\n\n  ") << BRIGHT << _("-?") << NORMAL << _(", ")
                              << BRIGHT << _("--help") << NORMAL;
           cli << _("\n         \tShows this help screen.");
@@ -180,7 +180,7 @@ int MSE::OnRun() {
           return EXIT_SUCCESS;
         } else if (arg == _("--version") || arg == _("-v") || arg == _("-V")) {
           // dump version
-          cli << _("Magic Set Editor\n");
+          cli << _("Setsmith (based on Magic Set Editor)\n");
           cli << _("Version ") << app_version.toString() << version_suffix << ENDL;
           cli.flush();
           return EXIT_SUCCESS;

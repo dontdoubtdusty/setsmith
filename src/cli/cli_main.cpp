@@ -25,7 +25,7 @@ CLISetInterface::CLISetInterface(const SetP& set, bool quiet, bool run)
   , our_context(nullptr)
 {
   if (!cli.haveConsole()) {
-    throw Error(_("Can not run command line interface without a console;\nstart MSE with \"mse.com --cli\""));
+    throw Error(_("Can not run command line interface without a console;\nstart Setsmith with \"setsmith.com --cli\""));
   }
   ei.allow_writes_outside = true;
   setExportInfoCwd();

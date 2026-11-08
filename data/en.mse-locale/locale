@@ -99,7 +99,7 @@ menu:
 	help:								&Help
 	index:								&Index...	F1
 	website:							&Website...
-	about:								&About Magic Set Editor...
+	about:								&About Setsmith...
 
 	# symbol editor
 
@@ -124,7 +124,7 @@ menu:
 
 ############################################################## Menu help texts
 help:
-	welcome:							Welcome to Magic Set Editor
+	welcome:							Welcome to Setsmith
 
 	#file:
 	new set:							Create a new set
@@ -144,7 +144,7 @@ help:
 	print:								Print cards from this set
 	reload data:						Reload all template files (game and style) as well as the set.
 	show profiler:						Show the profiler window, with timings of (script) functions. Used for optimization.
-	exit:								Quits Magic Set Editor; prompts to save the set
+	exit:								Quits Setsmith; prompts to save the set
 
 	#edit:
 	undo:								Undoes the last action
@@ -163,7 +163,7 @@ help:
 	find next:							Find the next match
 	replace:							Replace in the card texts
 	auto replace:						What text should automatically be replaced?
-	preferences:						Change the configuration of Magic Set Editor
+	preferences:						Change the configuration of Setsmith
 
 	#cards:
 	previous card:						Selects the previous card in the list
@@ -240,7 +240,7 @@ help:
 
 	# Preferences
 	app language:
-		Note: You must restart MSE
+		Note: You must restart Setsmith
 		for the changes to take effect.
 	zoom export:
 		(When off, the cards are
@@ -683,10 +683,10 @@ button:
 
 ############################################################## Titles in the GUI
 title:
-	magic set editor:					Magic Set Editor
-	%s - magic set editor:				%s - Magic Set Editor
+	magic set editor:					Setsmith
+	%s - magic set editor:				%s - Setsmith
 	untitled:							Untitled
-	about:								About Magic Set Editor
+	about:								About Setsmith
 	symbol editor:						Symbol Editor
 	# dialogs
 	new set:							New Set
@@ -834,7 +834,7 @@ error:
 	aborting parsing:					Fatal errors encountered, aborting reading.
 	newer version:						
 		%s
-		This file is made with a newer version of Magic Set Editor (%s)
+		This file is made with a newer version of Setsmith or Magic Set Editor (%s)
 		When you open it, some aspects of the file may be lost.
 		It is recommended that you upgrade to the latest version.
 		Visit https://magicseteditor.boards.net/page/downloads

@@ -1,6 +1,6 @@
-# MSE Slim: roadmap
+# Setsmith (MSE Slim): roadmap
 
-A personal, slimmed-down build of Magic Set Editor 2. It's based on
+**Setsmith** is a personal, slimmed-down build of Magic Set Editor 2. It was called "MSE Slim" before the rename, and code comments still mark fork changes with `MSE Slim:`. It's based on
 [haganbmj/MagicSetEditor2](https://github.com/haganbmj/MagicSetEditor2) 2.5.6 "(Unofficial)", the
 community-maintained version that the M15 template pack is built for. That version is itself a fork of
 [twanvl/MagicSetEditor2](https://github.com/twanvl/MagicSetEditor2). GPL v2; this fork stays GPL.
@@ -18,6 +18,7 @@ community-maintained version that the M15 template pack is built for. That versi
 | 2026-11-08 | Toolchain: MSYS2 (UCRT64) at `D:\msys64`, with CMake, Ninja, wxWidgets 3.2, Boost and Hunspell from pacman. |
 | 2026-11-08 | Local only for now. Push to GitHub once it builds. |
 | 2026-11-08 | `custom-uvs` stays a web app. The slim MSE stays Magic-only. |
+| 2026-11-08 | New name: **Setsmith**. It avoids confusion with MSE2 and keeps "Magic" (a Wizards trademark) out of the name. A web search found no card tool with this name. The GPL license and credit to Twan van Laarhoven and the MSE developers stay. |
 | 2026-11-08 | Symbol editor replaced by image upload. Drawing vector symbols is slow and rarely used; a PNG made in any art tool is faster, and the rarity filters still apply. |
 | 2026-11-08 | Console replaced by popups. It was a whole tab used only to read warnings. |
 | 2026-11-08 | Working docs copied from birb-box: `CLAUDE.md`, `claude/` (file map, session log, QA plan) and the Jello Board (`Jello Board.bat`, port 5179). This roadmap stays the vision and decisions doc. |
@@ -78,6 +79,19 @@ copies 11 packages (180 MB, including the English spell-check dictionary):
 - [x] `tools/check.ps1` passes after each removal. The exe now needs 18 MSYS2 DLLs (down from 35).
 - [ ] Hand-check symbol upload: Use this symbol, undo, save and reopen (`claude/qa-plan.md` step 3)
 - [ ] Optional: remove the leftover symbol-editor data actions (`src/data/action/symbol*`)
+
+## Rename to Setsmith — done 2026-11-08
+
+- [x] Exe and targets: `setsmith.exe`, `setsmith.com`, `setsmith-cli.exe` (`CMakeLists.txt`). `config.hpp.in` now uses `PROJECT_VERSION_*`, so the version stays 2.5.6, the version templates check.
+- [x] Window titles, menus, the About box, and the CLI `--help` and `--version` text (`en.mse-locale`, `main.cpp`)
+- [x] New logo `resource/about.png`, shown in the Welcome and About windows. Version shows as `2.5.6 (Setsmith)`.
+- [x] Settings live in `%APPDATA%\Setsmith`, separate from an installed MSE
+- [x] Kept as is for compatibility:
+  - The `.mse-set` and other `.mse-*` file extensions.
+  - The `mse_version` field.
+  - The `magicseteditor.exe` package ID that templates depend on.
+  - The per-file copyright headers.
+- [ ] The app icon is still the MSE icon (`resource/icon/app.ico`)
 
 ## Phase 3: Package
 

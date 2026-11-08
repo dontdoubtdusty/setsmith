@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(magicseteditor VERSION 2.5.6)
+project(setsmith VERSION 2.5.6)
 add_definitions(-DUNOFFICIAL_BUILD)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -37,9 +37,9 @@ include(${wxWidgets_USE_FILE})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${HUNSPELL_INCLUDE_DIRS})
 
-# Magic Set Editor executable
+# Setsmith executable (MSE Slim)
 
-add_executable(magicseteditor WIN32)
+add_executable(setsmith WIN32)
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${HUNSPELL_LIBRARIES})
@@ -57,27 +57,27 @@ endif()
 
 file(GLOB_RECURSE sources src/*.cpp)
 list(FILTER sources EXCLUDE REGEX win32_cli_wrapper.cpp)
-target_sources(magicseteditor PRIVATE ${sources})
-target_precompile_headers(magicseteditor PRIVATE src/util/prec.hpp)
+target_sources(setsmith PRIVATE ${sources})
+target_precompile_headers(setsmith PRIVATE src/util/prec.hpp)
 
 configure_file(src/config.hpp.in src/config.hpp)
 
 # resource file
 
-target_sources(magicseteditor PRIVATE resource/win32_res.rc)
+target_sources(setsmith PRIVATE resource/win32_res.rc)
 
 # Halian trying Mac stuff
 
 if(BUILD_APPLE_BUNDLE)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
-        "${CMAKE_BINARY_DIR}/magicseteditor.app/Contents/PlugIns")
+        "${CMAKE_BINARY_DIR}/setsmith.app/Contents/PlugIns")
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
     set_target_properties(
-    "magicseteditor"
+    "setsmith"
         PROPERTIES
-        MACOSX_BUNDLE_NAME                             "magicseteditor"
+        MACOSX_BUNDLE_NAME                             "setsmith"
         MACOSX_BUNDLE_VERSION                          "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_GUI_IDENTIFIER                   "org.magicseteditor.gui"
+        MACOSX_BUNDLE_GUI_IDENTIFIER                   "org.setsmith.gui"
         MACOSX_BUNDLE_ICON_FILE                        "mse.icns"
         MACOSX_BUNDLE_INFO_PLIST                       "MacOSXBundleInfo.plist.in"
         MACOSX_BUNDLE                                  "TRUE"
@@ -90,35 +90,35 @@ if(BUILD_APPLE_BUNDLE)
         XCODE_ATTRIBUTE_CLANG_LINK_OBJC_RUNTIME        NO
     )
     add_custom_command(
-        TARGET "magicseteditor"
+        TARGET "setsmith"
         POST_BUILD
-        COMMAND dylibbundler ARGS -od -ns -b -x "${CMAKE_BINARY_DIR}/magicseteditor.app/Contents/MacOS/magicseteditor" -d "${CMAKE_BINARY_DIR}/magicseteditor.app/Contents/libs"
+        COMMAND dylibbundler ARGS -od -ns -b -x "${CMAKE_BINARY_DIR}/setsmith.app/Contents/MacOS/setsmith" -d "${CMAKE_BINARY_DIR}/setsmith.app/Contents/libs"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
         COMMENT "Changing library search path from absolute to relative…"
     )
     add_custom_command(
-        TARGET "magicseteditor"
+        TARGET "setsmith"
         POST_BUILD
-        COMMAND mkdir ARGS -v "${CMAKE_BINARY_DIR}/magicseteditor.app/Contents/Resources"
+        COMMAND mkdir ARGS -v "${CMAKE_BINARY_DIR}/setsmith.app/Contents/Resources"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
         COMMENT "Copying icons…"
     )
     add_custom_command(
-        TARGET "magicseteditor"
+        TARGET "setsmith"
         POST_BUILD
-        COMMAND cp ARGS -v "${PROJECT_SOURCE_DIR}/*.icns" "${CMAKE_BINARY_DIR}/magicseteditor.app/Contents/Resources"
+        COMMAND cp ARGS -v "${PROJECT_SOURCE_DIR}/*.icns" "${CMAKE_BINARY_DIR}/setsmith.app/Contents/Resources"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
         COMMENT "Copying icons…"
     )
 endif()
 
-# magicseteditor.com: wrapper to enable command line executable on windows
+# setsmith.com: wrapper to enable command line executable on windows
 
 if(WIN32)
-  add_executable(magicseteditor-cli)
-  target_sources(magicseteditor-cli PRIVATE src/cli/win32_cli_wrapper.cpp)
-  add_custom_command(TARGET magicseteditor-cli POST_BUILD COMMAND
-    ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/magicseteditor-cli.exe" "${PROJECT_BINARY_DIR}/magicseteditor.com"
+  add_executable(setsmith-cli)
+  target_sources(setsmith-cli PRIVATE src/cli/win32_cli_wrapper.cpp)
+  add_custom_command(TARGET setsmith-cli POST_BUILD COMMAND
+    ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/setsmith-cli.exe" "${PROJECT_BINARY_DIR}/setsmith.com"
   )
 endif()
 
@@ -130,7 +130,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # visual studio debugger
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magicseteditor)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT setsmith)
 
 # Static linking on windows
 if (${VCPKG_TARGET_TRIPLET} MATCHES ".*-static")

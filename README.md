@@ -1,3 +1,20 @@
+# Setsmith
+
+Setsmith is a personal, slimmed-down fork of Magic Set Editor 2. It's built for making cards in the M15 frame:
+- the slim template data,
+- three tabs (Cards, Style, Set info),
+- set symbols uploaded as images.
+
+Plans and decisions are in `ROADMAP.md`; how to build and test is in `CLAUDE.md`.
+
+Setsmith is free software under the GNU General Public License 2 or later, like the program it comes from.
+- **Upstream:** Magic Set Editor, by Twan van Laarhoven and the other MSE developers.
+- **Base:** this fork builds on [haganbmj/MagicSetEditor2](https://github.com/haganbmj/MagicSetEditor2).
+
+The original README follows.
+
+---
+
 # Magic Set Editor 2
 
 Magic Set Editor, or MSE for short, is a program with which you can design your own cards for popular trading card games. MSE can then generate images of those cards that you can print or upload to the internet. Magic Set Editor also has a statistics window that will give useful information about your set, like the average mana cost, number of rares, etc. When you have finished your set, you can export it to an HTML file to use on the Internet, or to Apprentice or CCG Lackey so you can play with your cards online.

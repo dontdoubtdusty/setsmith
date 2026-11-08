@@ -18,7 +18,7 @@ class MSE2FileFormat : public FileFormat {
 public:
   String extension() override          { return _("mse-set"); }
   String matches() override            { return _("*.mse-set;set"); }
-  String name() override               { return _("Magic Set Editor sets (*.mse-set)"); }
+  String name() override               { return _("Set files (*.mse-set)"); }
   bool canImport() override            { return true; }
   bool canExport(const Game&) override { return true; }
   SetP importSet(const String& filename) override {

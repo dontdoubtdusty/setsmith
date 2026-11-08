@@ -587,7 +587,7 @@ void SetWindow::onFileSaveAs(wxCommandEvent&) {
 }
 
 void SetWindow::onFileSaveAsDirectory(wxCommandEvent&) {
-  wxFileDialog dlg(this, _TITLE_("save_set_as_directory"), settings.default_set_dir, clean_filename(set->short_name), "Magic Set Editor sets (*.mse-set)|*.mse-set", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+  wxFileDialog dlg(this, _TITLE_("save_set_as_directory"), settings.default_set_dir, clean_filename(set->short_name), "Set files (*.mse-set)|*.mse-set", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
   if (dlg.ShowModal() == wxID_OK) {
     String filename = dlg.GetPath();
     settings.default_set_dir = dlg.GetDirectory();

@@ -3,14 +3,14 @@
     "checklist":  [
 
                   ],
-    "columnId":  "next",
+    "columnId":  "done",
     "createdAt":  1794096000000,
-    "description":  "Pick a name that isn\u0027t MSE2. Keep the GPL license and credit to Twan van Laarhoven and the MSE developers; avoid the word Magic (Wizards trademark). Update the window titles, exe name, About box and README.",
+    "description":  "Renamed: setsmith.exe, titles, menus, About box, logo, CLI text, %APPDATA%\\Setsmith settings folder. Kept the .mse-* extensions and the magicseteditor.exe package ID for template compatibility. App icon is still the MSE one.",
     "order":  10000,
     "priority":  "Medium",
     "tags":  [
                  "Branding"
              ],
-    "title":  "Rename the fork",
+    "title":  "Rename to Setsmith",
     "updatedAt":  1794096000000
 }

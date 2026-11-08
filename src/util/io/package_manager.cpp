@@ -164,7 +164,7 @@ bool PackageManager::checkDependency(const PackageDependency& dep, bool report_e
   // mse package?
   if (dep.package == mse_package) {
     if (app_version < dep.version) {
-      queue_message(MESSAGE_WARNING, _ERROR_3_("package out of date", _("Magic Set Editor"), app_version.toString(), dep.version.toString()));
+      queue_message(MESSAGE_WARNING, _ERROR_3_("package out of date", _("Setsmith"), app_version.toString(), dep.version.toString()));
     }
     return true;
   }

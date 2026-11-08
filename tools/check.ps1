@@ -41,7 +41,7 @@ $env:PATH = "C:\Windows\system32;C:\Windows"
 $out = Join-Path ([IO.Path]::GetTempPath()) ("mse-slim-check-" + [guid]::NewGuid().ToString("N").Substring(0,8))
 New-Item -ItemType Directory $out | Out-Null
 Push-Location $build
-$msgs = & .\magicseteditor.com --export-images (Join-Path $PSScriptRoot "slim-test.mse-set") (Join-Path $out "{card.name}.png") 2>&1
+$msgs = & .\setsmith.com --export-images (Join-Path $PSScriptRoot "slim-test.mse-set") (Join-Path $out "{card.name}.png") 2>&1
 Pop-Location
 if ($msgs) { "render printed messages:"; $msgs | Select-Object -First 10; $fail = $true }
 foreach ($line in Get-Content (Join-Path $PSScriptRoot "slim-test.reference.txt")) {
@@ -57,10 +57,10 @@ foreach ($line in Get-Content (Join-Path $PSScriptRoot "slim-test.reference.txt"
 $log = Join-Path $out "gui.txt"
 $setCopy = Join-Path $out "gui-test.mse-set"
 Copy-Item (Join-Path $PSScriptRoot "slim-test.mse-set") $setCopy
-$p = Start-Process (Join-Path $build "magicseteditor.com") -ArgumentList "`"$setCopy`"" -WorkingDirectory $build `
+$p = Start-Process (Join-Path $build "setsmith.com") -ArgumentList "`"$setCopy`"" -WorkingDirectory $build `
   -RedirectStandardOutput $log -RedirectStandardError "$log.err" -PassThru -WindowStyle Hidden
 Start-Sleep -Seconds $GuiSeconds
-$gui = Get-Process magicseteditor -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq (Join-Path $build "magicseteditor.exe") }
+$gui = Get-Process setsmith -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq (Join-Path $build "setsmith.exe") }
 if ($gui) { "gui running: '$($gui.MainWindowTitle)'"; $gui | Stop-Process -Force } else { "GUI NOT RUNNING"; $fail = $true }
 if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
 $guiOut = @(Get-Content $log -ErrorAction SilentlyContinue) + @(Get-Content "$log.err" -ErrorAction SilentlyContinue) | Where-Object { $_ }

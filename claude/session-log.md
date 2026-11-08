@@ -14,7 +14,9 @@ Newest first. Keep each entry short: what changed, what was verified, what's nex
   - The dialog preview works.
 - **Not yet verified:** the final "Use this symbol" click, because the desktop was locked.
 - **Framework:** copied from birb-box: CLAUDE.md, `claude/` docs and the Jello Board.
+- **Rename to Setsmith:**
+  - Exe, titles, About box, logo and settings folder are renamed. `check.ps1` passes.
+  - Rendering is unchanged and the version still reports 2.5.6.
 - **Next:**
   - Hand-check the upload.
-  - Pick a new name for the fork.
   - Phase 3: packaging.

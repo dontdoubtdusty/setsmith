@@ -25,7 +25,7 @@
     "createdAt":  1794096000000,
     "genre":  "Card editor",
     "order":  1,
-    "pitch":  "A slimmer Magic Set Editor: M15 frames only, three tabs, image set symbols. Simple, fast, a little style.",
-    "title":  "MSE Slim",
+    "pitch":  "A slim card set editor based on Magic Set Editor: M15 frames only, three tabs, image set symbols. Simple, fast, a little style.",
+    "title":  "Setsmith",
     "updatedAt":  1794096000000
 }

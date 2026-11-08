@@ -9,7 +9,7 @@ Run `tools\check.ps1`. It must end with `ALL CHECKS PASSED`. It checks:
 
 ## Manual GUI checks (UI changes)
 
-1. **Startup:** the welcome window opens with no updates button. New set with the M15 style works.
+1. **Startup:** the welcome window says Setsmith and opens with no updates button. New set with the M15 style works.
 2. **Tabs:** only Cards, Style and Set info appear.
 3. **Set symbol, Set info tab:**
    - Click Upload. The dialog opens, and "Use this symbol" is disabled.
