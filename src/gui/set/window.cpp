@@ -22,7 +22,6 @@
 #include <gui/preferences_window.hpp>
 #include <gui/print_window.hpp>
 #include <gui/images_export_window.hpp>
-#include <gui/html_export_window.hpp>
 #include <gui/auto_replace_window.hpp>
 #include <gui/util.hpp>
 #include <util/io/package_manager.hpp>
@@ -58,9 +57,6 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
     add_menu_item_tr(menuFile, ID_FILE_SAVE_AS_DIRECTORY, nullptr, "save_set_as_directory");
     add_menu_item_tr(menuFile, wxID_ANY, "export", "export", wxITEM_NORMAL, makeExportMenu());
     menuFile->AppendSeparator();
-    #if USE_SCRIPT_PROFILING
-    add_menu_item_tr(menuFile, ID_FILE_PROFILER, nullptr, "show_profiler");
-    #endif
 //    menuFile->Append(ID_FILE_INSPECT,          _("Inspect Internal Data..."),  _("Shows a the data in the set using a tree structure"));
 //    menuFile->AppendSeparator();
     add_menu_item_tr(menuFile, ID_FILE_RELOAD, nullptr, "reload_data");
@@ -175,7 +171,6 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 
 wxMenu* SetWindow::makeExportMenu() {
   auto menuExport = new wxMenu();
-  add_menu_item_tr(menuExport, ID_FILE_EXPORT_HTML, "export_html", "export_html");
   add_menu_item_tr(menuExport, ID_FILE_EXPORT_IMAGE, "export_image", "export_image");
   add_menu_item_tr(menuExport, ID_FILE_EXPORT_IMAGES, "export_images", "export_images");
   add_menu_item_tr(menuExport, ID_FILE_EXPORT_APPR, "export_apprentice", "export_apprentice");
@@ -662,13 +657,6 @@ void SetWindow::onFileExportImages(wxCommandEvent&) {
   wnd.ShowModal();
 }
 
-void SetWindow::onFileExportHTML(wxCommandEvent&) {
-  ExportCardSelectionChoices choices;
-  selectionChoices(choices);
-  HtmlExportWindow wnd(this, set, choices);
-  wnd.ShowModal();
-}
-
 void SetWindow::onFileExportApprentice(wxCommandEvent&) {
   export_apprentice(this, set);
 }
@@ -676,13 +664,6 @@ void SetWindow::onFileExportApprentice(wxCommandEvent&) {
 void SetWindow::onFileExportMWS(wxCommandEvent&) {
   export_mws(this, set);
 }
-
-#if USE_SCRIPT_PROFILING
-  void show_profiler_window(wxWindow* parent);
-  void SetWindow::onFileProfiler(wxCommandEvent&) {
-    show_profiler_window(this);
-  }
-#endif
 
 void SetWindow::onFilePrint(wxCommandEvent&) {
   ExportCardSelectionChoices choices;
@@ -846,12 +827,8 @@ BEGIN_EVENT_TABLE(SetWindow, wxFrame)
   EVT_MENU      (ID_FILE_EXPORT,    SetWindow::onFileExportMenu)
   EVT_MENU      (ID_FILE_EXPORT_IMAGE,  SetWindow::onFileExportImage)
   EVT_MENU      (ID_FILE_EXPORT_IMAGES,  SetWindow::onFileExportImages)
-  EVT_MENU      (ID_FILE_EXPORT_HTML,  SetWindow::onFileExportHTML)
   EVT_MENU      (ID_FILE_EXPORT_APPR,  SetWindow::onFileExportApprentice)
   EVT_MENU      (ID_FILE_EXPORT_MWS,  SetWindow::onFileExportMWS)
-#if USE_SCRIPT_PROFILING
-  EVT_MENU      (ID_FILE_PROFILER,    SetWindow::onFileProfiler)
-#endif
 //  EVT_MENU      (ID_FILE_INSPECT,    SetWindow::onFileInspect)
   EVT_MENU      (ID_FILE_PRINT,      SetWindow::onFilePrint)
   EVT_MENU      (ID_FILE_PRINT_PREVIEW,  SetWindow::onFilePrintPreview)

@@ -128,10 +128,8 @@ private:
   void onFileExportMenu      (wxCommandEvent&);
   void onFileExportImage     (wxCommandEvent&);
   void onFileExportImages    (wxCommandEvent&);
-  void onFileExportHTML      (wxCommandEvent&);
   void onFileExportApprentice(wxCommandEvent&);
   void onFileExportMWS       (wxCommandEvent&);
-  void onFileProfiler        (wxCommandEvent&);
   void onFilePrint           (wxCommandEvent&);
   void onFilePrintPreview    (wxCommandEvent&);
   void onFileReload          (wxCommandEvent&);
