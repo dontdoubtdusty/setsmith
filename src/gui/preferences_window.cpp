@@ -8,7 +8,6 @@
 
 #include <util/prec.hpp>
 #include <gui/preferences_window.hpp>
-#include <gui/update_checker.hpp>
 #include <data/settings.hpp>
 #include <util/window_id.hpp>
 #include <util/io/package_manager.hpp>
@@ -100,20 +99,7 @@ private:
   void onApprenticeBrowse(wxCommandEvent&);
 };
 
-// Preferences page for automatic updates
-class UpdatePreferencesPage : public PreferencesPage {
-public:
-  UpdatePreferencesPage(Window* parent);
-  void store() override;
-  
-private:
-  DECLARE_EVENT_TABLE();
-  
-  wxChoice* check_at_startup;
-  
-  // check for updates
-  void onCheckUpdatesNow(wxCommandEvent&);
-};
+// MSE Slim: the Updates page was removed along with the update checker.
 
 
 // ----------------------------------------------------------------------------- : PreferencesWindow
@@ -127,7 +113,6 @@ PreferencesWindow::PreferencesWindow(Window* parent)
   nb->AddPage(new DisplayPreferencesPage(nb), _TITLE_("display"));
   nb->AddPage(new InternalPreferencesPage(nb), _TITLE_("internal"));
   nb->AddPage(new DirsPreferencesPage   (nb), _TITLE_("directories"));
-  nb->AddPage(new UpdatePreferencesPage (nb), _TITLE_("updates"));
   
   // init sizer
   wxSizer* s = new wxBoxSizer(wxVERTICAL);
@@ -412,47 +397,3 @@ BEGIN_EVENT_TABLE(DirsPreferencesPage, wxPanel)
   EVT_BUTTON     (ID_APPRENTICE_BROWSE, DirsPreferencesPage::onApprenticeBrowse)
 END_EVENT_TABLE  ();
 
-
-// ----------------------------------------------------------------------------- : Preferences page : updates
-
-UpdatePreferencesPage::UpdatePreferencesPage(Window* parent)
-  : PreferencesPage(parent)
-{
-  // init controls
-  check_at_startup    = new wxChoice(this, wxID_ANY);
-  wxButton* check_now = new wxButton(this, ID_CHECK_UPDATES_NOW, _BUTTON_("check now"));
-  // set values
-  check_at_startup->Append(_BUTTON_("always"));                        // 0
-  check_at_startup->Append(_BUTTON_("if internet connection exists")); // 1
-  check_at_startup->Append(_BUTTON_("never"));                         // 2
-  check_at_startup->SetSelection(settings.check_updates);
-  // init sizer
-  wxSizer* s = new wxBoxSizer(wxVERTICAL);
-    s->Add(new wxStaticText(this, wxID_ANY, _LABEL_("check at startup")), 0, wxALL, 8);
-    s->Add(check_at_startup, 0, wxALL & ~wxTOP, 8);
-    s->Add(check_now,        0, wxALL & ~wxTOP, 8);
-    s->Add(new wxStaticText(this, wxID_ANY, _LABEL_("checking requires internet")), 0, wxALL & ~wxTOP, 8);
-  SetSizer(s);
-}
-
-void UpdatePreferencesPage::store() {
-  int sel = check_at_startup->GetSelection();
-  if      (sel == 0) settings.check_updates = CHECK_ALWAYS;
-  else if (sel == 1) settings.check_updates = CHECK_IF_CONNECTED;
-  else               settings.check_updates = CHECK_NEVER;
-}
-
-void UpdatePreferencesPage::onCheckUpdatesNow(wxCommandEvent&) {
-  check_updates_now(false);
-  if (!update_data_found()) {
-    wxMessageBox(_ERROR_("checking updates failed"), _TITLE_("update check"), wxICON_ERROR | wxOK);
-  } else if (!update_available()) {
-    wxMessageBox(_ERROR_("no updates"),              _TITLE_("update check"), wxICON_INFORMATION | wxOK);
-  } else {
-    show_update_dialog(GetParent());
-  }
-}
-
-BEGIN_EVENT_TABLE(UpdatePreferencesPage, wxPanel)
-  EVT_BUTTON      (ID_CHECK_UPDATES_NOW, UpdatePreferencesPage::onCheckUpdatesNow)
-END_EVENT_TABLE  ()

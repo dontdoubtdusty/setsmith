@@ -18,15 +18,11 @@
 #include <cli/cli_main.hpp>
 #include <cli/text_io_handler.hpp>
 #include <gui/welcome_window.hpp>
-#include <gui/update_checker.hpp>
-#include <gui/packages_window.hpp>
 #include <gui/set/window.hpp>
 #include <gui/symbol/window.hpp>
 #include <gui/thumbnail_thread.hpp>
-#include <wx/fs_inet.h>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
-#include <wx/socket.h>
 
 ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTemplateP const& exp, String const& outname);
 
@@ -87,8 +83,6 @@ int MSE::OnRun() {
       SetAppName(_("magicseteditor"));
     #endif
     wxInitAllImageHandlers();
-    wxFileSystem::AddHandler(new wxInternetFSHandler); // needed for update checker
-    wxSocketBase::Initialize();
     init_script_variables();
     init_file_formats();
     cli.init();
@@ -120,17 +114,8 @@ int MSE::OnRun() {
           wnd->Show();
           return runGUI();
         } else if (f.GetExt() == _("mse-installer")) {
-          // Installer; install it
-          InstallType type = settings.install_type;
-          if (args.size() > 1) {
-            if (starts_with(args[1], _("--"))) {
-              parse_enum(String(args[1]).substr(2), type);
-            }
-          }
-          InstallerP installer = open_package<Installer>(argv[1]);
-          PackagesWindow wnd(nullptr, installer);
-          wnd.ShowModal();
-          return EXIT_SUCCESS;
+          // MSE Slim: the package manager was removed.
+          throw Error(_("This build can't install .mse-installer files.\nCopy template folders into the data folder next to magicseteditor.exe instead."));
         } else if (f.GetExt() == _("mse-script")) {
           // Run a script file
           if (!run_script_file(arg)) return EXIT_FAILURE;
@@ -172,10 +157,6 @@ int MSE::OnRun() {
           cli << _("\n         \tLoad the set file in the MSE user interface.");
           cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-symbol") << NORMAL;
           cli << _("\n         \tLoad the symbol into the MSE symbol editor.");
-          cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-installer")
-                             << NORMAL << _(" [") << BRIGHT << _("--local") << NORMAL << _("]");
-          cli << _("\n         \tInstall the packages from the installer.");
-          cli << _("\n         \tIf the ") << BRIGHT << _("--local") << NORMAL << _(" flag is passed, install packages for this user only.");
           cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-script") << NORMAL;
           cli << _("\n         \tRun a script file.");
           cli << _("\n\n  ") << BRIGHT << _("--symbol-editor") << NORMAL;
