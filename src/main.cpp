@@ -19,7 +19,6 @@
 #include <cli/text_io_handler.hpp>
 #include <gui/welcome_window.hpp>
 #include <gui/set/window.hpp>
-#include <gui/symbol/window.hpp>
 #include <gui/thumbnail_thread.hpp>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
@@ -103,11 +102,9 @@ int MSE::OnRun() {
         const String& arg = args[0];
         // Find the extension
         wxFileName f(arg.Mid(0,arg.find_last_not_of(_("\\/")) + 1));
-        if (f.GetExt() == _("mse-symbol")) {
-          // Show the symbol editor
-          Window* wnd = new SymbolWindow(nullptr, arg);
-          wnd->Show();
-          return runGUI();
+        if (f.GetExt() == _("mse-symbol") || arg == _("--symbol-editor")) {
+          // MSE Slim: the symbol editor was removed.
+          throw Error(_("This build has no symbol editor."));
         } else if (f.GetExt() == _("mse-set") || f.GetExt() == _("mse") || f.GetExt() == _("set")) {
           // Show the set window
           Window* wnd = new SetWindow(nullptr, import_set(arg));
@@ -121,10 +118,6 @@ int MSE::OnRun() {
           if (!run_script_file(arg)) return EXIT_FAILURE;
           if (cli.shown_errors()) return EXIT_FAILURE;
           return EXIT_SUCCESS;
-        } else if (arg == _("--symbol-editor")) {
-          Window* wnd = new SymbolWindow(nullptr);
-          wnd->Show();
-          return runGUI();
         } else if (arg == _("--create-installer")) {
           // create an installer
           Installer inst;
@@ -155,12 +148,8 @@ int MSE::OnRun() {
                              << PARAM << _("FILE") << FILE_EXT << _(".set") << NORMAL << _(", ")
                              << PARAM << _("FILE") << FILE_EXT << _(".mse") << NORMAL;
           cli << _("\n         \tLoad the set file in the MSE user interface.");
-          cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-symbol") << NORMAL;
-          cli << _("\n         \tLoad the symbol into the MSE symbol editor.");
           cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-script") << NORMAL;
           cli << _("\n         \tRun a script file.");
-          cli << _("\n\n  ") << BRIGHT << _("--symbol-editor") << NORMAL;
-          cli << _("\n         \tShow the symbol editor instead of the welcome window.");
           cli << _("\n\n  ") << BRIGHT << _("--create-installer") << NORMAL << _(" [")
                              << PARAM << _("OUTFILE") << FILE_EXT << _(".mse-installer") << NORMAL << _("] [")
                              << PARAM << _("PACKAGE") << NORMAL << _(" [") << PARAM << _("PACKAGE") << NORMAL << _(" ...]]");
