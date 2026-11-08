@@ -28,6 +28,12 @@ void set_status_text(Window* window, const String& text);
 /// Set the help text for a window, it will be shown in the status bar on mouse over
 void set_help_text(Window* window, const String& text);
 
+/// Show queued (non-fatal) error and warning messages in one message box.
+/** MSE Slim: replaces the Console tab. Call from idle handlers. Each distinct message is shown
+ *  once per session, and at most 10 per box. Safe to call while a box is already open.
+ */
+void show_queued_messages(Window* parent);
+
 // ----------------------------------------------------------------------------- : DC related
 
 /// Fill a DC with a single color

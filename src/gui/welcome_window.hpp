@@ -44,7 +44,7 @@ private:
   void onNewSet      (wxCommandEvent&);
   void onOpenLast    (wxCommandEvent&);
   void onSelectLanguage(wxCommandEvent&);
-//  void onIdle    (wxIdleEvent& ev);
+  void onIdle    (wxIdleEvent& ev);
   
   /// Close the welcome window, and show the given set
   void close(const SetP& set);

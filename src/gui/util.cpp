@@ -25,6 +25,39 @@
   #include <wx/mstream.h>
 #endif
 
+// ----------------------------------------------------------------------------- : Queued messages
+
+void show_queued_messages(Window* parent) {
+  static bool showing = false;      // a message box is open; don't open another from its event loop
+  static set<String> already_shown; // per session, so template errors that repeat on every redraw don't spam
+  if (showing || !have_queued_message()) return;
+  const size_t max_listed = 10;
+  MessageType worst = MESSAGE_NONE;
+  String text;
+  size_t listed = 0, hidden = 0;
+  MessageType type;
+  String msg;
+  while (get_queued_message(type, msg)) {
+    if (type < MESSAGE_INFO) continue; // console input/output echo, not for the user
+    if (!already_shown.insert(msg).second) continue;
+    worst = max(worst, type);
+    if (listed < max_listed) {
+      if (!text.empty()) text += _("\n\n");
+      text += msg;
+      ++listed;
+    } else {
+      ++hidden;
+    }
+  }
+  if (text.empty()) return;
+  if (hidden) text += String::Format(_("\n\n...and %d more."), (int)hidden);
+  long icon = worst >= MESSAGE_ERROR ? wxICON_ERROR : worst == MESSAGE_WARNING ? wxICON_WARNING : wxICON_INFORMATION;
+  String title = worst >= MESSAGE_ERROR ? _("Error") : worst == MESSAGE_WARNING ? _("Warning") : _("Message");
+  showing = true;
+  wxMessageBox(text, title, wxOK | icon, parent);
+  showing = false;
+}
+
 // ----------------------------------------------------------------------------- : Window related
 
 // Id of the control that has the focus, or -1 if no control has the focus

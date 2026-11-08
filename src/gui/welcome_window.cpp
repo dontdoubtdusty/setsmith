@@ -146,6 +146,11 @@ void WelcomeWindow::onOpenLast(wxCommandEvent&) {
   }
 }
 
+void WelcomeWindow::onIdle(wxIdleEvent&) {
+  // MSE Slim: show errors such as "Error loading set" (there is no Console tab to collect them)
+  show_queued_messages(this);
+}
+
 void WelcomeWindow::close(const SetP& set) {
   if (!set) return;
   (new SetWindow(nullptr, set))->Show();
@@ -159,7 +164,7 @@ BEGIN_EVENT_TABLE(WelcomeWindow, wxFrame)
   EVT_BUTTON         (ID_FILE_RECENT,        WelcomeWindow::onOpenLast)
   EVT_COMBOBOX       (ID_SELECT_LANGUAGE,     WelcomeWindow::onSelectLanguage)
   EVT_PAINT          (                       WelcomeWindow::onPaint)
-//  EVT_IDLE           (                     WelcomeWindow::onIdle)
+  EVT_IDLE           (                       WelcomeWindow::onIdle)
 END_EVENT_TABLE  ()
 
 

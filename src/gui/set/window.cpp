@@ -12,7 +12,6 @@
 #include <gui/set/cards_panel.hpp>
 #include <gui/set/set_info_panel.hpp>
 #include <gui/set/style_panel.hpp>
-#include <gui/set/console_panel.hpp>
 #include <wx/spinctrl.h> // EVT_SPINCTRL below; was pulled in by the removed random_pack_panel.hpp
 #include <gui/control/card_list.hpp>
 #include <gui/control/card_viewer.hpp>
@@ -139,8 +138,8 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   addPanel(menuWindow, tabBar, new CardsPanel     (this, wxID_ANY), 0, _("window_cards"),      _("cards tab"));
   addPanel(menuWindow, tabBar, new StylePanel     (this, wxID_ANY), 1, _("window_style"),      _("style tab"));
   addPanel(menuWindow, tabBar, new SetInfoPanel   (this, wxID_ANY), 2, _("window_set_info"),   _("set info tab"));
-  // MSE Slim: the Keywords, Statistics and Random Pack panels were removed.
-  addPanel(menuWindow, tabBar, new ConsolePanel   (this, wxID_ANY), 3, _("window_console"),    _("console tab"));
+  // MSE Slim: the Keywords, Statistics, Random Pack and Console panels were removed.
+  // Template errors that the Console used to list now show in a message box (see onIdle).
   selectPanel(ID_WINDOW_CARDS); // select cards panel
   
   // loose ends
@@ -814,6 +813,7 @@ void SetWindow::onMenuOpen(wxMenuEvent& ev) {
 
 void SetWindow::onIdle(wxIdleEvent& ev) {
   // Stuff that must be done in the main thread
+  show_queued_messages(this);
 }
 
 // ----------------------------------------------------------------------------- : Event table
