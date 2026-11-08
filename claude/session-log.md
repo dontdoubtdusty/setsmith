@@ -17,6 +17,7 @@ Newest first. Keep each entry short: what changed, what was verified, what's nex
 - **Rename to Setsmith:**
   - Exe, titles, About box, logo and settings folder are renamed. `check.ps1` passes.
   - Rendering is unchanged and the version still reports 2.5.6.
+  - New gold diamond app icon. Verified in the title bar and in Explorer's exe icon.
 - **Next:**
   - Hand-check the upload.
   - Phase 3: packaging.

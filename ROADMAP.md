@@ -91,7 +91,7 @@ copies 11 packages (180 MB, including the English spell-check dictionary):
   - The `mse_version` field.
   - The `magicseteditor.exe` package ID that templates depend on.
   - The per-file copyright headers.
-- [ ] The app icon is still the MSE icon (`resource/icon/app.ico`)
+- [x] New app icon `resource/icon/app.ico`: the gold diamond from the logo, 16–256 px, made by `tools/make-icon.ps1`. Other icons (set files, toolbar) are still MSE's.
 
 ## Phase 3: Package
 

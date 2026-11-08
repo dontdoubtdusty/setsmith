@@ -5,12 +5,12 @@
                   ],
     "columnId":  "done",
     "createdAt":  1794096000000,
-    "description":  "Renamed: setsmith.exe, titles, menus, About box, logo, CLI text, %APPDATA%\\Setsmith settings folder. Kept the .mse-* extensions and the magicseteditor.exe package ID for template compatibility. App icon is still the MSE one.",
+    "description":  "Renamed: setsmith.exe, titles, menus, About box, logo, gold diamond app icon, CLI text, %APPDATA%\\Setsmith settings folder. Kept the .mse-* extensions and the magicseteditor.exe package ID for template compatibility.",
     "order":  10000,
     "priority":  "Medium",
     "tags":  [
                  "Branding"
              ],
     "title":  "Rename to Setsmith",
-    "updatedAt":  1794096000000
+    "updatedAt":  1794100000000
 }

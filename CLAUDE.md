@@ -17,6 +17,7 @@ Build and test. Run from the repo root in PowerShell.
 - **Toolchain:** MSYS2 UCRT64 at `D:\msys64` (GCC, CMake, Ninja, wxWidgets 3.2, Boost.Regex, Hunspell). `check.ps1` drives it through `D:\msys64\usr\bin\bash.exe`, so you don't need to open an MSYS2 shell.
 - **Reconfigure after adding or removing sources.** CMake finds sources with `file(GLOB)`, and `check.ps1` reconfigures every run.
 - **Running the exe outside MSYS2:** it needs the 18 MSYS2 DLLs next to it in `build/`, plus `build/resource/` (the post-build step copies it) and `build/data/` (from `make-slim-data.ps1`).
+- **Changing an icon:** Ninja doesn't see `.ico` changes, so touch `resource/win32_res.rc` to rebuild the exe icon. The post-build step then copies `resource/` again for the window icon. Regenerate the app icon with `tools/make-icon.ps1 -Out resource\icon\app.ico`.
 - **Render test:** `tools/slim-test.mse-set` is compared against the hashes in `tools/slim-test.reference.txt`. If you change rendering on purpose, regenerate the reference and say so in the commit.
 
 ## Architecture

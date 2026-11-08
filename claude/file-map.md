@@ -10,6 +10,16 @@ The places where MSE Slim differs from upstream. Use `git diff upstream/master..
 | `tools/make-slim-data.ps1` | Copies M15, planeswalker, token and blend packages into `build/data` |
 | `tools/slim-test.mse-set`, `slim-test.reference.txt` | Seven test cards and their render hashes |
 | `tools/JelloBoard/`, `Jello Board.bat` | Local task board (copied from birb-box) |
+| `tools/make-icon.ps1` | Generates the Setsmith app icon (`resource/icon/app.ico`) |
+
+## Branding (Setsmith)
+
+| File | Purpose |
+|---|---|
+| `resource/about.png`, `resource/icon/app.ico` | Logo (Welcome and About windows) and app icon |
+| `data/en.mse-locale/locale` | Titles and menu text |
+| `src/main.cpp` | App name: settings folder and CLI banner |
+| `src/config.hpp.in` | Version from `PROJECT_VERSION_*` |
 
 ## Set symbol upload (replaces the symbol editor)
 
