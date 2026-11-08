@@ -18,6 +18,9 @@ community-maintained version that the M15 template pack is built for. That versi
 | 2026-11-08 | Toolchain: MSYS2 (UCRT64) at `D:\msys64`, with CMake, Ninja, wxWidgets 3.2, Boost and Hunspell from pacman. |
 | 2026-11-08 | Local only for now. Push to GitHub once it builds. |
 | 2026-11-08 | `custom-uvs` stays a web app. The slim MSE stays Magic-only. |
+| 2026-11-08 | Symbol editor replaced by image upload. Drawing vector symbols is slow and rarely used; a PNG made in any art tool is faster, and the rarity filters still apply. |
+| 2026-11-08 | Console replaced by popups. It was a whole tab used only to read warnings. |
+| 2026-11-08 | Working docs copied from birb-box: `CLAUDE.md`, `claude/` (file map, session log, QA plan) and the Jello Board (`Jello Board.bat`, port 5179). This roadmap stays the vision and decisions doc. |
 | 2026-11-08 | Re-based from twanvl 2.1.2 onto haganbmj 2.5.6. 2.1.2 printed `Variable not set: extra_card` on M15 cards, because the template pack targets 2.5.6. The old work is kept on branch `slim-twanvl`. |
 
 ## Phase 0: Baseline
@@ -60,17 +63,21 @@ copies 11 packages (180 MB, including the English spell-check dictionary):
   this PC). Document this in the Phase 3 package.
 - [ ] Optional later: trim unused frame images inside `magic-modules` (145 MB). Riskier, since it's shared.
 
-## Phase 2: Simpler UI
+## Phase 2: Simpler UI — built 2026-11-08, one manual check left
 
-The audit was done on twanvl 2.1.2. Check the line references again on 2.5.6.
-
-- [ ] Remove the Keywords, Statistics, Random Pack and Console tabs (~2,000 lines; tabs are added in `src/gui/set/window.cpp`)
-- [ ] Remove the package manager and update checker (~950 lines, drops the network dependency)
-- [ ] Remove the symbol editor (~2,900 lines; use an image for the set symbol)
-- [ ] Remove the print, HTML export and profiler windows (~530 lines, drops wxHTML)
-- [ ] Optional: remove the spell checker (drops Hunspell)
-- [ ] Keep Cards, Style, Set Info, the image crop tool and image export
-- [ ] Rebuild and test after each removal
+- [x] Removed the Keywords, Statistics and Random Pack tabs
+- [x] Removed the Console tab. Template warnings now show as one deduplicated popup (`show_queued_messages`, `src/gui/util.cpp`).
+- [x] Removed the package manager and update checker (drops the network code)
+- [x] Removed HTML export and the profiler (wxWidgets is now core+base only). `export_set()` moved to `src/data/export_template.cpp`.
+- [x] Removed the symbol editor (`src/gui/symbol/`). Replaced it with **set symbol upload** (`src/gui/symbol_upload_window.*`):
+  - Any image can be the symbol. It is stored in the set as a PNG and colored per rarity by the existing symbol filters (`render_image_symbol`).
+  - The dialog previews four rarities and lists best practices. It warns about missing transparency, small images and wide shapes.
+  - Old vector `.mse-symbol` files still render.
+- [x] Kept printing and the spell checker (decided 2026-11-08)
+- [x] Kept Cards, Style, Set Info, the image crop tool and image export
+- [x] `tools/check.ps1` passes after each removal. The exe now needs 18 MSYS2 DLLs (down from 35).
+- [ ] Hand-check symbol upload: Use this symbol, undo, save and reopen (`claude/qa-plan.md` step 3)
+- [ ] Optional: remove the leftover symbol-editor data actions (`src/data/action/symbol*`)
 
 ## Phase 3: Package
 

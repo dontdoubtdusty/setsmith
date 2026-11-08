@@ -1,0 +1,16 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "next",
+    "createdAt":  1794096000000,
+    "description":  "One folder or zip: exe, the 18 MSYS2 DLLs, resource/, slim data. Note the required card fonts (Beleren, MPlantin, Relay). Test on a clean PATH.",
+    "order":  20000,
+    "priority":  "Medium",
+    "tags":  [
+                 "Packaging"
+             ],
+    "title":  "Phase 3: portable package",
+    "updatedAt":  1794096000000
+}

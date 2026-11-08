@@ -1,0 +1,16 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "next",
+    "createdAt":  1794096000000,
+    "description":  "Pick a name that isn\u0027t MSE2. Keep the GPL license and credit to Twan van Laarhoven and the MSE developers; avoid the word Magic (Wizards trademark). Update the window titles, exe name, About box and README.",
+    "order":  10000,
+    "priority":  "Medium",
+    "tags":  [
+                 "Branding"
+             ],
+    "title":  "Rename the fork",
+    "updatedAt":  1794096000000
+}

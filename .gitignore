@@ -19,3 +19,7 @@
 /resource/RC*
 
 /resource/expected_locale_keys
+
+# Jello Board build output
+/tools/JelloBoard/bin
+/tools/JelloBoard/obj

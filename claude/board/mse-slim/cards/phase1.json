@@ -1,0 +1,16 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "done",
+    "createdAt":  1794096000000,
+    "description":  "M15, planeswalker, token frames and blends only (11 packages, 180 MB). The render test is byte-identical to the full pack.",
+    "order":  10000,
+    "priority":  "High",
+    "tags":  [
+                 "Data"
+             ],
+    "title":  "Phase 1: slim template data",
+    "updatedAt":  1794096000000
+}

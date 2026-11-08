@@ -1,0 +1,16 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "ideas",
+    "createdAt":  1794096000000,
+    "description":  "src/data/action/symbol*.cpp and part of the Symbol data model were only used by the editor. Keep what renders old .mse-symbol files.",
+    "order":  10000,
+    "priority":  "Low",
+    "tags":  [
+                 "Cleanup"
+             ],
+    "title":  "Remove the leftover symbol editor data",
+    "updatedAt":  1794096000000
+}

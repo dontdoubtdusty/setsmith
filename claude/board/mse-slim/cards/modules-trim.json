@@ -1,0 +1,16 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "ideas",
+    "createdAt":  1794096000000,
+    "description":  "Optional: drop the frame modules M15 never uses, to shrink the data further. Must keep the render test identical.",
+    "order":  20000,
+    "priority":  "Low",
+    "tags":  [
+                 "Data"
+             ],
+    "title":  "Trim magic-modules",
+    "updatedAt":  1794096000000
+}

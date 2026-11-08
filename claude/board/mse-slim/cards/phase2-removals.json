@@ -1,0 +1,16 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "done",
+    "createdAt":  1794096000000,
+    "description":  "Removed the Keywords, Stats and Random Pack tabs, the package manager, the updates, HTML export, the profiler and the symbol editor. The console became popups.",
+    "order":  20000,
+    "priority":  "High",
+    "tags":  [
+                 "UI"
+             ],
+    "title":  "Phase 2: remove unused UI",
+    "updatedAt":  1794096000000
+}

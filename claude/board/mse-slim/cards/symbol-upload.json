@@ -1,0 +1,17 @@
+﻿{
+    "archived":  false,
+    "checklist":  [
+
+                  ],
+    "columnId":  "test",
+    "createdAt":  1794096000000,
+    "description":  "Upload dialog with a rarity preview and best practices. Built and committed (0d366599). Still to check by hand: Use this symbol, undo, save/reopen, the notes for JPG and small images. See claude/qa-plan.md step 3.",
+    "order":  10000,
+    "priority":  "High",
+    "tags":  [
+                 "UI",
+                 "Symbols"
+             ],
+    "title":  "Set symbol upload",
+    "updatedAt":  1794096000000
+}
