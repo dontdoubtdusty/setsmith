@@ -33,7 +33,7 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 | File | Purpose |
 |---|---|
 | `src/data/font.*`, `src/util/rotation.cpp`, `src/gfx/resample_text.cpp` | Text outlines: `stroke color/width`, `stroke2 color/width` (alpha dilation) |
-| `src/render/text/viewer.*` | Masked text that is centered or bottom aligned is fitted against the right mask rows |
+| `src/render/text/viewer.*` | Masked text that is centered or bottom aligned is fitted against the right mask rows; the mask is checked over each line's full height |
 
 ## Branding (Setsmith)
 
@@ -85,4 +85,4 @@ Update checker and installer (`data/installer.*`, the installed-package database
 
 ## Magic data patches
 
-`tools/make-slim-data.ps1` patches the copied M15 pack after copying (no Masterpiece rarity, set code, set symbol or style option). Each patch must match an exact number of times, or the script stops.
+`tools/make-slim-data.ps1` patches the copied M15 pack after copying (no Masterpiece rarity, set code, set symbol or style option) and adds a P/T corner mask to the M15 and etched-foil text boxes. The mask image lives in `tools/patches/`. Each patch must match an exact number of times, or the script stops.

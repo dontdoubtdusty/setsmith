@@ -85,3 +85,8 @@ Newest first. Keep each entry short: what changed, what was verified, what's nex
 - **Masterpiece removed from the Magic data:** no rarity choice, set code, set symbol or style option. Done as patches in `tools/make-slim-data.ps1` because the pack is not in this repo (each patch must match exactly, or the script stops).
 - **Verified:** `check.ps1` passes after each stage, Magic and UVS renders are byte-identical, the real bonus-stage set (with old keys) loads with zero messages, About window and main window checked in screenshots.
 - **Next:** stage 2 of the new look (Cards tab layout, row color stripes, backdrop), then icons for the toolbar, then the Welcome window.
+
+## 2026-11-12
+
+- **Text clear of the P/T box (permanent fix):** the text engine checks the mask over each line's full height, and M15 and etched foil get a P/T corner mask when the card has a P/T. Planeswalker and UVS wrapping improved too (two reference hashes regenerated). Verified with check.ps1 and a long-flavor Jensen render.
+- **Next:** extend the P/T mask to borderless (altered), DFC and adventure frames if their text hits the P/T box.

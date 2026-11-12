@@ -160,7 +160,8 @@ private:
   // helper : get the start coordinate of a line, this is 0 unless there is a contour mask
   double lineLeft (RotatedDC& dc, const TextStyle& style, double y) const;
   // helper : get the end coordinate of a line, this is width unless there is a contour mask
-  double lineRight(RotatedDC& dc, const TextStyle& style, double y) const;
+  // Setsmith: with a height, the narrowest point of the mask over the rows y to y+height
+  double lineRight(RotatedDC& dc, const TextStyle& style, double y, double height = 0) const;
 };
 
 

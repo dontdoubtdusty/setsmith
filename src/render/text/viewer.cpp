@@ -629,7 +629,8 @@ bool TextViewer::prepareLinesAtScale(RotatedDC& dc, const vector<CharInfo>& char
     }
     // Did the word become too long?
     if (!break_now) {
-      double max_width = lineRight(dc, style, line.top) - line.margin_right;
+      // Setsmith: check the mask over the line's whole height so far
+      double max_width = lineRight(dc, style, line.top, max(line_size.height, word_size.height)) - line.margin_right;
       if (line_size.width + word_size.width > max_width) {
         if (!style.field().multi_line) {
           // single line word does not fit
@@ -752,8 +753,16 @@ bool TextViewer::prepareLinesAtScale(RotatedDC& dc, const vector<CharInfo>& char
 double TextViewer::lineLeft(RotatedDC& dc, const TextStyle& style, double y) const {
   return style.mask.getFromCache().rowLeft(y, dc.getInternalSize()) + style.padding_left;
 }
-double TextViewer::lineRight(RotatedDC& dc, const TextStyle& style, double y) const {
-  return style.mask.getFromCache().rowRight(y, dc.getInternalSize()) - style.padding_right;
+double TextViewer::lineRight(RotatedDC& dc, const TextStyle& style, double y, double height) const {
+  const AlphaMask& mask = style.mask.getFromCache();
+  RealSize size = dc.getInternalSize();
+  double right = mask.rowRight(y, size);
+  // Setsmith: a line covers every row down to its bottom, not just its top one. Take the narrowest row,
+  // so text keeps clear of a notch that starts partway down the line (like the P/T box corner on M15).
+  for (double row = y + 1 ; row < y + height ; row += 1) {
+    right = min(right, mask.rowRight(row, size));
+  }
+  return right - style.padding_right;
 }
 
 

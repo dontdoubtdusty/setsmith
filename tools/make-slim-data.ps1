@@ -140,6 +140,24 @@ foreach ($info in "card_fields", "card_fields_dfc", "card_fields_tfc") {
 }
 "{0,-48} {1,7}" -f "Setsmith patches (no Masterpiece)", "applied"
 
+# Keep rules and flavor text out of the P/T box corner. The pack's text box runs under the P/T box,
+# so a long last line (often the flavor text) was drawn beneath it. A mask (black = no text) covers that
+# corner whenever the card has a P/T. Etched foil can move its text box with "text chops"; the mask is
+# drawn for the default box, so it is only used when both chops are 0.
+$ptMask = Join-Path $PSScriptRoot "patches\m15-text-pt-mask.png"
+foreach ($p in "magic-m15.mse-style", "magic-m15-showcase-etched-foil.mse-style") {
+  Copy-Item -Force $ptMask (Join-Path (Join-Path $Output $p) "text-pt-mask.png")
+}
+Patch-File "magic-m15.mse-style" "style" @(
+  @{ Name = "text P/T mask"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tleft: 29\r?\n\t\ttop: 327\r?\n\t\twidth: 314\r?\n\t\theight: 154\r?\n)'
+     With = '$1		mask: { if card.pt != "" then "text-pt-mask.png" else "" }' + "`n" }
+)
+Patch-File "magic-m15-showcase-etched-foil.mse-style" "style" @(
+  @{ Name = "text P/T mask"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tleft: 29\r?\n\t\ttop: \{327-\(-chop_top\(\)\)\}\r?\n\t\twidth: 314\r?\n\t\tbottom: \{481-chop_bot\(\)\}\r?\n)'
+     With = '$1		mask: { if card.pt != "" and chop_top() == 0 and chop_bot() == 0 then "text-pt-mask.png" else "" }' + "`n" }
+)
+"{0,-48} {1,7}" -f "Setsmith patches (text clear of P/T box)", "applied"
+
 # Remove packages that are no longer on the list.
 $keepNames = @($needed.Keys) + $ownPackages + "en.mse-locale" + "dictionaries"
 Get-ChildItem $Output -Directory | Where-Object { $keepNames -notcontains $_.Name } | ForEach-Object {
