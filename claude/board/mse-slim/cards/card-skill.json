@@ -1,0 +1,12 @@
+{
+    "archived":  false,
+    "checklist":  [],
+    "columnId":  "done",
+    "createdAt":  1794528000000,
+    "description":  "/card skill + tools/card.ps1: Claude makes Magic or UVS cards from an idea into running sets in Documents/Setsmith Cards. Frames added: saga, DFC, adventure, borderless art, etched foil.",
+    "order":  31000,
+    "priority":  "Medium",
+    "tags":  [ "Feature" ],
+    "title":  "/card skill and new Magic frames",
+    "updatedAt":  1794528000000
+}

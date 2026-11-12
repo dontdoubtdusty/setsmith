@@ -2,6 +2,15 @@
 
 Newest first. Keep each entry short: what changed, what was verified, what's next.
 
+## 2026-11-12 (/card skill, more Magic frames, Character art fix)
+
+- **/card skill:** `.claude/skills/card/SKILL.md` + `tools/card.ps1`. Claude designs a Magic or UVS card from an idea (fields the user gives are kept), adds or replaces it by name in `Documents\Setsmith Cards\Claude Magic.mse-set` / `Claude UVS.mse-set` (with `.bak`), and renders a PNG next to it. Optional art is center-cropped to the art box; `-Art2` for a DFC back.
+- **Engine:** `--export-images ... --zoom N` (Magic exports at 750 px); saved settings untouched.
+- **UVS:** empty art exports as a dark backdrop (`art-blank.png`), not the checkerboard. Character art could not be loaded: the card type field covered the whole card above the art. Shading is now the non-editable `character shade` field; on Characters the card type is clicked in the footer.
+- **Magic frames added:** saga, DFC, adventure, borderless art (`m15-altered` frame option; the pack has no true extended art), etched foil. New render test `tools/frames-test.mse-set`. `make-slim-data.ps1` now reads dependencies from the right descriptor file.
+- **Verified:** `check.ps1` passes (slim-test and uvs-test unchanged); each new frame looked at with art.
+- **Next:** click-test loading art on a UVS Character in the GUI. Cloud `/card` was discussed and put on hold (board idea).
+
 ## 2026-11-08 (UniVersus: all main types, Bonus Stage set)
 
 - **Types:** Action, Asset, Backup (stamina heart), Attack (speed circle + damage burst), Character (art to the footer, shaded; name/traits/text anchored above the footer using a length estimate; hand size + health). One shared layout; positions are per-type scripts.

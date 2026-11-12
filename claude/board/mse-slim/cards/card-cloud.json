@@ -1,0 +1,12 @@
+{
+    "archived":  false,
+    "checklist":  [],
+    "columnId":  "ideas",
+    "createdAt":  1794528000000,
+    "description":  "Make /card work from Claude Code on the web: GitHub Actions Linux build, download pinned M15 pack + fonts, cross-platform card script, cards committed to a separate repo. Discussed 2026-11-12, user put it on hold.",
+    "order":  31000,
+    "priority":  "Low",
+    "tags":  [ "Feature" ],
+    "title":  "/card away from the PC (cloud sessions)",
+    "updatedAt":  1794528000000
+}

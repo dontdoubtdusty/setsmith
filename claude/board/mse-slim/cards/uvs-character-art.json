@@ -1,0 +1,12 @@
+{
+    "archived":  false,
+    "checklist":  [],
+    "columnId":  "test",
+    "createdAt":  1794528000000,
+    "description":  "Character shading moved to a non-editable field so the art box is clickable; card type is now the footer type text on Characters. Renders verified; not yet clicked in the GUI.",
+    "order":  31000,
+    "priority":  "High",
+    "tags":  [ "UVS" ],
+    "title":  "Test: load art on a full-art UVS Character",
+    "updatedAt":  1794528000000
+}
