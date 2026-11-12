@@ -38,15 +38,18 @@ card style:
 		z index: 2
 		visible: { is_char() }
 		mask: { common + "mask-white.png" }
-	# Characters: no text box, as on the official cards; a light scrim over the bottom left of the art.
+	# The text box, tinted by card type; clicking it changes the type.
+	# Characters have no text box (their shading is the "character shade" field), so the type is
+	# changed by clicking the printed type in the footer. A full-card field here would sit above the
+	# art and swallow every click, so the art could never be loaded.
 	card type:
-		left: { if is_char() then 0 else bleed_x + 22 }
-		top: { if is_char() then 0 else bleed_y + 648 }
-		width: { if is_char() then 744 + 2 * bleed_x else 700 }
-		height: { if is_char() then 1039 + 2 * bleed_y else 297 }
+		left: { bleed_x + (if is_char() then 300 else 22) }
+		top: { bleed_y + (if is_char() then 967 else 648) }
+		width: { if is_char() then 408 else 700 }
+		height: { if is_char() then 24 else 297 }
 		z index: 1
 		render style: image
-		image: { common + (if is_char() then "shade-character" else "box-" + card.card_type) + ".png" }
+		image: { common + (if is_char() then "blank" else "box-" + card.card_type) + ".png" }
 
 	############################# Name and keyword line
 	name:
@@ -310,6 +313,13 @@ card style:
 
 extra card field:
 	type: choice
+	name: character shade
+	script: card.card_type
+	editable: false
+	save value: false
+
+extra card field:
+	type: choice
 	name: name banner
 	script: card.card_type
 	editable: false
@@ -430,6 +440,16 @@ extra card field:
 	save value: false
 
 extra card style:
+	# Characters: a light scrim over the bottom left of the art. Not editable, so clicks reach the art.
+	character shade:
+		left: 0
+		top: 0
+		width: { 744 + 2 * bleed_x }
+		height: { 1039 + 2 * bleed_y }
+		z index: 1
+		render style: image
+		visible: { is_char() }
+		image: { common + "shade-character.png" }
 	# Bonus Stage theme: a torn salmon brush swatch behind a Character's name, sized from the name's estimated length.
 	name banner:
 		left: { bleed_x + 22 }

@@ -374,6 +374,8 @@ public static class UvsAssets {
     using (var br = new LinearGradientBrush(new RectangleF(0, 0, 50, 70), C("#3c3c41"), C("#1e1e21"), 90f))
       g.FillRectangle(br, 0, 0, 50, 70);
     Save(b, "art-blank.png");
+    // Fully transparent: the image of a field that is only a click target (the Character card type).
+    Save(NewBmp(2, 2), "blank.png");
   }
 
   // ---------------------------------------------------------------- Bonus Stage character theme
