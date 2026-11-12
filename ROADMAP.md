@@ -127,6 +127,8 @@ copies 11 packages (180 MB, including the English spell-check dictionary):
 - [x] Character `cutout` layer (body above the shading). Engine: empty non-editable image fields draw nothing. Cutouts only from HD stills for now (the user's call); more as they send stills.
 - [ ] Let the GUI load a cutout (today only builder scripts can set it)
 - [ ] Token
+- [x] Study of 3,816 real cards, their text and the How to Play guide: layout, official badge cuts, game rules and balance tables (`claude/uvs-study.md`, scripts in `tools/uvs-study/`, material in git-ignored `study/`)
+- [ ] Swap the flat stat digits for the official FT01 cuts; check shield tabs and speed arrows against the cuts (study section 6)
 - [ ] Holo mask export for rare cards (the user prints on a proxy site and wants holo on some rares)
 - [ ] Keyword boxes in rules text (`QUEST: 1`, `ECHO`, `STUN: 2`), zone icons
 - [ ] `uvs-2026-arena.mse-style` (landscape); B sides are done (face field, number suffix)

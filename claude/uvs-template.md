@@ -208,6 +208,5 @@ The 13 resource symbols: Air, All, Chaos, Death, Earth, Evil, Fire, Good, Infini
 
 ## Open questions
 
-- The name and stat-number fonts are not identified yet.
-- Where the official symbol art should come from.
-- The exact text box height for each type. It seems to change with the art; check whether real cards have a fixed size or a different size per card.
+- The name font is not identified yet. Stat numbers can use the official digit images cut in the study (`claude/uvs-study.md`, section 3); they change style per set.
+- Answered by the study (2026-11-12): the text box is a fixed size in every 2026 set (top at y 643-651), and the badge art now comes from the scans (`study/uvs-graphics`).

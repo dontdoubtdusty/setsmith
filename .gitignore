@@ -26,3 +26,6 @@
 
 # Crash dumps from MSYS2 tools
 *.stackdump
+
+# UniVersus study material: downloaded scans, card text, PDFs and graphics cut from them (not ours)
+/study/
