@@ -35,6 +35,8 @@ community-maintained version that the M15 template pack is built for. That versi
 | 2026-11-09 | No Masterpiece cards on the Magic side (rarity choice, set code, set symbol, style option). Patched into the copied pack by `make-slim-data.ps1`, since the pack is not in this repo. |
 | 2026-11-09 | New icons: `app.ico` is a card with a gold diamond, `set.ico` is stacked cards, both drawn by `tools/make-icon.ps1`. |
 | 2026-11-12 | `/card` Claude skill (`.claude/skills/card`) makes Magic or UVS cards through `tools/card.ps1` and the CLI, not by driving the GUI: the set file is plain text, so the CLI is faster and testable. Claude designs from an idea and keeps any field the user spells out. Cards go into one running set per game (`Documents\Setsmith Cards\Claude Magic.mse-set` / `Claude UVS.mse-set`), replaced by name so a redo updates the card. Art only from a path the user gives (center-cropped to the art box); otherwise blank. `--export-images` gained `--zoom N` (Magic renders at 2x, 750 px) without touching saved settings. UVS gets a plain dark default art (`art-blank.png`) because an empty image field exported as the editor's checkerboard. |
+| 2026-11-12 | More Magic frames: saga, DFC, adventure, borderless art and etched foil, the card types and looks real sets use most. Borderless comes from `m15-altered`'s "borderless art" frame option, because the pack has no true extended-art frame (`m15-extra` is "M15 with Extra Features", not extended art). The new frames get their own render test, `tools/frames-test.mse-set`: adding them to `slim-test` would shift Magic's collector numbers and break hashes that came from real MSE 2.5.6. |
+| 2026-11-12 | UVS Character cards: the shading moved from the card type field to a non-editable extra field. The card type field covered the whole card above the art, so the art could not be clicked or loaded. On Characters the card type is now changed by clicking the printed type in the footer. |
 
 ## Phase 0: Baseline
 
@@ -58,7 +60,7 @@ community-maintained version that the M15 template pack is built for. That versi
 powershell -ExecutionPolicy Bypass -File tools\make-slim-data.ps1
 ```
 
-Frames kept: **M15**, **M15 planeswalkers**, **M15 tokens**. The script follows declared dependencies and
+Frames kept: **M15**, **M15 planeswalkers**, **M15 tokens**. Added 2026-11-12: **saga**, **DFC**, **adventure**, **M15 w/Text altering** (for borderless art) and **etched foil** (16 packages, 193 MB). The script follows declared dependencies and
 copies 11 packages (180 MB, including the English spell-check dictionary):
 
 `magic.mse-game`, `magic-m15`, `magic-m15-mainframe-planeswalker`, `magic-m15-mainframe-tokens`,

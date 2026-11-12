@@ -12,9 +12,9 @@ The user's request: $ARGUMENTS
 
 - **Game.** `magic`/`mtg` or `uvs`/`universus` in the request decides it. Without one, infer it from the content (mana costs, creature types, power/toughness mean Magic; difficulty, check, block, speed, damage, foundations, attacks mean UVS). Ask only if it is truly unclear.
 - **Idea or text.** Fields the user spells out are used exactly as written. Design everything else: a fitting name, costs and stats that are fair for the effect, clean rules text in the game's own wording, and a short flavor text for Magic when there is room. Don't ask about details you can decide; the user can say "redo" or change a field afterwards.
-- **Art.** If the request names an image file (`art: <path>` or just a path), pass it as `-Art`. Otherwise there is no art: the art box stays empty, and the user adds art later in Setsmith.
+- **Art.** If the request names an image file (`art: <path>` or just a path), pass it as `-Art` (a second image for a double-faced card's back goes in `-Art2`). Otherwise there is no art: the art box stays empty, and the user adds art later in Setsmith.
 - **Redo or tweak.** "make it cost 3", "redo" or "change the name" means the last card made in this conversation. Write the whole card again with the change. The script replaces a card with the same name; if the name changes, the old card stays in the set, so mention it.
-- **Not supported yet:** UVS Token and Arena frames, double-faced Magic cards, sagas, classes, and any Magic frame other than M15, M15 planeswalker and M15 tokens. Say so instead of faking it.
+- **Not supported yet:** UVS Token and Arena frames; Magic classes, battles, split, flip and leveler cards, true extended art, and any Magic frame not in the frames table below. Say so instead of faking it.
 
 ## 2. Write the card file
 
@@ -42,7 +42,21 @@ Leave out fields that don't apply. Never write an `image:` line; the script hand
 | `flavor text` | Wrap in `<i-flavor>...</i-flavor>`. |
 | `power`, `toughness` | Creatures only. |
 | `illustrator` | Artist credit when the user gives one. |
-| `stylesheet` | Only for other frames: `m15-mainframe-planeswalker` or `m15-mainframe-tokens`. |
+| `stylesheet` | Only for other frames, see below. |
+
+Frames (set with a `stylesheet:` line; leave it out for plain M15):
+
+| Frame | `stylesheet` | Notes |
+|---|---|---|
+| Planeswalker | `m15-mainframe-planeswalker` | See below. |
+| Token | `m15-mainframe-tokens` | See below. |
+| Saga | `m15-saga` | `super type: Enchantment`, `sub type: Saga`. Chapters go in `level 1 text`, `level 2 text`, `level 3 text` (and `level 4 text`); they get I, II, III automatically. The reminder text fills itself in. No `rule text`. Art is a tall column on the right. |
+| Double-faced (transform, modal) | `m15-mainframe-dfc` | Front uses the normal fields. Back face: `name 2`, `casting cost 2` (modal backs only), `super type 2`, `sub type 2`, `rule text 2`, `flavor text 2`, `power 2`, `toughness 2`. A back with no cost needs its color twice: `indicator 2: green` (the dot) and `card color 2: green` (the frame). Renders both faces side by side in one 1504 px wide PNG. Back art: `-Art2`. |
+| Adventure | `m15-adventure` | Main card uses the normal fields. The adventure (left page): `name 2`, `casting cost 2`, `super type 2: Sorcery` or `Instant`, `sub type 2: Adventure`, `rule text 2`. |
+| Borderless art | `m15-altered` | Add these lines exactly (the inner line has two tabs in the file, so one tab in the card file): `has styling: true`, then `styling data:`, then `	frames: borderless art`. The art fills the whole card behind the frame. This pack has no true extended-art frame (art widened sideways, black border kept); say so if asked for extended art and offer borderless. |
+| Etched foil | `m15-showcase-etched-foil` | Commander-style showcase frame, normal fields. |
+
+Colors: `white`, `blue`, `black`, `red`, `green` (also for `indicator` / `card color` on the front).
 
 Planeswalkers: `stylesheet: m15-mainframe-planeswalker`, `loyalty: 4`, then each ability as `loyalty cost 1: +1` with `level 1 text: ...`, `loyalty cost 2: -2` with `level 2 text: ...`, and so on (up to 4 abilities). A static ability goes in a `level N text` with no `loyalty cost N`.
 
@@ -74,7 +88,7 @@ Typical UVS numbers: difficulty 0-6, check 1-6, block modifier 0-4; attack speed
 Run in PowerShell from the Setsmith repo root:
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\card.ps1 -Game <magic|uvs> -CardFile "<card file>" [-Art "<image path>"]
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\card.ps1 -Game <magic|uvs> -CardFile "<card file>" [-Art "<image path>"] [-Art2 "<back face image>"]
 ```
 
 It adds the card to `<Documents>\Setsmith Cards\Claude Magic.mse-set` or `Claude UVS.mse-set` (made on first use, with the previous copy kept as `.bak`), and saves the PNG in the `Claude Magic` / `Claude UVS` folder next to it. It prints `png:` and `set:` lines. If it prints `setsmith printed:` messages, a field value is probably wrong: fix the card file and run again. If `build\setsmith.com` is missing, run `tools\check.ps1` first.

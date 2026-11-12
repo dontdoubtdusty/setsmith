@@ -22,7 +22,12 @@ param(
     "magic.mse-game",
     "magic-m15.mse-style",
     "magic-m15-mainframe-planeswalker.mse-style",
-    "magic-m15-mainframe-tokens.mse-style"
+    "magic-m15-mainframe-tokens.mse-style",
+    "magic-m15-saga.mse-style",
+    "magic-m15-mainframe-dfc.mse-style",
+    "magic-m15-adventure.mse-style",
+    "magic-m15-altered.mse-style",
+    "magic-m15-showcase-etched-foil.mse-style"
   ),
   # Packages that templates load at runtime without declaring them. Add any found while testing.
   [string[]]$Extra = @(
@@ -56,8 +61,8 @@ while ($queue.Count) {
   $dir = Join-Path $Source $p
   if (-not (Test-Path $dir)) { throw "Package '$p' is not in '$Source'." }
   $needed[$p] = $true
-  # The package description file has no extension (game, style, include, symbol-font, ...).
-  $desc = Get-ChildItem $dir -File | Where-Object { $_.Extension -eq "" } | Select-Object -First 1
+  # The package description file is named after the package type: x.mse-style has "style", x.mse-game has "game".
+  $desc = Get-Item (Join-Path $dir ($p -replace '^.*\.mse-', '')) -ErrorAction SilentlyContinue
   if (-not $desc) { continue }
   $inDepends = $false
   foreach ($line in Get-Content $desc.FullName) {

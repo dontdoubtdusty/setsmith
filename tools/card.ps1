@@ -15,7 +15,8 @@
   instead of adding a copy. The old set is kept as .bak.
 
   -Art crops the image to the art box's shape (center crop) and stores it in the set.
-  Without -Art, a replaced card keeps its old art and a new card has none.
+  -Art2 does the same for the second image (the back face of a double-faced card).
+  Without them, a replaced card keeps its old art and a new card has none.
 
   Prints "png: <path>" and "set: <path>". Exit 1 on errors or if Setsmith printed messages.
 #>
@@ -23,6 +24,7 @@ param(
   [Parameter(Mandatory)][ValidateSet("magic", "uvs")][string]$Game,
   [Parameter(Mandatory)][string]$CardFile,
   [string]$Art,
+  [string]$Art2,
   [string]$Set
 )
 
@@ -74,7 +76,10 @@ function Get-ArtAspect($block, [string]$setStyle) {
     if ((Get-Field $block "card type") -ne "character") { return 1.0 }
     switch ($style) { "2026-exact" { return 744 / 1039 } "2026-mpc" { return 822 / 1122 } default { return 819 / 1114 } }
   }
+  # Borderless art (frame option of m15-altered) covers the whole card.
+  if ($block -match "^`t`tframes:.*(borderless|frameless) art") { return 375 / 523 }
   switch ($style) {
+    "m15-saga"                   { return 157 / 379 }
     "m15-mainframe-planeswalker" { return 324 / 427.5 }
     "m15-mainframe-tokens"       { return 317 / 289 }
     default                      { return 316 / 231 }
@@ -120,15 +125,19 @@ if (-not $name) { throw "The card file has no 'name:' line." }
 $index = -1
 for ($i = 0; $i -lt $parts.cards.Count; $i++) { if ((Get-Field $parts.cards[$i] "name") -eq $name) { $index = $i } }
 
-# 4. Art: crop a new image into the set, or keep the replaced card's image.
-$block = [Collections.Generic.List[string]]($block | Where-Object { $_ -notmatch "^`timage:" })
-if ($Art) {
-  $n = 1; while (Test-Path (Join-Path $setDir "image$n")) { $n++ }
-  Save-CroppedArt $Art (Get-ArtAspect $block $setStyle) (Join-Path $setDir "image$n")
-  $block.Add("`timage: image$n")
-} elseif ($index -ge 0) {
-  $old = Get-Field $parts.cards[$index] "image"
-  if ($old) { $block.Add("`timage: $old") }
+# 4. Art: crop a new image into the set, or keep the replaced card's image. "image 2" is the back face.
+$block = [Collections.Generic.List[string]]($block | Where-Object { $_ -notmatch "^`timage( 2)?:" })
+$aspect = Get-ArtAspect $block $setStyle
+foreach ($pair in @(@("image", $Art), @("image 2", $Art2))) {
+  $field, $src = $pair
+  if ($src) {
+    $n = 1; while (Test-Path (Join-Path $setDir "image$n")) { $n++ }
+    Save-CroppedArt $src $aspect (Join-Path $setDir "image$n")
+    $block.Add("`t${field}: image$n")
+  } elseif ($index -ge 0) {
+    $old = Get-Field $parts.cards[$index] $field
+    if ($old) { $block.Add("`t${field}: $old") }
+  }
 }
 if ($index -ge 0) { $parts.cards[$index] = $block; "replaced: $name" } else { $parts.cards.Add($block); "added: $name" }
 

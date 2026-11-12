@@ -6,6 +6,7 @@
   1. Builds with MSYS2 (UCRT64) and Ninja.
   2. Renders the test sets and compares each image with its reference hashes:
      - tools/slim-test.mse-set: M15 cards; hashes of what the installed MSE 2.5.6 + full M15 pack produces.
+     - tools/frames-test.mse-set: saga, DFC, adventure, borderless and etched foil Magic frames; Setsmith's own accepted output.
      - tools/uvs-test.mse-set: UniVersus cards; hashes of Setsmith's own accepted output
        (regenerate them on purpose when the UVS frame changes, and say so in the commit).
   3. Launches the GUI for a few seconds outside MSYS2 and fails if it prints any error.
@@ -43,7 +44,7 @@ $env:PATH = "C:\Windows\system32;C:\Windows"
 $out = Join-Path ([IO.Path]::GetTempPath()) ("mse-slim-check-" + [guid]::NewGuid().ToString("N").Substring(0,8))
 New-Item -ItemType Directory $out | Out-Null
 # Each test set has a <name>.reference.txt with the expected image hashes.
-foreach ($test in "slim-test", "uvs-test") {
+foreach ($test in "slim-test", "frames-test", "uvs-test") {
   Push-Location $build
   $msgs = & .\setsmith.com --export-images (Join-Path $PSScriptRoot "$test.mse-set") (Join-Path $out "$test - {card.name}.png") 2>&1
   Pop-Location
