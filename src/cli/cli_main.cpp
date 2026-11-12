@@ -131,7 +131,7 @@ void CLISetInterface::showUsage() {
   cli << _("   <expression>        Execute a script expression, display the result\n");
   cli << _("   :help               Show this help page.\n");
   cli << _("   :load <setfile>     Load a different set file.\n");
-  cli << _("   :quit               Exit the MSE command line interface.\n");
+  cli << _("   :quit               Exit the Setsmith command line interface.\n");
   cli << _("   :reset              Clear all local variable definitions.\n");
   cli << _("   :pwd                Print the current working directory.\n");
   cli << _("   :cd                 Change the working directory.\n");

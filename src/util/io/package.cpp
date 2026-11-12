@@ -432,13 +432,12 @@ void Package::saveToDirectory(const String& saveAs, bool remove_unused, bool is_
   // create directory?
   create_directory(saveAs);
   // write to a directory
-  VCSP vcs = getVCS();
   FOR_EACH(f, files) {
     String f_out_path = saveAs + _("/") + f.first;
     if (!f.second.keep && remove_unused) {
       // remove files that are not to be kept
       // ignore failure (new file that is not kept)
-      vcs->removeFile(f_out_path);
+      remove_file(f_out_path);
       continue;
     }
     // TODO: create subdirectory?
@@ -451,7 +450,6 @@ void Package::saveToDirectory(const String& saveAs, bool remove_unused, bool is_
         throw PackageError(_ERROR_("unable to store file"));
       }
       if (f.second.created) {
-        vcs->addFile(f_out_path);
         f.second.created = false;
       }
     } else if (filename != saveAs) {
@@ -465,7 +463,6 @@ void Package::saveToDirectory(const String& saveAs, bool remove_unused, bool is_
           throw PackageError(_ERROR_("unable to store file"));
         }
       }
-      vcs->addFile(f_out_path);
     } else {
       // old file, just keep it
     }

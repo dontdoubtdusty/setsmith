@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/value/text.hpp>
 #include <gui/util.hpp>
 #include <gui/drop_down_list.hpp>
@@ -217,7 +218,7 @@ void DropDownWordList::drawIcon(DC& dc, int x, int y, size_t item, bool selected
     bool radio = !words->words[item]->is_prefix;
     // draw checkbox
     dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    dc.SetBrush(theme::colour(wxSYS_COLOUR_WINDOW));
     dc.DrawRectangle(x,y,16,16);
     wxRect rect = RealRect(x+2,y+2,12,12);
     if (radio) {

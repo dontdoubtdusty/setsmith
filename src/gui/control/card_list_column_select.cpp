@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/control/card_list_column_select.hpp>
 #include <data/game.hpp>
 #include <data/field.hpp>
@@ -65,7 +66,7 @@ void CardListColumnSelectDialog::initColumns() {
 
 void CardListColumnSelectDialog::initList() {
   // Init items
-  Color window_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+  Color window_color = theme::colour(wxSYS_COLOUR_WINDOW);
   FOR_EACH(c, columns) {
     list->Append(c.field->card_list_name.get());
     // check

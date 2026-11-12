@@ -44,6 +44,11 @@ public:
   Scriptable<Color>  shadow_color;         ///< Color for shadow
   RealSize           shadow_displacement;  ///< Position of the shadow
   double             shadow_blur;          ///< Blur radius of the shadow
+  // MSE Slim: outlined text (used by the UniVersus templates). Widths are in card units, 0 = none.
+  Scriptable<Color>  stroke_color;         ///< Color of the outline around the letters
+  double             stroke_width;         ///< Width of that outline
+  Scriptable<Color>  stroke2_color;        ///< Color of a second outline, drawn around the first
+  double             stroke2_width;        ///< Width of the second outline (added to stroke_width)
   Color              separator_color;      ///< Color for <sep> text
   int                flags;                ///< FontFlags for this font
   

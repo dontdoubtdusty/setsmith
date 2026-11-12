@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/control/keyword_list.hpp>
 #include <gui/util.hpp>
 #include <data/set.hpp>
@@ -233,7 +234,7 @@ wxListItemAttr* KeywordList::OnGetItemAttr(long pos) const {
   if (!kw.valid) {
     item_attr.SetTextColour(*wxRED);
   } else if (kw.fixed) {
-    item_attr.SetTextColour(lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),0.5));
+    item_attr.SetTextColour(lerp(theme::colour(wxSYS_COLOUR_WINDOW),theme::colour(wxSYS_COLOUR_WINDOWTEXT),0.5));
   }
   return &item_attr;
 }

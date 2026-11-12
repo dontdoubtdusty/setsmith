@@ -24,27 +24,9 @@ DECLARE_POINTER_TYPE(Field);
 DECLARE_POINTER_TYPE(Value);
 DECLARE_POINTER_TYPE(AutoReplace);
 
-// For now, use the old style update checker
-#define USE_OLD_STYLE_UPDATE_CHECKER 1
 
 // ----------------------------------------------------------------------------- : Extra data structures
 
-/// When to check for updates?
-enum CheckUpdates
-{  CHECK_ALWAYS
-,  CHECK_IF_CONNECTED
-,  CHECK_NEVER
-};
-
-/// Where to install to?
-enum InstallType
-{  INSTALL_DEFAULT  // the platform default.
-,  INSTALL_LOCAL  // install to the user's files
-,  INSTALL_GLOBAL  // install to the global files
-};
-
-void parse_enum(const String&, InstallType&);
-bool is_install_local(InstallType type);
 
 /// How to handle filename conflicts
 enum FilenameConflicts
@@ -190,25 +172,11 @@ public:
   
   PageLayoutType print_layout;
   
-  // --------------------------------------------------- : Special game stuff
-  String apprentice_location;
   
   // --------------------------------------------------- : Internal settings
   double internal_scale;
   bool internal_image_extension;
 
-  // --------------------------------------------------- : Update checking
-  #if USE_OLD_STYLE_UPDATE_CHECKER
-    String updates_url;
-  #endif
-  String package_versions_url; ///< latest package versions
-  String installer_list_url;   ///< available installers
-  CheckUpdates check_updates;
-  bool   check_updates_all; ///< Check updates of all packages, not just the program
-  String website_url;
-  
-  // --------------------------------------------------- : Installation settings
-  InstallType install_type;
   
   // --------------------------------------------------- : The io
   

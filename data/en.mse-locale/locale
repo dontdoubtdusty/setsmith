@@ -834,10 +834,9 @@ error:
 	aborting parsing:					Fatal errors encountered, aborting reading.
 	newer version:						
 		%s
-		This file is made with a newer version of Setsmith or Magic Set Editor (%s)
+		This file is made with a newer version of Setsmith (%s)
 		When you open it, some aspects of the file may be lost.
 		It is recommended that you upgrade to the latest version.
-		Visit https://magicseteditor.boards.net/page/downloads
 	word list type not found:			The word list type "%s" was not found (from a <word-list> tag)
 	pack type not found:				The pack type "%s" was not found (from a pack type)
 

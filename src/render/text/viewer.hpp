@@ -132,7 +132,10 @@ private:
   
   // --------------------------------------------------- : Lines
   vector<Line> lines; ///< The lines in the text box
-  
+  /// MSE Slim: where the first line starts below padding_top. Used so that masked text that is centered
+  /// or bottom aligned is fitted against the mask rows it is finally drawn on.
+  double mask_top_offset = 0;
+
   /// Prepare the lines, layout the text
   void prepareLines(RotatedDC& dc, const String& text, TextStyle& style, Context& ctx);
   /// Find the scale to use for the text

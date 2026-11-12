@@ -1,6 +1,6 @@
 Documentation
 
-Welcome to the Magic Set Editor technical documentation.
+Welcome to the technical documentation for the template language and file formats. They come from Magic Set Editor 2, which Setsmith is built on.
 These documents describe the file formats and scirpting language used by the program.
 
 There is currently no information on how to ''use'' the program for making cards.

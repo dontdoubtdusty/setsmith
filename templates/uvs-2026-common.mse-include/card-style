@@ -1,0 +1,628 @@
+# Field layout for the UniVersus 2026 frame, shared by the bleed, exact-size and MPC stylesheets.
+# Units: exact card units (744 x 1039 = 2.5 x 3.5 in at 300 dpi). Positions add "bleed_x" (left, width) or "bleed_y" (top, height).
+# Measured from official 1488 x 2079 and 744 x 1039 card images (FT01, TK802, GDZ01, SL).
+#
+# Types: Foundation, Action, Asset have a colored text box; Backup adds a stamina heart and Attack adds
+# speed + damage, both stacked on the right above the check. Characters have no text box: full art to the card
+# edge (and the bleed), with a backing set by the Set info "character theme", the name, traits and rules text
+# on it, and hand size + health.
+
+card background: black
+
+# Set info: the IP logo box. Its size is also the size the logo is stored at (square, 256 px keeps it sharp in print).
+set info style:
+	ip logo:
+		width: 256
+		height: 256
+
+############################################################## Card fields
+
+card style:
+	############################# Art and frame
+	# Characters: full art over the whole card and the bleed (art for print: the stylesheet card size, for example 819 x 1114 or 822 x 1122 for MPC).
+	image:
+		left: { if is_char() then 0 else bleed_x + 22 }
+		top: { if is_char() then 0 else bleed_y + 22 }
+		width: { if is_char() then 744 + 2 * bleed_x else 700 }
+		height: { if is_char() then 1039 + 2 * bleed_y else 700 }
+		z index: 0
+		mask: { if is_char() then common + "mask-white.png" else common + "art-mask.png" }
+	# Characters: the cut-out character over the art and its shading, below the text.
+	cutout:
+		left: 0
+		top: 0
+		width: { 744 + 2 * bleed_x }
+		height: { 1039 + 2 * bleed_y }
+		z index: 2
+		visible: { is_char() }
+		mask: { common + "mask-white.png" }
+	# Characters: no text box, as on the official cards; a light scrim over the bottom left of the art.
+	card type:
+		left: { if is_char() then 0 else bleed_x + 22 }
+		top: { if is_char() then 0 else bleed_y + 648 }
+		width: { if is_char() then 744 + 2 * bleed_x else 700 }
+		height: { if is_char() then 1039 + 2 * bleed_y else 297 }
+		z index: 1
+		render style: image
+		image: { common + (if is_char() then "shade-character" else "box-" + card.card_type) + ".png" }
+
+	############################# Name and keyword line
+	name:
+		left: { bleed_x + 44 }
+		top: { bleed_y + (if is_char() then char_name_bottom() - 158 else 500) }
+		width: { if is_char() then 540 else 640 }
+		height: 158
+		z index: 6
+		alignment: bottom left
+		line height soft: 0.78
+		font:
+			name: Figtree Black
+			style: italic
+			size: 37
+			color: white
+			stroke color: black
+			stroke width: 5
+			stroke2 color: { type_color() }
+			stroke2 width: 4
+			shadow color: { if is_char() then rgba(0,0,0,190) else rgba(0,0,0,0) }
+			shadow displacement x: 3
+			shadow displacement y: 4
+	keywords:
+		visible: false
+	separator:
+		visible: false
+	traits:
+		visible: false
+
+	############################# Rules text
+	rule text:
+		left: { bleed_x + 46 }
+		top: { bleed_y + (if is_char() then char_rules_top() else rules_top()) }
+		width: { if is_char() then 544 else 660 }
+		height: { if is_char() then 936 - char_rules_top() else 940 - rules_top() }
+		z index: 4
+		alignment: { if is_char() then "top left" else "middle left" }
+		mask: { if is_char() then common + "rules-mask-full.png" else rules_mask() }
+		line height soft: 0.78
+		line height hard: 1.1
+		padding right: 6
+		font:
+			name: Barlow Condensed SemiBold
+			size: 25.5
+			color: white
+			# Characters: a heavy outline and a hard drop shadow so the text reads on any art
+			stroke color: { if is_char() then rgb(0,0,0) else rgba(0,0,0,0) }
+			stroke width: 3
+			shadow color: { if is_char() then rgba(0,0,0,200) else rgba(0,0,0,0) }
+			shadow displacement x: 2
+			shadow displacement y: 3
+		symbol font:
+			name: uvs-symbols
+			size: 25
+			alignment: middle center
+
+	############################# Big numbers (the images are drawn by extra fields below)
+	difficulty:
+		left: { bleed_x + 26 }
+		top: { bleed_y + 22 }
+		width: 126
+		height: 130
+		z index: 8
+		visible: { not is_char() }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			style: italic
+			size: 66
+			color: { if glyph_id(card.difficulty) == "" then rgb(255,150,30) else rgba(0,0,0,0) }
+			stroke color: { if glyph_id(card.difficulty) == "" then rgb(0,0,0) else rgba(0,0,0,0) }
+			stroke width: 6
+			stroke2 color: { if glyph_id(card.difficulty) == "" then type_color() else rgba(0,0,0,0) }
+			stroke2 width: 5
+	check:
+		left: { bleed_x + 596 }
+		top: { bleed_y + 826 }
+		width: 126
+		height: 130
+		z index: 8
+		visible: { not is_char() }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			style: italic
+			size: 66
+			color: { if glyph_id(card.check) == "" then rgb(40,160,230) else rgba(0,0,0,0) }
+			stroke color: { if glyph_id(card.check) == "" then rgb(0,0,0) else rgba(0,0,0,0) }
+			stroke width: 6
+			stroke2 color: { if glyph_id(card.check) == "" then type_color() else rgba(0,0,0,0) }
+			stroke2 width: 5
+
+	############################# Block
+	block zone:
+		left: { bleed_x + 606 }
+		top: { bleed_y + 28 }
+		width: 116
+		height: 100
+		z index: 7
+		render style: image
+		visible: { card.block != "" and not is_char() }
+		image: { common + "shield-" + card.block_zone + ".png" }
+	block:
+		left: { bleed_x + 616 }
+		top: { bleed_y + 42 }
+		width: 74
+		height: 62
+		z index: 9
+		visible: { not is_char() }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			size: 38
+			color: white
+			stroke color: black
+			stroke width: 3.2
+
+	############################# Stat stack: Attack (speed, damage), Backup (stamina), Character (hand size, health)
+	# Positions measured on SL Bear Bite (Attack), TK802-041 (Backup) and FT01-006 (Character).
+	attack zone:
+		left: { bleed_x + 599 }
+		top: { bleed_y + 601 }
+		width: 116
+		height: 100
+		z index: 7
+		render style: image
+		visible: { card.card_type == "attack" }
+		image: { common + "speed-" + card.attack_zone + ".png" }
+	speed:
+		left: { bleed_x + 619 }
+		top: { bleed_y + 626 }
+		width: 70
+		height: 50
+		z index: 9
+		visible: { card.card_type == "attack" }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			size: 40
+			color: white
+			stroke color: black
+			stroke width: 3.5
+	damage:
+		left: { bleed_x + 609 }
+		top: { bleed_y + 726 }
+		width: 80
+		height: 50
+		z index: 9
+		visible: { card.card_type == "attack" }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			size: 40
+			color: white
+			stroke color: black
+			stroke width: 3.5
+	stamina:
+		left: { bleed_x + 615 }
+		top: { bleed_y + 739 }
+		width: 80
+		height: 52
+		z index: 9
+		visible: { card.card_type == "backup" }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			size: 40
+			color: white
+			stroke color: black
+			stroke width: 3.5
+	hand size:
+		left: { bleed_x + 625 }
+		top: { bleed_y + 612 }
+		width: 70
+		height: 56
+		z index: 9
+		visible: { is_char() }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			size: 42
+			color: white
+			stroke color: black
+			stroke width: 3.5
+	health:
+		left: { bleed_x + 620 }
+		top: { bleed_y + 733 }
+		width: 80
+		height: 52
+		z index: 9
+		visible: { is_char() }
+		alignment: middle center
+		font:
+			name: Figtree Black
+			size: 42
+			color: white
+			stroke color: black
+			stroke width: 3.5
+
+	############################# Footer
+	# Resource symbols, measured on FT01 2x scans: centered at y 988.25, 47.5 apart, first at x 135.75.
+	# Each image is 41 units (attuned square 41, circle 40 with its white halo).
+	symbol 1:
+		left: { bleed_x + 115.25 }
+		top: { bleed_y + 967.75 }
+		width: 41
+		height: 41
+		z index: 3
+		render style: image
+		image: { symbol_image(card.symbol_1) }
+	symbol 2:
+		left: { bleed_x + 162.75 }
+		top: { bleed_y + 967.75 }
+		width: 41
+		height: 41
+		z index: 3
+		render style: image
+		image: { symbol_image(card.symbol_2) }
+	symbol 3:
+		left: { bleed_x + 210.25 }
+		top: { bleed_y + 967.75 }
+		width: 41
+		height: 41
+		z index: 3
+		render style: image
+		image: { symbol_image(card.symbol_3) }
+	symbol 4:
+		left: { bleed_x + 257.75 }
+		top: { bleed_y + 967.75 }
+		width: 41
+		height: 41
+		z index: 3
+		render style: image
+		image: { symbol_image(card.symbol_4) }
+	symbol 5:
+		left: { bleed_x + 305.25 }
+		top: { bleed_y + 967.75 }
+		width: 41
+		height: 41
+		z index: 3
+		render style: image
+		image: { symbol_image(card.symbol_5) }
+	symbol 6:
+		left: { bleed_x + 352.75 }
+		top: { bleed_y + 967.75 }
+		width: 41
+		height: 41
+		z index: 3
+		render style: image
+		image: { symbol_image(card.symbol_6) }
+	rarity:
+		visible: false
+	number:
+		visible: false
+	face:
+		visible: false
+	credit:
+		visible: false
+
+############################################################## Extra fields (drawn by the style, not edited)
+
+extra card field:
+	type: choice
+	name: name banner
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: keyword strip
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: text
+	name: keyword line
+	script: keyword_line()
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: watermark
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: difficulty rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: difficulty image
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: check rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: check image
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: block rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: speed rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: damage rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: damage image
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: heart rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: heart image
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: hand size rim
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: hand size image
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: ip logo
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: ip logo image
+	script: card.card_type
+	editable: false
+	save value: false
+extra card field:
+	type: text
+	name: footer line
+	script: "<font:Figtree Black>" + type_name() + "</font>  " + card.rarity + "  " + set.set_code + "  " + footer_number()
+	editable: false
+	save value: false
+extra card field:
+	type: text
+	name: copyright line
+	script: (if card.credit != "" then card.credit + "  " else "") + set.copyright
+	editable: false
+	save value: false
+
+extra card style:
+	# Bonus Stage theme: a torn salmon brush swatch behind a Character's name, sized from the name's estimated length.
+	name banner:
+		left: { bleed_x + 22 }
+		top: { bleed_y + char_name_bottom() - char_brush_height() + 12 }
+		width: { char_brush_width() }
+		height: { char_brush_height() }
+		z index: 5
+		render style: image
+		visible: { is_char() and bonus_theme() }
+		image: { common + "bonus-brush.png" }
+	keyword strip:
+		left: { bleed_x + 22 }
+		top: { bleed_y + 648 }
+		width: 700
+		height: 40
+		z index: 2
+		render style: image
+		visible: { has_keyword_line() and not is_char() }
+		image: { common + "strip-" + card.card_type + ".png" }
+	# Non-characters: in the keyword strip. Characters: under the name, on the art.
+	keyword line:
+		left: { bleed_x + (if is_char() then 50 else 64) }
+		top: { bleed_y + (if is_char() then char_rules_top() - 37 else 651) }
+		width: { if is_char() then 540 else 620 }
+		height: { if is_char() then 32 else 37 }
+		z index: 5
+		alignment: middle left
+		visible: { has_keyword_line() }
+		font:
+			name: Figtree ExtraBold
+			style: italic
+			size: 15
+			color: white
+			stroke color: { if is_char() then rgb(0,0,0) else rgba(0,0,0,0) }
+			stroke width: 3
+			shadow color: { if is_char() then rgba(0,0,0,200) else rgba(0,0,0,0) }
+			shadow displacement x: 2
+			shadow displacement y: 2.5
+	# The set's IP logo, faint, behind the rules text (Set info: watermark).
+	watermark:
+		left: { bleed_x + (if is_char() then 208 else 262) }
+		top: { bleed_y + (if is_char() then 690 else 704) }
+		width: 220
+		height: 220
+		z index: 3
+		render style: image
+		# not on Characters: official ones have none, and over full art it reads as a smudge
+		visible: { set.watermark == "ip logo" and not is_char() }
+		image: { set_alpha(set.ip_logo, alpha: 0.14) }
+	difficulty rim:
+		left: { bleed_x + 26 }
+		top: { bleed_y + 22 }
+		width: 126
+		height: 130
+		z index: 6
+		render style: image
+		visible: { not is_char() }
+		image: { number_rim(value: card.difficulty) }
+	difficulty image:
+		left: { bleed_x + 26 }
+		top: { bleed_y + 22 }
+		width: 126
+		height: 130
+		z index: 7
+		render style: image
+		visible: { not is_char() }
+		image: { number_image(value: card.difficulty, kind: "d") }
+	check rim:
+		left: { bleed_x + 596 }
+		top: { bleed_y + 826 }
+		width: 126
+		height: 130
+		z index: 6
+		render style: image
+		visible: { not is_char() }
+		image: { number_rim(value: card.check) }
+	check image:
+		left: { bleed_x + 596 }
+		top: { bleed_y + 826 }
+		width: 126
+		height: 130
+		z index: 7
+		render style: image
+		visible: { not is_char() }
+		image: { number_image(value: card.check, kind: "c") }
+	block rim:
+		left: { bleed_x + 606 }
+		top: { bleed_y + 28 }
+		width: 116
+		height: 100
+		z index: 6
+		render style: image
+		visible: { card.block != "" and not is_char() }
+		image: { recolor_image(common + "shield-rim.png", color: type_color()) }
+	speed rim:
+		left: { bleed_x + 599 }
+		top: { bleed_y + 601 }
+		width: 116
+		height: 100
+		z index: 6
+		render style: image
+		visible: { card.card_type == "attack" }
+		image: { recolor_image(common + "speed-rim.png", color: type_color()) }
+	damage rim:
+		left: { bleed_x + 591 }
+		top: { bleed_y + 701 }
+		width: 116
+		height: 100
+		z index: 6
+		render style: image
+		visible: { card.card_type == "attack" }
+		image: { recolor_image(common + "damage-rim.png", color: type_color()) }
+	damage image:
+		left: { bleed_x + 591 }
+		top: { bleed_y + 701 }
+		width: 116
+		height: 100
+		z index: 7
+		render style: image
+		visible: { card.card_type == "attack" }
+		image: { common + "damage.png" }
+	# Backup stamina (green) and Character health (red) share the heart shape; 139 x 120 = the measured 110 x 90 heart.
+	heart rim:
+		left: { bleed_x + (if is_char() then 590 else 585) }
+		top: { bleed_y + (if is_char() then 703 else 713) }
+		width: 139
+		height: 120
+		z index: 6
+		render style: image
+		visible: { is_char() or card.card_type == "backup" }
+		image: { recolor_image(common + "heart-rim.png", color: type_color()) }
+	heart image:
+		left: { bleed_x + (if is_char() then 590 else 585) }
+		top: { bleed_y + (if is_char() then 703 else 713) }
+		width: 139
+		height: 120
+		z index: 7
+		render style: image
+		visible: { is_char() or card.card_type == "backup" }
+		image: { common + (if is_char() then "heart-health.png" else "heart-stamina.png") }
+	hand size rim:
+		left: { bleed_x + 596 }
+		top: { bleed_y + 578 }
+		width: 116
+		height: 112
+		z index: 6
+		render style: image
+		visible: { is_char() }
+		image: { recolor_image(common + "hand-size-rim.png", color: type_color()) }
+	hand size image:
+		left: { bleed_x + 596 }
+		top: { bleed_y + 578 }
+		width: 116
+		height: 112
+		z index: 7
+		render style: image
+		visible: { is_char() }
+		image: { common + "hand-size.png" }
+	ip logo:
+		left: { bleed_x + 47 }
+		top: { bleed_y + 967 }
+		width: 60
+		height: 42
+		z index: 3
+		render style: image
+		image: { common + "logo-ring.png" }
+	# The set's IP logo (Set info), fitted in a 28-unit box centered in the ring, as on FT01 cards.
+	# Clipped to the ring's inside; with no logo it is just black.
+	ip logo image:
+		left: { bleed_x + 53.75 }
+		top: { bleed_y + 973.75 }
+		width: 28
+		height: 28
+		z index: 4
+		render style: image
+		image: { set_mask(image: set.ip_logo, mask: common + "logo-mask.png") }
+	footer line:
+		left: { bleed_x + 300 }
+		top: { bleed_y + 967 }
+		width: 408
+		height: 24
+		z index: 3
+		alignment: middle right
+		font:
+			name: Figtree SemiBold
+			size: 11.8
+			color: white
+	copyright line:
+		left: { bleed_x + 300 }
+		top: { bleed_y + 990 }
+		width: 408
+		height: 21
+		z index: 3
+		alignment: middle right
+		font:
+			name: Figtree SemiBold
+			size: 9
+			color: white

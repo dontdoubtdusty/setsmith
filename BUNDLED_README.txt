@@ -1,7 +1,9 @@
-This is built from a fork of MagicSetEditor2 and contains changes that are not in the main MSE codebase.
+Setsmith
 
-For information about the changes contained within it, to get involved, or to complain, please visit the following: 
+A card editor for custom UniVersus and Magic cards.
 
-- Repository: https://github.com/haganbmj/MagicSetEditor2/
-- Releases: https://github.com/haganbmj/MagicSetEditor2/releases
-- Changelog: https://github.com/haganbmj/MagicSetEditor2/blob/master/CHANGES.md
+Setsmith is built on Magic Set Editor 2: the unofficial 2.5.6 release by haganbmj, and the original program by Twan van Laarhoven, Sean Hunt (coppro), Alissa Rao (Lymia), CaiCai and the other Magic Set Editor developers.
+
+- Magic Set Editor 2 (unofficial releases): https://github.com/haganbmj/MagicSetEditor2/
+
+Setsmith is free software under the GNU General Public License, version 2 or later. The license text is in COPYING.

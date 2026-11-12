@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/value/color.hpp>
 #include <gui/drop_down_list.hpp>
 #include <gui/util.hpp>
@@ -83,7 +84,7 @@ void DropDownColorList::drawIcon(DC& dc, int x, int y, size_t item, bool selecte
     col = field().choices[item - hasDefault()]->color;
   }
   // draw a rectangle with the right color
-  dc.SetPen(wxSystemSettings::GetColour(selected ? wxSYS_COLOUR_HIGHLIGHTTEXT : wxSYS_COLOUR_WINDOWTEXT));
+  dc.SetPen(theme::colour(selected ? wxSYS_COLOUR_HIGHLIGHTTEXT : wxSYS_COLOUR_WINDOWTEXT));
   dc.SetBrush(col);
   dc.DrawRectangle(x+1, y+1, (int)icon_size.width-2, (int)item_size.height-2);
 }

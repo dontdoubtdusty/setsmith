@@ -1,153 +1,29 @@
 # Setsmith
 
-Setsmith is a personal, slimmed-down fork of Magic Set Editor 2. It's built for making cards in the M15 frame:
-- the slim template data,
-- three tabs (Cards, Style, Set info),
-- set symbols uploaded as images.
+Setsmith is a card editor for custom trading cards. It makes cards in two frames:
+- **UniVersus**: the 2026 frame, in three print sizes (with bleed, exact size, and MakePlayingCards).
+- **Magic**: the M15 frame.
 
-Plans and decisions are in `ROADMAP.md`; how to build and test is in `CLAUDE.md`.
+You work in three tabs (Cards, Style, Set info). Set symbols are uploaded as images, and cards export to PNG at print size.
 
-Setsmith is free software under the GNU General Public License 2 or later, like the program it comes from.
-- **Upstream:** Magic Set Editor, by Twan van Laarhoven and the other MSE developers.
-- **Base:** this fork builds on [haganbmj/MagicSetEditor2](https://github.com/haganbmj/MagicSetEditor2).
+Plans and decisions are in `ROADMAP.md`. How to build and test is in `CLAUDE.md`.
 
-The original README follows.
+## Built on Magic Set Editor 2
 
----
+Setsmith started as a fork of Magic Set Editor 2, and most of its engine (card rendering, the template language, the file formats) is still theirs. It builds on the unofficial 2.5.6 release by [haganbmj](https://github.com/haganbmj/MagicSetEditor2), which in turn builds on the work of Twan van Laarhoven, Sean Hunt (coppro), Alissa Rao (Lymia), CaiCai and the other Magic Set Editor developers.
 
-# Magic Set Editor 2
+Setsmith keeps Magic Set Editor's file extensions and package names (`.mse-set`, `.mse-style` and so on), so existing sets and templates still open. Its template scripting language is the one documented in `doc/`, which is the Magic Set Editor technical documentation. The changelog of the original project is kept as `UPSTREAM-CHANGES.md`.
 
-Magic Set Editor, or MSE for short, is a program with which you can design your own cards for popular trading card games. MSE can then generate images of those cards that you can print or upload to the internet. Magic Set Editor also has a statistics window that will give useful information about your set, like the average mana cost, number of rares, etc. When you have finished your set, you can export it to an HTML file to use on the Internet, or to Apprentice or CCG Lackey so you can play with your cards online.
+## License
 
-More information on https://magicseteditor.boards.net/
+Free software under the GNU General Public License, version 2 or later (see `COPYING`), like the program it is built on.
 
-## Dependencies
+## Building (Windows)
 
-The code depends on
- * wxWidgets >= 3.0
- * boost
- * hunspell
-
-## Building on Windows with Visual Studio
-
-On windows, the program can be compiled with Visual Studio (recommended) or with mingw-gcc.
- * VS instructions up-to-date as of April 2024
- * Download and install [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/)
- * Download and install [vcpkg](https://github.com/microsoft/vcpkg)
- * Use vcpkg to install pkgconf, wxwidgets, boost, hunspell
-
-=======
-````
-.\vcpkg install pkgconf wxwidgets boost-smart-ptr boost-regex boost-logic boost-pool boost-iterator hunspell --triplet=x64-windows-static
-````
-and/or
-````
-.\vcpkg install pkgconf wxwidgets boost-smart-ptr boost-regex boost-logic boost-pool boost-iterator hunspell --triplet=x86-windows-static
-````
-then, regardless of your choice
-````
-.\vcpkg integrate install
-````
-
- * Then just use "Open Folder" from inside visual studio to open the Magic Set Editor source code root folder.
- * Select the configuration that you want to build (probably release x64-windows-static).
-
-![configuration](https://github.com/haganbmj/MagicSetEditor2/blob/master/resource/readme/configuration.png)
-
- * To build the app go to Build menu > build magicseteditor.exe
-
-Notes:
- * You will most likely get a message about being unable to open hunspell-1.7.lib because pkgconf forgets to add the actual path to HUNSPELL_LIBRARIES. If so, uncomment the noted line in CMakeLists.txt (line 31) and point it to the root vcpkg installation to find the correct hunspell-1.7.lib file.
-
- * You may need to work around [this bug](https://github.com/microsoft/vcpkg/issues/4756) by replacing `$VCPATH\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.16\Modules\FindwxWidgets.cmake` with the file from  https://github.com/CaeruleusAqua/vcpkg-wx-find (`$VCPATH` is usually `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7`)
- * vcpkg by default installs 32 bit versions of libraries, use `vcpkg install PACKAGENAME --triplet=x64-windows` if you want to enable a 64 bit build.
- * Similarly, to use a static build, use `vcpkg install PACKAGENAME --triplet=x32-windows` or `vcpkg install PACKAGENAME -triplet=x64-windows-static`.
- 
-For running tests you will also need to
- * Download and install perl (For example [Strawberry perl](http://strawberryperl.com/) or using [MSYS2](https://www.msys2.org/))
-The tests can be run from inside visual studio
-
-## Building on Windows with GCC (MSYS2)
-
- * Download and install [msys2](https://www.msys2.org/)
- * Install a recent version of the gcc compiler, cmake, and wxWidgets libraries:
+Setsmith builds with MSYS2 (UCRT64) and needs wxWidgets 3.2, Boost.Regex and Hunspell. The one command that builds, runs the render tests and checks that the window opens is:
 
 ```
-pacman -S mingw32/mingw-w64-i686-gcc
-pacman -S mingw32/mingw-w64-i686-wxWidgets
-pacman -S mingw32/mingw-w64-i686-boost
-pacman -S mingw32/mingw-w64-i686-hunspell
-pacman -S cmake
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\check.ps1
 ```
 
-   Use `mingw64/mingw-w64-x86_64-...` instead of for the 64bit build.
- * Build
-
-```
-cmake -G "MSYS Makefiles" -H. -Bbuild -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-```
-
- Use `CMAKE_BUILD_TYPE=Debug` for a debug build.
-
-## Building on Linux
-
- * Install the dependencies; for example, on a Debian-based system:
-
-```
-sudo apt install g++
-sudo apt install libboost-dev libwxgtk3.0-gtk3-dev libhunspell-dev
-```
-
-Then use cmake to build:
-
-```
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
-```
-
- Use `CMAKE_BUILD_TYPE=Debug` for a debug build.
-
-## Building on FreeBSD
-
- * Install the dependencies:
-
-```
-sudo pkg install hunspell cmake wx30-gtk3 boost-all
-```
-
-Then use cmake to build:
-
-```
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
-```
-
- Use `CMAKE_BUILD_TYPE=Debug` for a debug build.
-
-## Building on Mac OS
-
- * Install the dependencies; for example, using Homebrew: (Note: Tested with boost 1.84.0, wxmac (wxwidgets) 3.2.4, hunspell 1.7.2, cmake 3.28.3, dylibbundler 1.0.5.)
-
-```
-brew install boost wxwidgets hunspell cmake dylibbundler
-```
-
- * Then use cmake to build:
-
-```
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_APPLE_BUNDLE=1 ..
-cmake --build .
-```
-
- Use `CMAKE_BUILD_TYPE=Debug` for a debug build.
- * Finally, copy the resources to a SharedSupport directory and run the executable:
-
-```
-mkdir magicseteditor.app/Contents/SharedSupport
-cp -r ../resource magicseteditor.app/Contents/SharedSupport
-open ./magicseteditor.app
-```
+The Magic template data is copied from the M15 Magic Pack by `tools\make-slim-data.ps1`; the UniVersus templates live in `templates\`. See `CLAUDE.md` for the details.

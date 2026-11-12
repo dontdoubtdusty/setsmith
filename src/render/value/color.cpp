@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <render/value/color.hpp>
 #include <render/card/viewer.hpp>
 
@@ -33,9 +34,9 @@ void ColorValueViewer::draw(RotatedDC& dc) {
       }
     }
     // draw name and color
-    dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetPen(theme::colour(wxSYS_COLOUR_WINDOWTEXT));
     dc.DrawRectangle(RealRect(0, 0, 40, dc.getHeight()));
-    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    dc.SetBrush(theme::colour(wxSYS_COLOUR_WINDOW));
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.DrawRectangle(RealRect(40, 0, dc.getWidth()-40, dc.getHeight()));
     dc.DrawText(color_name, RealPoint(43, 3));

@@ -1,4 +1,4 @@
-doc/*
+This directory holds the Magic Set Editor technical documentation. Setsmith is built on Magic Set Editor 2 and uses the same scripting language and file formats, so it applies to Setsmith as well.
 
 This directory contains the Magic Set Editor technical documentation, as shown on the website.
 The files are converted to HTML using the 'autoformat' php script in tools/website/drupal.

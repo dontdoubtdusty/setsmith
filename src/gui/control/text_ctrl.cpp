@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/control/text_ctrl.hpp>
 #include <gui/value/editor.hpp>
 #include <gui/util.hpp>
@@ -28,9 +29,9 @@ Rotation TextCtrl::getRotation() const {
 void TextCtrl::draw(DC& dc) {
   RotatedDC rdc(dc, getRotation(), QUALITY_LOW);
   if (viewers.empty() || !static_cast<FakeTextValue&>(*viewers.front()->getValue()).editable) {
-    DataViewer::draw(rdc, wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
+    DataViewer::draw(rdc, theme::colour(wxSYS_COLOUR_3DFACE));
   } else {
-    DataViewer::draw(rdc, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    DataViewer::draw(rdc, theme::colour(wxSYS_COLOUR_WINDOW));
   }
 }
 
@@ -86,7 +87,7 @@ void TextCtrl::onChangeSet() {
     style->height = 20;
     style->left = 1;
     style->top = 1;
-    style->font.color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+    style->font.color = theme::colour(wxSYS_COLOUR_WINDOWTEXT);
     // assign to this control
     IndexMap<FieldP,StyleP> styles; styles.add(field, style);
     IndexMap<FieldP,ValueP> values; values.add(field, value);

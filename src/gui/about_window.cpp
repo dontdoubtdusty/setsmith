@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/about_window.hpp>
 #include <gui/util.hpp>
 #include <util/version.hpp>
@@ -33,29 +34,34 @@ void AboutWindow::onPaint(wxPaintEvent& ev) {
   draw(dc);
 }
 
-const char* MSE_AUTHORS[] = {"Twan van Laarhoven (twanvl)", "Sean Hunt (coppro)", "Alissa Rao (Lymia)", "haganbmj", "CaiCai (247321453)"};
+// MSE Slim: Setsmith is built on Magic Set Editor 2. The people who wrote it are credited here.
+static const char* MSE_AUTHORS[] = {"Twan van Laarhoven (twanvl)", "Sean Hunt (coppro)", "Alissa Rao (Lymia)", "haganbmj", "CaiCai (247321453)"};
 
 void AboutWindow::draw(DC& dc) {
   wxSize ws = GetClientSize();
   // draw background
   dc.SetPen  (*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxColor(240,247,255));
+  dc.SetBrush(theme::panel());
   dc.DrawRectangle(0, 0, ws.GetWidth(), ws.GetHeight());
   // draw logo
   dc.DrawBitmap(logo,  (ws.GetWidth() -  logo.GetWidth()) / 2, 5);
-  // draw version info
-  dc.SetFont(wxFont(9, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, _("Arial")));
   int x = 34, y = 110;
-  dc.DrawText(_("Version: ") + app_version.toString() + version_suffix, x, y);
-  y += 30;
+  // version
+  dc.SetTextForeground(theme::accent());
+  dc.SetFont(theme::font(10, true));
+  dc.DrawText(_("Version ") + app_version.toString(), x, y);
+  dc.SetFont(theme::font(9));
+  y += 28;
   // license
-  dc.DrawText(_("This program is free software and released under the GNU General Public\nLicense version 2 or later."), x, y);
-  y += 30+18;
-  // draw author info
-  dc.DrawText(_("Developed by"), x, y);
+  dc.SetTextForeground(theme::text());
+  dc.DrawText(_("Free software, released under the GNU General Public License\nversion 2 or later."), x, y);
+  y += 38;
+  // credit the program Setsmith is built on
+  dc.DrawText(_("Built on Magic Set Editor 2 (the unofficial 2.5.6 release by haganbmj),\nwhich was written by:"), x, y);
+  y += 38;
   for (auto name : MSE_AUTHORS) {
-    y += 18;
     dc.DrawText(name, x + 20, y);
+    y += 17;
   }
 }
 
@@ -200,7 +206,7 @@ void HoverButton::draw(DC& dc) {
   // clear background (for transparent button images)
   wxSize ws = GetClientSize();
   dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxBrush(background.Alpha()>0 ? wxColour(background) : wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE)));
+  dc.SetBrush(wxBrush(background.Alpha()>0 ? wxColour(background) : theme::colour(wxSYS_COLOUR_3DFACE)));
   dc.DrawRectangle(0, 0, ws.GetWidth(), ws.GetHeight());
   // draw button
   dc.DrawBitmap(*toDraw(), 0, 0, true);

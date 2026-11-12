@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/auto_replace_window.hpp>
 #include <gui/control/item_list.hpp>
 #include <gui/util.hpp>
@@ -83,8 +84,8 @@ AutoReplaceList::AutoReplaceList(Window* parent, int id, const Game& game)
   InsertColumn(1, _LABEL_("auto match"),   wxLIST_FORMAT_LEFT,  100);
   InsertColumn(2, _LABEL_("auto replace"), wxLIST_FORMAT_LEFT,  200);
   // grey for disabled items
-  item_attr.SetTextColour(lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-                               wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),0.5));
+  item_attr.SetTextColour(lerp(theme::colour(wxSYS_COLOUR_WINDOW),
+                               theme::colour(wxSYS_COLOUR_WINDOWTEXT),0.5));
   // init list
   refreshList();
   sortBy(1,true);

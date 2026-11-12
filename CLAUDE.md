@@ -1,6 +1,6 @@
 # Setsmith (MSE Slim): working notes for Claude
 
-Setsmith is a personal, slimmer fork of Magic Set Editor 2. The exe is `build/setsmith.exe`, and settings live in `%APPDATA%\Setsmith`. It is based on haganbmj/MagicSetEditor2 2.5.6 (Unofficial) and lives on branch `slim`.
+Setsmith is its own card editor, built on Magic Set Editor 2 (credited in the About box and README). The exe is `build/setsmith.exe`, and settings live in `%APPDATA%\Setsmith`. It is based on haganbmj/MagicSetEditor2 2.5.6 (Unofficial) and lives on branch `slim`.
 - `ROADMAP.md` is the plan and the decisions record (with the why behind each decision). Read it first.
 - `claude/` holds the working docs: the file map, session log, QA plan and the task board.
 

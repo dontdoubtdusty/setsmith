@@ -82,9 +82,7 @@ void export_set(Set& set, const String& filename, size_t format_index, bool is_c
 
 // ----------------------------------------------------------------------------- : The formats
 
-FileFormatP mse1_file_format();
 FileFormatP mse2_file_format();
-FileFormatP mtg_editor_file_format();
 
 // ----------------------------------------------------------------------------- : Other ways to export
 
@@ -102,8 +100,3 @@ void export_image(const SetP& set, const CardP& card, const String& filename);
 Bitmap export_bitmap(const SetP& set, const CardP& card);
 Bitmap export_bitmap(const SetP& set, const CardP& card, const double zoom, const Radians angle_radians);
 
-/// Export a set to Magic Workstation format
-void export_mws(Window* parent, const SetP& set);
-
-/// Export a set to Apprentice
-void export_apprentice(Window* parent, const SetP& set);

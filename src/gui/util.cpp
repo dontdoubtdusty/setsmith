@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/util.hpp>
 #include <util/error.hpp>
 #include <util/rotation.hpp>
@@ -422,16 +423,16 @@ RECT msw_rect(wxRect const& rect, int dl = 0, int dt = 0, int dr = 0, int db=0) 
 
 // Draw a basic 3D border
 void draw3DBorder(DC& dc, int x1, int y1, int x2, int y2) {
-  dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DDKSHADOW));
+  dc.SetPen(theme::colour(wxSYS_COLOUR_3DDKSHADOW));
   dc.DrawLine(x1, y1, x2, y1);
   dc.DrawLine(x1, y1, x1, y2);
-  dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DSHADOW));
+  dc.SetPen(theme::colour(wxSYS_COLOUR_3DSHADOW));
   dc.DrawLine(x1-1, y1-1, x2+1, y1-1);
   dc.DrawLine(x1-1, y1-1, x1-1, y2+1);
-  dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DLIGHT));
+  dc.SetPen(theme::colour(wxSYS_COLOUR_3DLIGHT));
   dc.DrawLine(x1, y2, x2, y2);
   dc.DrawLine(x2, y1, x2, y2+1);
-  dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_3DHIGHLIGHT));
+  dc.SetPen(theme::colour(wxSYS_COLOUR_3DHIGHLIGHT));
   dc.DrawLine(x1-1, y2+1, x2+1, y2+1);
   dc.DrawLine(x2+1, y1-1, x2+1, y2+2);
 }
@@ -457,7 +458,7 @@ void draw_control_box(Window* win, DC& dc, const wxRect& rect, bool focused, boo
   // otherwise, draw a standard border
   // clear the background
   dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+  dc.SetBrush(theme::colour(wxSYS_COLOUR_WINDOW));
   dc.DrawRectangle(rect);
   // draw the border
   #if defined(__WXMSW__)
@@ -478,12 +479,12 @@ void draw_button(Window* win, DC& dc, const wxRect& rect, bool focused, bool dow
     rn.DrawPushButton(win, dc, rect, (focused ? wxCONTROL_FOCUSED : 0) | (down ? wxCONTROL_PRESSED : 0) | (enabled ? 0 : wxCONTROL_DISABLED));
   #else
     dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+    dc.SetBrush(theme::colour(wxSYS_COLOUR_BTNFACE));
     dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height);
-    dc.SetPen(wxSystemSettings::GetColour(down ? wxSYS_COLOUR_BTNSHADOW : wxSYS_COLOUR_BTNHIGHLIGHT));
+    dc.SetPen(theme::colour(down ? wxSYS_COLOUR_BTNSHADOW : wxSYS_COLOUR_BTNHIGHLIGHT));
     dc.DrawLine(rect.x,rect.y,rect.x+rect.width,rect.y);
     dc.DrawLine(rect.x,rect.y,rect.x,rect.y+rect.height);
-    dc.SetPen(wxSystemSettings::GetColour(down ? wxSYS_COLOUR_BTNHIGHLIGHT : wxSYS_COLOUR_BTNSHADOW));
+    dc.SetPen(theme::colour(down ? wxSYS_COLOUR_BTNHIGHLIGHT : wxSYS_COLOUR_BTNSHADOW));
     dc.DrawLine(rect.x+rect.width-1,rect.y,rect.x+rect.width-1,rect.y+rect.height);
     dc.DrawLine(rect.x,rect.y+rect.height-1,rect.x+rect.width,rect.y+rect.height-1);
   #endif
@@ -497,7 +498,7 @@ void draw_menu_arrow(Window* win, DC& dc, const wxRect& rect, bool active) {
     ,  wxPoint(0, 8)
     };
   dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxSystemSettings::GetColour(active ? wxSYS_COLOUR_HIGHLIGHTTEXT : wxSYS_COLOUR_WINDOWTEXT));
+  dc.SetBrush(theme::colour(active ? wxSYS_COLOUR_HIGHLIGHTTEXT : wxSYS_COLOUR_WINDOWTEXT));
   dc.DrawPolygon(3, pt, rect.x + rect.width - 6, rect.y + (rect.height - 9) / 2);
 }
 
@@ -525,7 +526,7 @@ void draw_checkbox(const Window* win, DC& dc, const wxRect& rect, bool checked, 
     if (checked) {
       dc.DrawCheckMark(wxRect(rect.x+1,rect.y+1,rect.width-2,rect.height-2));
     }
-    dc.SetPen(wxSystemSettings::GetColour(enabled ? wxSYS_COLOUR_WINDOWTEXT: wxSYS_COLOUR_GRAYTEXT));
+    dc.SetPen(theme::colour(enabled ? wxSYS_COLOUR_WINDOWTEXT: wxSYS_COLOUR_GRAYTEXT));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height);
   }
@@ -542,12 +543,12 @@ void draw_radiobox(const Window* win, DC& dc, const wxRect& rect, bool checked, 
   } else {
     // circle drawing on windows looks absolutely horrible
     // so use rounded rectangles instead
-    dc.SetPen(wxSystemSettings::GetColour(enabled ? wxSYS_COLOUR_WINDOWTEXT: wxSYS_COLOUR_GRAYTEXT));
+    dc.SetPen(theme::colour(enabled ? wxSYS_COLOUR_WINDOWTEXT: wxSYS_COLOUR_GRAYTEXT));
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     //dc.DrawEllipse(rect.x, rect.y, rect.width, rect.height);
     dc.DrawRoundedRectangle(rect.x, rect.y, rect.width, rect.height, rect.width*0.5-1);
     if (checked) {
-      dc.SetBrush(wxSystemSettings::GetColour(enabled ? wxSYS_COLOUR_WINDOWTEXT: wxSYS_COLOUR_GRAYTEXT));
+      dc.SetBrush(theme::colour(enabled ? wxSYS_COLOUR_WINDOWTEXT: wxSYS_COLOUR_GRAYTEXT));
       dc.SetPen(*wxTRANSPARENT_PEN);
       //dc.DrawEllipse(rect.x+2,rect.y+2,rect.width-4,rect.height-4);
       dc.DrawRoundedRectangle(rect.x+3, rect.y+3, rect.width-6, rect.height-6, rect.width*0.5-4);

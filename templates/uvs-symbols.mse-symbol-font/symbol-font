@@ -1,0 +1,83 @@
+mse version: 2.0.0
+short name: UVS symbols
+version: 2026-11-08
+depends on:
+	package: uvs-2026-common.mse-include
+	version: 2026-11-08
+
+# Inline symbols for UniVersus rules text: ability labels, the commit icon and the 13 resource symbols.
+# The label images are 120 px tall, drawn by tools/make-uvs-assets.ps1.
+
+image font size: 96
+horizontal space: 3
+vertical space: 0
+
+symbol:
+	code: ENHANCE
+	image: /uvs-2026-common.mse-include/label-enhance.png
+symbol:
+	code: RESPONSE
+	image: /uvs-2026-common.mse-include/label-response.png
+symbol:
+	code: FORM
+	image: /uvs-2026-common.mse-include/label-form.png
+symbol:
+	code: BLITZ
+	image: /uvs-2026-common.mse-include/label-blitz.png
+symbol:
+	code: C
+	image: /uvs-2026-common.mse-include/icon-commit.png
+	image font size: 82
+# Resource symbols, typed as {fire}, {good}, ... (164 px images, about 30 units tall at the rules text size)
+symbol:
+	code: air
+	image: /uvs-2026-common.mse-include/sym-air.png
+	image font size: 137
+symbol:
+	code: all
+	image: /uvs-2026-common.mse-include/sym-all.png
+	image font size: 137
+symbol:
+	code: chaos
+	image: /uvs-2026-common.mse-include/sym-chaos.png
+	image font size: 137
+symbol:
+	code: death
+	image: /uvs-2026-common.mse-include/sym-death.png
+	image font size: 137
+symbol:
+	code: earth
+	image: /uvs-2026-common.mse-include/sym-earth.png
+	image font size: 137
+symbol:
+	code: evil
+	image: /uvs-2026-common.mse-include/sym-evil.png
+	image font size: 137
+symbol:
+	code: fire
+	image: /uvs-2026-common.mse-include/sym-fire.png
+	image font size: 137
+symbol:
+	code: good
+	image: /uvs-2026-common.mse-include/sym-good.png
+	image font size: 137
+symbol:
+	code: infinity
+	image: /uvs-2026-common.mse-include/sym-infinity.png
+	image font size: 137
+symbol:
+	code: life
+	image: /uvs-2026-common.mse-include/sym-life.png
+	image font size: 137
+symbol:
+	code: order
+	image: /uvs-2026-common.mse-include/sym-order.png
+	image font size: 137
+symbol:
+	code: void
+	image: /uvs-2026-common.mse-include/sym-void.png
+	image font size: 137
+symbol:
+	code: water
+	image: /uvs-2026-common.mse-include/sym-water.png
+	image font size: 137

@@ -1,0 +1,65 @@
+# Shared scripts for the UniVersus 2026 stylesheets. Included from each stylesheet's init script,
+# after it sets "bleed_x" and "bleed_y" (extra card units around the exact card: left and right, top and bottom).
+
+common := "/uvs-2026-common.mse-include/"
+
+# Type color: outer outline of the name and the big numbers, and the badge rims.
+type_color := {
+	t := card.card_type
+	if      t == "character" and bonus_theme() then rgb(242,108,108)
+	else if t == "foundation" then rgb(150,160,167)
+	else if t == "action"     then rgb(46,135,218)
+	else if t == "asset"      then rgb(64,170,80)
+	else if t == "attack"     then rgb(240,140,40)
+	else if t == "backup"     then rgb(226,70,155)
+	else if t == "character"  then rgb(130,70,180)
+	else                           rgb(150,160,167)
+}
+
+# File id of a pre-drawn number glyph, or "" when the value has no glyph (then plain text is drawn).
+glyph_id := {
+	v := trim(input)
+	if v == "*" then "star"
+	else if match(v, match: "^[0-9xX]$") then to_lower(v)
+	else ""
+}
+number_image := { g := glyph_id(value); if g == "" then nil else common + "num-" + kind + "-" + g + ".png" }
+number_rim   := { g := glyph_id(value); if g == "" then nil else recolor_image(common + "num-rim-" + g + ".png", color: type_color()) }
+
+# Footer resource symbol image, e.g. "earth attuned" -> sym-at_earth.png
+symbol_image := {
+	if input == "none" or input == "" then nil
+	else common + "sym-" + replace(input, match: "^([a-z]+) attuned$", replace: "at_\\1") + ".png"
+}
+
+# The keyword strip pushes the rules text down.
+rules_top := { if has_keyword_line() then 692 else 656 }
+
+is_char := { card.card_type == "character" }
+# Character theme (Set info). Bonus Stage: salmon accents and a brush swatch behind the name.
+bonus_theme := { set.character_theme == "bonus stage" }
+# Name brush swatch, sized from the name (Figtree Black italic caps at 37: about 28 units a letter;
+# names longer than 15 letters wrap at the comma or a space onto two lines of about half the length).
+char_name_lines := { if length(card.name) > 15 then 2 else 1 }
+char_brush_width := {
+	n := length(card.name)
+	min(620, 80 + (if char_name_lines() == 2 then n / 2 + 3 else n) * 28)
+}
+char_brush_height := { if char_name_lines() == 2 then 110 else 70 }
+# Backup and Attack keep a column on the right of the text box for their stat stack.
+has_stat_column := { card.card_type == "backup" or card.card_type == "attack" }
+rules_mask := {
+	common + (if has_stat_column() then "rules-mask-col" else "rules-mask") + (if has_keyword_line() then "-kw" else "") + ".png"
+}
+
+# Character: the rules text sits on the art, anchored to the bottom, with the name and traits above it.
+# MSE can't measure text before placing fields, so the height is estimated from the text length:
+# about 40 characters per line at 544 units wide (label boxes take extra room), lines 35 units apart, 4 more per paragraph.
+char_text_height := {
+	t := remove_tags(card.rule_text)
+	paras := 1 + length(t) - length(replace(t, match: "\n", replace: ""))
+	lines := length(t) / 40 + paras * 0.5
+	lines * 35 + paras * 4 + 8
+}
+char_rules_top := { max(560, 936 - char_text_height()) }
+char_name_bottom := { char_rules_top() - (if has_keyword_line() then 36 else 6) }

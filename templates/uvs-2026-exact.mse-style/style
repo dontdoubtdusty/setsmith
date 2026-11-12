@@ -1,0 +1,30 @@
+mse version: 2.0.0
+game: uvs
+short name: 2026 (exact)
+full name: UniVersus 2026 frame, exact card size
+icon: icon.png
+position hint: 011
+version: 2026-11-08
+
+depends on:
+	package: uvs.mse-game
+	version: 2026-11-08
+depends on:
+	package: uvs-2026-common.mse-include
+	version: 2026-11-08
+depends on:
+	package: uvs-symbols.mse-symbol-font
+	version: 2026-11-08
+
+# 2.5 x 3.5 in at 300 dpi, no bleed (same size as the official card images).
+# The layout is shared with the bleed (uvs-2026) and MPC (uvs-2026-mpc) stylesheets.
+card width: 744
+card height: 1039
+card dpi: 300
+
+init script:
+	bleed_x := 0
+	bleed_y := 0
+	include file: /uvs-2026-common.mse-include/scripts
+
+include file: /uvs-2026-common.mse-include/card-style

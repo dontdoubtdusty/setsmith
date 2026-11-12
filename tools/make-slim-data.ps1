@@ -87,8 +87,56 @@ New-Item -ItemType Directory -Force $dictOut | Out-Null
 Copy-Item -Force (Join-Path $Source "dictionaries\en_US.*") $dictOut
 "{0,-48} {1,7}" -f "dictionaries\en_US (spell checker)", "copied"
 
+# Setsmith's own templates (UniVersus), kept in this repo under templates\.
+$ownPackages = @()
+foreach ($pkg in Get-ChildItem (Join-Path $PSScriptRoot "..\templates") -Directory | Where-Object { $_.Name -like "*.mse-*" }) {
+  $dest = Join-Path $Output $pkg.Name
+  if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+  Copy-Item -Recurse $pkg.FullName $dest
+  $ownPackages += $pkg.Name
+  "{0,-48} {1,7}" -f "$($pkg.Name) (from repo)", "copied"
+}
+
+# Setsmith patches to the copied Magic pack. Each edit must match exactly the expected number of times,
+# so a changed pack stops the script instead of being half patched.
+function Patch-File([string]$Package, [string]$Rel, [array]$Edits) {
+  $path = Join-Path (Join-Path $Output $Package) $Rel
+  $text = [IO.File]::ReadAllText($path)
+  foreach ($e in $Edits) {
+    $n = [regex]::Matches($text, $e.Pattern).Count
+    if ($n -ne $e.Count) { throw "Patch '$($e.Name)' in $Package\$Rel matched $n times, expected $($e.Count)." }
+    $with = if ($e.ContainsKey("With")) { $e.With } else { "" }
+    $text = [regex]::Replace($text, $e.Pattern, $with)
+  }
+  [IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding($false)))
+}
+# Masterpiece Series cards are not wanted: no rarity choice, no set code or symbol, no style option.
+Patch-File "magic.mse-game" "card_fields" @(
+  @{ Name = "rarity choice"; Count = 3; Pattern = '(?m)^\tchoice: masterpiece\r?\n' }
+)
+Patch-File "magic.mse-game" "set_fields" @(
+  @{ Name = "set code field";     Count = 1; Pattern = '(?m)^set field:\r?\n\ttype: text\r?\n\tname: masterpiece set code\r?\n\tdescription:[^\r\n]*\r?\n' }
+  @{ Name = "set symbol field";   Count = 1; Pattern = '(?m)^set field:\r?\n\ttype: symbol\r?\n\tname: masterpiece symbol\r?\n\tdescription:[^\r\n]*\r?\n' }
+  @{ Name = "set symbol style";   Count = 1; Pattern = '(?ms)^\tmasterpiece symbol:\r?\n.*?(?=^\tinverted common symbol:)' }
+)
+Patch-File "magic-m15.mse-style" "style" @(
+  @{ Name = "style option"; Count = 1; Pattern = '(?m)^styling field:\r?\n\ttype: boolean\r?\n\tname: masterpiece\r?\n\tdescription:[^\r\n]*\r?\n\tinitial: no\r?\n' }
+)
+Patch-File "magic-modules.mse-include" "rarities/choice_images" @(
+  @{ Name = "rarity image"; Count = 1; Pattern = '(?m)^\tmasterpiece:\r?\n\t\tscript:\r?\n(\t\t\t[^\r\n]*\r?\n)+' }
+)
+Patch-File "magic-modules.mse-include" "rarities/choice_images_old" @(
+  @{ Name = "old rarity image"; Count = 1; Pattern = '(?m)^\tmasterpiece:\r?\n\t\tscript:\r?\n(\t\t\t[^\r\n]*\r?\n)+' }
+)
+foreach ($info in "card_fields", "card_fields_dfc", "card_fields_tfc") {
+  Patch-File "magic-modules.mse-include" "information/$info" @(
+    @{ Name = "set code"; Count = 2; Pattern = 'if is_masterpiece\(\) then set\.masterpiece_set_code else set\.set_code'; With = "set.set_code" }
+  )
+}
+"{0,-48} {1,7}" -f "Setsmith patches (no Masterpiece)", "applied"
+
 # Remove packages that are no longer on the list.
-$keepNames = @($needed.Keys) + "en.mse-locale" + "dictionaries"
+$keepNames = @($needed.Keys) + $ownPackages + "en.mse-locale" + "dictionaries"
 Get-ChildItem $Output -Directory | Where-Object { $keepNames -notcontains $_.Name } | ForEach-Object {
   Remove-Item -Recurse -Force $_.FullName
   "removed old package: $($_.Name)"

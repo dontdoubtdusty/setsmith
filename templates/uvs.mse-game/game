@@ -1,0 +1,273 @@
+mse version: 2.0.0
+short name: UniVersus
+full name: UniVersus (custom proxies)
+icon: icon.png
+position hint: 02
+version: 2026-11-08
+
+# Setsmith: game definition for UniVersus (UVS Games) cards, for private custom proxies.
+# Layout spec: claude/uvs-template.md in the Setsmith repo.
+
+############################################################## Scripts
+
+init script:
+	type_names := [
+		foundation: "Foundation", action: "Action", asset: "Asset", attack: "Attack",
+		backup: "Backup", character: "Character", token: "Token", arena: "Arena"
+	]
+	type_name := { type_names[card.card_type] or else "" }
+
+	# Ability labels (ENHANCE, RESPONSE, FORM, BLITZ) become colored label boxes.
+	# {C} becomes the commit icon.
+	# Text in parentheses becomes reminder text: italic and a little smaller.
+	uvs_labels   := replace@(match: "(?<!<sym>)\\b(ENHANCE|RESPONSE|FORM|BLITZ)\\b(?!</sym>)", replace: "<sym>\\1</sym>")
+	uvs_commit   := replace@(match: "\\\{C\\\}", replace: "<sym>C</sym>")   # "\{" is a literal brace in MSE strings
+	# Reminder text only when the parentheses start a paragraph, so "(min. 1)" inside a sentence stays plain.
+	uvs_reminder := replace@(match: "(^|\n)(\\([^)\n]*\\))", replace: "\\1<i><size:22>\\2</size></i>")
+	# {fire}, {good}, ... become inline resource symbols.
+	uvs_resources := replace@(match: "\\\{(air|all|chaos|death|earth|evil|fire|good|infinity|life|order|void|water)\\\}", replace: "<sym>\\1</sym>")
+	uvs_rules_filter := uvs_labels + uvs_commit + uvs_resources + uvs_reminder
+
+	# Printed card number: the number field, or the card's position in the set.
+	card_number_text := {
+		n := if card.number != "" then card.number else to_text(position(of: card, in: set) + 1)
+		n + (if card.face == "B side" then "B" else "")
+	}
+	set_total_text := { if set.total_cards != "" then set.total_cards else to_text(number_of_items(in: set)) }
+	# Footer number: "32/186". A number typed with its own total ("9/103") is printed as typed.
+	footer_number := {
+		n := card_number_text()
+		if match(n, match: "/") then n else n + "/" + set_total_text()
+	}
+
+	# Keyword/trait line: keywords in yellow, then the separator, then the traits joined with dots.
+	join_dots := { replace(input, match: " *, *", replace: " • ") }
+	keyword_line := {
+		kw := to_upper(join_dots(card.keywords))
+		tr := to_upper(join_dots(card.traits))
+		kw_part := if kw == "" then "" else "<color:rgb(255,226,0)>" + kw + "</color>"
+		sep := if kw != "" and tr != "" then " " + card.separator + " " else ""
+		kw_part + sep + tr
+	}
+	has_keyword_line := { card.keywords != "" or card.traits != "" }
+
+############################################################## Card fields
+
+card field:
+	type: choice
+	name: card type
+	choice: foundation
+	choice: action
+	choice: asset
+	choice: attack
+	choice: backup
+	choice: character
+	choice: token
+	choice: arena
+	default: "foundation"
+	card list visible: true
+	card list column: 2
+	card list name: Type
+	description: The card type. It sets the frame color and which stats are shown.
+
+card field:
+	type: text
+	name: name
+	identifying: true
+	# multi line: long names wrap to a second line, as on real cards
+	multi line: true
+	card list visible: true
+	card list column: 1
+	card list width: 200
+	script: to_upper(value)
+	description: Card name. Printed in capitals.
+
+card field:
+	type: text
+	name: keywords
+	description: Keywords, comma separated, e.g. "Breaker: 1, Unique". Printed in yellow before the separator.
+
+card field:
+	type: choice
+	name: separator
+	choice: |
+	choice: /
+	default: "|"
+	description: The mark between the keywords and the traits.
+
+card field:
+	type: text
+	name: traits
+	description: Traits, comma separated, e.g. "Weapon, Armor". Printed after the separator, joined with dots.
+
+card field:
+	type: text
+	name: rule text
+	multi line: true
+	script: uvs_rules_filter(value)
+	description: Rules text. ENHANCE, RESPONSE, FORM and BLITZ become label boxes; (text in parentheses) becomes reminder text.
+
+card field:
+	type: text
+	name: difficulty
+	card list visible: true
+	card list column: 3
+	card list width: 40
+	card list name: Diff
+
+card field:
+	type: text
+	name: check
+	card list visible: true
+	card list column: 4
+	card list width: 40
+
+card field:
+	type: text
+	name: block
+	card list visible: true
+	card list column: 5
+	card list width: 40
+
+card field:
+	type: choice
+	name: block zone
+	choice: high
+	choice: mid
+	choice: low
+	default: "mid"
+
+card field:
+	type: text
+	name: speed
+card field:
+	type: text
+	name: damage
+card field:
+	type: choice
+	name: attack zone
+	choice: high
+	choice: mid
+	choice: low
+	default: "mid"
+card field:
+	type: text
+	name: stamina
+card field:
+	type: text
+	name: hand size
+card field:
+	type: text
+	name: health
+
+card field:
+	type: choice
+	name: symbol 1
+	include file: symbol_choices
+card field:
+	type: choice
+	name: symbol 2
+	include file: symbol_choices
+card field:
+	type: choice
+	name: symbol 3
+	include file: symbol_choices
+card field:
+	type: choice
+	name: symbol 4
+	include file: symbol_choices
+card field:
+	type: choice
+	name: symbol 5
+	include file: symbol_choices
+card field:
+	type: choice
+	name: symbol 6
+	include file: symbol_choices
+
+card field:
+	type: choice
+	name: rarity
+	choice: C
+	choice: UC
+	choice: R
+	choice: UR
+	choice: SR
+	choice: T
+	choice: CH
+	choice: CH-C
+	choice: CH-R
+	default: "C"
+	card list visible: true
+	card list column: 6
+	card list width: 50
+
+card field:
+	type: text
+	name: number
+	description: Card number. Leave empty to use the card's position in the set.
+
+card field:
+	type: choice
+	name: face
+	choice: front
+	choice: B side
+	default: "front"
+	description: A B side is the transformed face of a double-sided card; its number gets a "B".
+
+card field:
+	type: image
+	name: image
+
+card field:
+	type: image
+	name: cutout
+	# Not editable in the GUI: an editable empty image field shows a checkerboard over the whole card while
+	# editing. Set by the set builder (Bonus Stage: cutfinal.py + build-set.ps1).
+	editable: false
+	description: Characters only, optional: the character cut out of the art (a PNG with a transparent background, framed exactly like the image). It is drawn above the shading, so the character stays bright and pops out.
+
+card field:
+	type: text
+	name: credit
+	description: Credit printed before the set copyright, e.g. "Illustration by Jane Doe".
+
+############################################################## Set fields
+
+set field:
+	type: info
+	name: Set information
+set field:
+	type: text
+	name: title
+	identifying: true
+set field:
+	type: text
+	name: set code
+	description: Printed in the footer, e.g. FT01.
+set field:
+	type: text
+	name: total cards
+	description: Printed after the card number (32/186). Leave empty to count the cards in the set.
+set field:
+	type: text
+	name: copyright
+	description: Copyright line printed in the footer, e.g. "© 2026 My Name".
+set field:
+	type: image
+	name: ip logo
+	description: The logo in the footer circle (and the watermark, when that is on). Use a square PNG with a white logo on a transparent background, cropped close; it is drawn as is.
+set field:
+	type: choice
+	name: character theme
+	choice: standard
+	choice: bonus stage
+	default: "standard"
+	description: Look of the full-art Character cards. Standard: a soft dark fade behind the text. Bonus Stage: a salmon name slab and an angular ink panel, after the Bonus Stage webtoon art.
+set field:
+	type: choice
+	name: watermark
+	choice: none
+	choice: ip logo
+	default: "none"
+	description: Draw the IP logo faintly behind the rules text, like the set logos on FT01 cards.

@@ -1,0 +1,30 @@
+mse version: 2.0.0
+game: uvs
+short name: 2026 (bleed)
+full name: UniVersus 2026 frame, print-shop bleed
+icon: icon.png
+position hint: 010
+version: 2026-11-08
+
+depends on:
+	package: uvs.mse-game
+	version: 2026-11-08
+depends on:
+	package: uvs-2026-common.mse-include
+	version: 2026-11-08
+depends on:
+	package: uvs-symbols.mse-symbol-font
+	version: 2026-11-08
+
+# 2.5 x 3.5 in plus a 1/8 in bleed on every side, at 300 dpi.
+# The layout is shared with the exact-size (uvs-2026-exact) and MPC (uvs-2026-mpc) stylesheets.
+card width: 819
+card height: 1114
+card dpi: 300
+
+init script:
+	bleed_x := 37.5
+	bleed_y := 37.5
+	include file: /uvs-2026-common.mse-include/scripts
+
+include file: /uvs-2026-common.mse-include/card-style

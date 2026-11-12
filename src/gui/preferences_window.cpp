@@ -38,7 +38,6 @@ public:
   void store() override;  
   
 private:
-  wxComboBox* language;
   wxCheckBox* open_sets_in_new_window;
 };
 
@@ -83,21 +82,6 @@ private:
   void updateInternalScale();
 };
 
-// Preferences page for directories of programs
-// i.e. Apprentice, Magic Workstation
-// perhaps in the future also directories for packages?
-class DirsPreferencesPage : public PreferencesPage {
-public:
-  DirsPreferencesPage(Window* parent);
-  void store() override;
-  
-private:
-  DECLARE_EVENT_TABLE();
-  
-  wxTextCtrl* apprentice;
-  
-  void onApprenticeBrowse(wxCommandEvent&);
-};
 
 // MSE Slim: the Updates page was removed along with the update checker.
 
@@ -112,7 +96,6 @@ PreferencesWindow::PreferencesWindow(Window* parent)
   nb->AddPage(new GlobalPreferencesPage (nb), _TITLE_("global"));
   nb->AddPage(new DisplayPreferencesPage(nb), _TITLE_("display"));
   nb->AddPage(new InternalPreferencesPage(nb), _TITLE_("internal"));
-  nb->AddPage(new DirsPreferencesPage   (nb), _TITLE_("directories"));
   
   // init sizer
   wxSizer* s = new wxBoxSizer(wxVERTICAL);
@@ -141,50 +124,24 @@ END_EVENT_TABLE  ()
 
 // ----------------------------------------------------------------------------- : Preferences page : global
 
-bool compare_package_name(const PackagedP& a, const PackagedP& b) {
-  return a->name() < b->name();
-}
 
 GlobalPreferencesPage::GlobalPreferencesPage(Window* parent)
   : PreferencesPage(parent)
 {
   // init controls
-  language = new wxComboBox(this, wxID_ANY, _(""), wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_READONLY);
   open_sets_in_new_window = new wxCheckBox(this, wxID_ANY, _BUTTON_("open sets in new window"));
   // set values
-  vector<PackagedP> locales;
-  package_manager.findMatching(_("*.mse-locale"), locales);
-  sort(locales.begin(), locales.end(), compare_package_name);
-  int n = 0;
-  FOR_EACH(package, locales) {
-    language->Append(package->name() + _(": ") + package->full_name, package.get());
-    if (settings.locale == package->name()) {
-      language->SetSelection(n);
-    }
-    n++;
-  }
   open_sets_in_new_window->SetValue(settings.open_sets_in_new_window);
   // init sizer
   wxSizer* s = new wxBoxSizer(wxVERTICAL);
   s->SetSizeHints(this);
-    wxSizer* s2 = new wxStaticBoxSizer(wxVERTICAL, this, _LABEL_("language"));
-      s2->Add(new wxStaticText(this, wxID_ANY, _LABEL_("app language")), 0,             wxALL,          4);
-      s2->Add(language,                                                  0, wxEXPAND | (wxALL & ~wxTOP), 4);
-      s2->Add(new wxStaticText(this, wxID_ANY, _HELP_( "app language")), 0,             wxALL,          4);
-    s->Add(s2, 0, wxEXPAND | wxALL, 8);
     wxSizer* s3 = new wxStaticBoxSizer(wxVERTICAL, this, _LABEL_("windows"));
       s3->Add(open_sets_in_new_window, 0, wxALL, 4);
-    s->Add(s3, 0, wxEXPAND | (wxALL & ~wxTOP), 8);
+    s->Add(s3, 0, wxEXPAND | wxALL, 8);
   SetSizer(s);
 }
 
 void GlobalPreferencesPage::store() {
-  // locale
-  int n = language->GetSelection();
-  if (n == wxNOT_FOUND) return;
-  Packaged* p = (Packaged*)language->GetClientData(n);
-  settings.locale = p->name();
-  // set the_locale?
   // open_sets_in_new_window
   settings.open_sets_in_new_window = open_sets_in_new_window->GetValue();
 }
@@ -356,44 +313,4 @@ void InternalPreferencesPage::updateInternalScale() {
 BEGIN_EVENT_TABLE(InternalPreferencesPage, wxPanel)
   EVT_COMBOBOX(ID_INTERNAL_SCALE, InternalPreferencesPage::onInternalScaleChange)
 END_EVENT_TABLE()
-
-// ----------------------------------------------------------------------------- : Preferences page : directories
-
-DirsPreferencesPage::DirsPreferencesPage(Window* parent)
-  : PreferencesPage(parent)
-{
-  // init controls
-  apprentice   = new wxTextCtrl(this, wxID_ANY);
-  wxButton* ab = new wxButton(this, ID_APPRENTICE_BROWSE, _BUTTON_("browse"));
-  // set values
-  apprentice->SetValue(settings.apprentice_location);
-  // init sizer
-  wxSizer* s = new wxBoxSizer(wxVERTICAL);
-    wxSizer* s2 = new wxStaticBoxSizer(wxVERTICAL, this, _LABEL_("external programs"));
-      s2->Add(new wxStaticText(this, wxID_ANY, _LABEL_("apprentice")), 0, wxALL, 4);
-      wxSizer* s3 = new wxBoxSizer(wxHORIZONTAL);
-        s3->Add(apprentice, 1, wxEXPAND | wxRIGHT, 4);
-        s3->Add(ab,         0, wxEXPAND);
-      s2->Add(s3, 0, wxEXPAND | (wxALL & ~wxTOP), 4);
-    s->Add(s2, 0, wxEXPAND | wxALL, 8);
-  s->SetSizeHints(this);
-  SetSizer(s);
-}
-
-void DirsPreferencesPage::store() {
-  settings.apprentice_location = apprentice->GetValue();
-}
-
-void DirsPreferencesPage::onApprenticeBrowse(wxCommandEvent&) {
-  // browse for appr.exe
-  wxFileDialog dlg(this, _TITLE_("locate apprentice"), apprentice->GetValue(), _(""), _LABEL_("apprentice exe") + _("|appr.exe"), wxFD_OPEN);
-  if (dlg.ShowModal() == wxID_OK) {
-    wxFileName fn(dlg.GetPath());
-    apprentice->SetValue(fn.GetPath());
-  }
-}
-  
-BEGIN_EVENT_TABLE(DirsPreferencesPage, wxPanel)
-  EVT_BUTTON     (ID_APPRENTICE_BROWSE, DirsPreferencesPage::onApprenticeBrowse)
-END_EVENT_TABLE  ();
 

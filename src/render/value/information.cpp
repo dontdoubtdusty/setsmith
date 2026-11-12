@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <render/value/information.hpp>
 #include <render/card/viewer.hpp>
 
@@ -17,8 +18,8 @@ IMPLEMENT_VALUE_VIEWER(Info);
 void InfoValueViewer::draw(RotatedDC& dc) {
   dc.SetPen(*wxTRANSPARENT_PEN);
   if (nativeLook()) {
-    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
+    dc.SetTextForeground(theme::colour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetBrush(theme::colour(wxSYS_COLOUR_APPWORKSPACE));
     dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, _("Arial")));
   } else {
     dc.SetTextForeground(style().font.color);

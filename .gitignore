@@ -23,3 +23,6 @@
 # Jello Board build output
 /tools/JelloBoard/bin
 /tools/JelloBoard/obj
+
+# Crash dumps from MSYS2 tools
+*.stackdump

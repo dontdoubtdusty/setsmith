@@ -26,13 +26,11 @@
 // ----------------------------------------------------------------------------- : Set
 
 Set::Set()
-  : vcs (make_intrusive<VCS>())
-  , script_manager(new SetScriptManager(*this))
+  : script_manager(new SetScriptManager(*this))
 {}
 
 Set::Set(const GameP& game)
   : game(game)
-  , vcs (make_intrusive<VCS>())
   , script_manager(new SetScriptManager(*this))
 {
   data.init(game->set_fields);
@@ -41,7 +39,6 @@ Set::Set(const GameP& game)
 Set::Set(const StyleSheetP& stylesheet)
   : game(stylesheet->game)
   , stylesheet(stylesheet)
-  , vcs (make_intrusive<VCS>())
   , script_manager(new SetScriptManager(*this))
 {
   data.init(game->set_fields);
@@ -181,6 +178,15 @@ void reflect_version_check(Writer& handler, const Char* key, intrusive_ptr<Packa
 void reflect_version_check(GetMember& handler, const Char* key, intrusive_ptr<Packaged> const& package) {}
 void reflect_version_check(GetDefaultMember& handler, const Char* key, intrusive_ptr<Packaged> const& package) {}
 
+// The old "version control" section of a set file. Only read so that old files load without warnings.
+struct IgnoredVersionControl {
+  String type;
+  DECLARE_REFLECTION();
+};
+IMPLEMENT_REFLECTION_NO_SCRIPT(IgnoredVersionControl) {
+  REFLECT(type);
+}
+
 IMPLEMENT_REFLECTION(Set) {
   REFLECT(game);
   if (game) {
@@ -204,7 +210,8 @@ IMPLEMENT_REFLECTION(Set) {
     REFLECT(pack_types);
   }
   reflect_set_info_get_member(handler,data);
-  REFLECT_NO_SCRIPT_N("version_control", vcs);
+  // MSE Slim: version control support was removed. Old sets still have this key, so read it and ignore it.
+  REFLECT_IF_READING { IgnoredVersionControl ignored; REFLECT_N("version_control", ignored); }
   REFLECT(apprentice_code);
 }
 

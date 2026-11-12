@@ -92,8 +92,6 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   menuBar->Append(menuWindow, _MENU_("window"));
   
   auto menuHelp = new wxMenu();
-    add_menu_item_tr(menuHelp, ID_HELP_INDEX, "help", "index");
-    add_menu_item_tr(menuHelp, ID_HELP_WEBSITE, nullptr, "website");
     add_menu_item_tr(menuHelp, ID_HELP_ABOUT, nullptr, "about");
   menuBar->Append(menuHelp, _MENU_("help"));
   
@@ -172,8 +170,6 @@ wxMenu* SetWindow::makeExportMenu() {
   auto menuExport = new wxMenu();
   add_menu_item_tr(menuExport, ID_FILE_EXPORT_IMAGE, "export_image", "export_image");
   add_menu_item_tr(menuExport, ID_FILE_EXPORT_IMAGES, "export_images", "export_images");
-  add_menu_item_tr(menuExport, ID_FILE_EXPORT_APPR, "export_apprentice", "export_apprentice");
-  add_menu_item_tr(menuExport, ID_FILE_EXPORT_MWS, "export_mws", "export_mws");
   return menuExport;
 }
 
@@ -487,8 +483,6 @@ void SetWindow::onUpdateUI(wxUpdateUIEvent& ev) {
     // file menu
     case ID_FILE_SAVE:         ev.Enable(!set->actions.atSavePoint() || set->needSaveAs());  break;
     case ID_FILE_EXPORT_IMAGE: ev.Enable(!!current_panel->selectedCard());          break;
-    case ID_FILE_EXPORT_APPR:  ev.Enable(set->game->isMagic());                break;
-    case ID_FILE_EXPORT_MWS:   ev.Enable(set->game->isMagic());                break;
     case ID_FILE_EXIT:
       // update for ID_FILE_RECENT done for a different id, because ID_FILE_RECENT may not be in the menu yet
       updateRecentSets();
@@ -516,7 +510,6 @@ void SetWindow::onUpdateUI(wxUpdateUIEvent& ev) {
     case ID_EDIT_FIND_NEXT : ev.Enable(current_panel->canFind());  break;
     case ID_EDIT_REPLACE   : ev.Enable(current_panel->canReplace());break;
     // help
-    case ID_HELP_INDEX     : ev.Enable(false);            break; // not implemented
     // other
     default:
       // items created by the panel, and cut/copy/paste and find/replace
@@ -656,13 +649,7 @@ void SetWindow::onFileExportImages(wxCommandEvent&) {
   wnd.ShowModal();
 }
 
-void SetWindow::onFileExportApprentice(wxCommandEvent&) {
-  export_apprentice(this, set);
-}
 
-void SetWindow::onFileExportMWS(wxCommandEvent&) {
-  export_mws(this, set);
-}
 
 void SetWindow::onFilePrint(wxCommandEvent&) {
   ExportCardSelectionChoices choices;
@@ -785,15 +772,7 @@ void SetWindow::onWindowSelect(wxCommandEvent& ev) {
 
 // ----------------------------------------------------------------------------- : Window events - menu - help
 
-void SetWindow::onHelpIndex(wxCommandEvent&) {
-  // TODO : context sensitive
-//  HelpWindow* wnd = new HelpWindow(this);
-//  wnd->Show();
-}
 
-void SetWindow::onHelpWebsite(wxCommandEvent&) {
-  wxLaunchDefaultBrowser(settings.website_url);
-}
 
 void SetWindow::onHelpAbout(wxCommandEvent&) {
   AboutWindow wnd(this);
@@ -827,8 +806,6 @@ BEGIN_EVENT_TABLE(SetWindow, wxFrame)
   EVT_MENU      (ID_FILE_EXPORT,    SetWindow::onFileExportMenu)
   EVT_MENU      (ID_FILE_EXPORT_IMAGE,  SetWindow::onFileExportImage)
   EVT_MENU      (ID_FILE_EXPORT_IMAGES,  SetWindow::onFileExportImages)
-  EVT_MENU      (ID_FILE_EXPORT_APPR,  SetWindow::onFileExportApprentice)
-  EVT_MENU      (ID_FILE_EXPORT_MWS,  SetWindow::onFileExportMWS)
 //  EVT_MENU      (ID_FILE_INSPECT,    SetWindow::onFileInspect)
   EVT_MENU      (ID_FILE_PRINT,      SetWindow::onFilePrint)
   EVT_MENU      (ID_FILE_PRINT_PREVIEW,  SetWindow::onFilePrintPreview)
@@ -848,8 +825,6 @@ BEGIN_EVENT_TABLE(SetWindow, wxFrame)
   EVT_MENU      (ID_EDIT_PREFERENCES,  SetWindow::onEditPreferences)
   EVT_MENU      (ID_WINDOW_NEW,      SetWindow::onWindowNewWindow)
   EVT_TOOL_RANGE    (ID_WINDOW_MIN, ID_WINDOW_MAX, SetWindow::onWindowSelect)
-  EVT_MENU      (ID_HELP_INDEX,      SetWindow::onHelpIndex)
-  EVT_MENU      (ID_HELP_WEBSITE,    SetWindow::onHelpWebsite)
   EVT_MENU      (ID_HELP_ABOUT,      SetWindow::onHelpAbout)
   EVT_MENU_OPEN    (            SetWindow::onMenuOpen)
   EVT_TOOL_RANGE    (ID_CHILD_MIN, ID_CHILD_MAX,   SetWindow::onChildMenu)

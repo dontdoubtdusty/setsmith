@@ -1,0 +1,28 @@
+choice: none
+choice: air
+choice: all
+choice: chaos
+choice: death
+choice: earth
+choice: evil
+choice: fire
+choice: good
+choice: infinity
+choice: life
+choice: order
+choice: void
+choice: water
+choice: air attuned
+choice: all attuned
+choice: chaos attuned
+choice: death attuned
+choice: earth attuned
+choice: evil attuned
+choice: fire attuned
+choice: good attuned
+choice: infinity attuned
+choice: life attuned
+choice: order attuned
+choice: void attuned
+choice: water attuned
+default: "none"

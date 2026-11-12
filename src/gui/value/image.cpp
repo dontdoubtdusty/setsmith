@@ -41,7 +41,11 @@ void ImageValueEditor::sliceImage(const Image& image) {
   AlphaMask mask;
   style().mask.getNoCache(options,mask);
   // slice
-  ImageSliceWindow s(wxGetTopLevelParent(&editor()), image, style().getSize(), mask);
+  // MSE Slim: a field without a size in the stylesheet (e.g. an image field in Set info without a
+  // "set info style") has size 0x0, and the slice window divides by it. Use the image's own size then.
+  wxSize target = style().getSize();
+  if (target.GetWidth() <= 0 || target.GetHeight() <= 0) target = wxSize(image.GetWidth(), image.GetHeight());
+  ImageSliceWindow s(wxGetTopLevelParent(&editor()), image, target, mask);
   // clicked ok?
   if (s.ShowModal() == wxID_OK) {
     // store the image into the set

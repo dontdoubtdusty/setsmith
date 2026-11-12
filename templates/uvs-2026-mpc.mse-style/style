@@ -1,0 +1,32 @@
+mse version: 2.0.0
+game: uvs
+short name: 2026 (MPC)
+full name: UniVersus 2026 frame, MakePlayingCards print size
+icon: icon.png
+position hint: 012
+version: 2026-11-09
+
+depends on:
+	package: uvs.mse-game
+	version: 2026-11-08
+depends on:
+	package: uvs-2026-common.mse-include
+	version: 2026-11-08
+depends on:
+	package: uvs-symbols.mse-symbol-font
+	version: 2026-11-08
+
+# MakePlayingCards poker-size template: 822 x 1122 px at 300 dpi (2.74 x 3.74 in).
+# MPC trims to 750 x 1050 (2.5 x 3.5 in), 36 px in from each edge. The exact card (744 x 1039) sits
+# centered, so the cut lands 3 px (sides) and 5.5 px (top, bottom) out in the bleed, never in the frame.
+# The layout is shared with the bleed (uvs-2026) and exact-size (uvs-2026-exact) stylesheets.
+card width: 822
+card height: 1122
+card dpi: 300
+
+init script:
+	bleed_x := 39
+	bleed_y := 41.5
+	include file: /uvs-2026-common.mse-include/scripts
+
+include file: /uvs-2026-common.mse-include/card-style

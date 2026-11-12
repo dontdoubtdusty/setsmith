@@ -391,8 +391,24 @@ TextLayoutP TextViewer::extractLayoutInfo() const {
 
 void TextViewer::prepareLines(RotatedDC& dc, const String& text, TextStyle& style, Context& ctx) {
   vector<CharInfo> chars;
+  mask_top_offset = 0;
   prepareLinesTryScales(dc, text, style, chars);
   assert(!lines.empty());
+
+  // MSE Slim: the layout checks the mask at each line's position, but vertical alignment only moves the
+  // lines afterwards. For masked text that isn't top aligned, lay it out again starting where the
+  // alignment will put it, so lines are fitted against the mask rows they are drawn on.
+  if (style.mask.getFromCache().isLoaded() && style.paragraph_height <= 0 && !(style.alignment() & ALIGN_TOP)) {
+    double avail = dc.getInternalSize().height - style.padding_top - style.padding_bottom;
+    for (int pass = 0 ; pass < 2 && !lines.empty() ; ++pass) {
+      double used = lines.back().bottom() - (style.padding_top + mask_top_offset);
+      double offset = max(0.0, align_delta_y(style.alignment(), avail, used));
+      if (fabs(offset - mask_top_offset) < 0.5) break;
+      mask_top_offset = offset;
+      chars.clear();
+      prepareLinesTryScales(dc, text, style, chars);
+    }
+  }
   
   // no text, find a dummy height for the single line we have
   if (lines.size() == 1 && lines[0].width() < 0.0001) {
@@ -564,7 +580,7 @@ bool TextViewer::prepareLinesAtScale(RotatedDC& dc, const vector<CharInfo>& char
 
   // first line
   Line line;
-  line.top = style.padding_top;
+  line.top = style.padding_top + mask_top_offset; // MSE Slim: offset for masked, aligned text
   line.margin_left  = elements.paragraphs[0].margin_left;
   line.margin_right = elements.paragraphs[0].margin_right;
   line.alignment = elements.paragraphs[0].alignment;
@@ -749,7 +765,7 @@ void TextViewer::alignLines(RotatedDC& dc, const vector<CharInfo>& chars, const 
   if (style.paragraph_height <= 0) {
     // whole text box alignment
     assert(!lines.empty());
-    double top = lines[0].top;
+    double top = lines[0].top - mask_top_offset; // MSE Slim: lines already start at the aligned position
     alignParagraph(0, lines.size(), chars, style, RealRect(RealPoint(0,top),s));
   } else {
     // per paragraph alignment

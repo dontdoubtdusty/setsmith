@@ -12,7 +12,6 @@
 #include <util/dynamic_arg.hpp>
 #include <util/error.hpp>
 #include <util/file_utils.hpp>
-#include <util/vcs.hpp>
 
 class Package;
 class wxFileInputStream;
@@ -189,7 +188,6 @@ public:
 
 protected:
   // TODO: I dislike putting this here very much. There ought to be a better way.
-  virtual VCSP getVCS() { return make_intrusive<VCS>(); }
 
   /// true if this is a zip file, false if a directory
   bool isZipfile() const { return !wxDirExists(filename); }
@@ -310,7 +308,6 @@ protected:
 private:
   bool   fully_loaded;  ///< Is the package fully loaded?
   friend struct JustAsPackageProxy;
-  friend class Installer;
 };
 
 inline void after_reading(Packaged& p, Version file_app_version) {

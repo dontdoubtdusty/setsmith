@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/control/tree_list.hpp>
 #include <gfx/gfx.hpp>
 #include <wx/renderer.h>
@@ -142,13 +143,13 @@ void TreeList::onPaint(wxPaintEvent& ev) {
   // clear background
   wxSize cs = GetClientSize();
   dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+  dc.SetBrush(theme::colour(wxSYS_COLOUR_BTNFACE));
   dc.DrawRectangle(0,0,cs.x,header_height);
-  dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+  dc.SetBrush(theme::colour(wxSYS_COLOUR_WINDOW));
   dc.DrawRectangle(0,header_height,cs.x,cs.y-header_height);
   // draw header
   dc.SetFont(*wxNORMAL_FONT);
-  dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
+  dc.SetTextForeground(theme::colour(wxSYS_COLOUR_BTNTEXT));
   int x = 0, y = 0;
   for (size_t j = 0 ; j < cols ; ++j) {
     int w = columnWidth(j);
@@ -166,12 +167,12 @@ void TreeList::onPaint(wxPaintEvent& ev) {
     if (!item.visible()) continue; // invisible
     x = level_width * (item.level + 1);
     // line below
-    dc.SetPen(lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-                   wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),0.2));
+    dc.SetPen(lerp(theme::colour(wxSYS_COLOUR_WINDOW),
+                   theme::colour(wxSYS_COLOUR_WINDOWTEXT),0.2));
     dc.DrawLine(x,y+item_height-1,cs.x,y+item_height-1);
     // draw lines
-    dc.SetPen(lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-                   wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),0.4));
+    dc.SetPen(lerp(theme::colour(wxSYS_COLOUR_WINDOW),
+                   theme::colour(wxSYS_COLOUR_WINDOWTEXT),0.4));
     for (int j = 0 ; j < 32 && j <= item.level ; ++j) {
       if (item.lines & (1 << j)) {
         // draw line
@@ -189,7 +190,7 @@ void TreeList::onPaint(wxPaintEvent& ev) {
     }
     if (selection == i) {
       dc.SetPen(*wxTRANSPARENT_PEN);
-      dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT));
+      dc.SetBrush(theme::colour(wxSYS_COLOUR_HIGHLIGHT));
       dc.DrawRectangle(x, y, cs.x-x, item_height-1);
     }
     // draw text(s)

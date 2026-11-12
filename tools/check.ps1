@@ -4,8 +4,10 @@
 
 .DESCRIPTION
   1. Builds with MSYS2 (UCRT64) and Ninja.
-  2. Renders tools/slim-test.mse-set and compares each image with tools/slim-test.reference.txt
-     (hashes of the images the installed MSE 2.5.6 + full M15 pack produces on this PC).
+  2. Renders the test sets and compares each image with its reference hashes:
+     - tools/slim-test.mse-set: M15 cards; hashes of what the installed MSE 2.5.6 + full M15 pack produces.
+     - tools/uvs-test.mse-set: UniVersus cards; hashes of Setsmith's own accepted output
+       (regenerate them on purpose when the UVS frame changes, and say so in the commit).
   3. Launches the GUI for a few seconds outside MSYS2 and fails if it prints any error.
   Exits 0 only if all three pass.
 
@@ -40,15 +42,18 @@ $env:PATH = "C:\Windows\system32;C:\Windows"
 "== render test"
 $out = Join-Path ([IO.Path]::GetTempPath()) ("mse-slim-check-" + [guid]::NewGuid().ToString("N").Substring(0,8))
 New-Item -ItemType Directory $out | Out-Null
-Push-Location $build
-$msgs = & .\setsmith.com --export-images (Join-Path $PSScriptRoot "slim-test.mse-set") (Join-Path $out "{card.name}.png") 2>&1
-Pop-Location
-if ($msgs) { "render printed messages:"; $msgs | Select-Object -First 10; $fail = $true }
-foreach ($line in Get-Content (Join-Path $PSScriptRoot "slim-test.reference.txt")) {
-  $hash, $name = $line -split '  ', 2
-  $file = Join-Path $out $name
-  if (-not (Test-Path $file)) { "MISSING  $name"; $fail = $true; continue }
-  if ((Get-FileHash $file).Hash -eq $hash) { "same     $name" } else { "CHANGED  $name"; $fail = $true }
+# Each test set has a <name>.reference.txt with the expected image hashes.
+foreach ($test in "slim-test", "uvs-test") {
+  Push-Location $build
+  $msgs = & .\setsmith.com --export-images (Join-Path $PSScriptRoot "$test.mse-set") (Join-Path $out "$test - {card.name}.png") 2>&1
+  Pop-Location
+  if ($msgs) { "render printed messages ($test):"; $msgs | Select-Object -First 10; $fail = $true }
+  foreach ($line in Get-Content (Join-Path $PSScriptRoot "$test.reference.txt")) {
+    $hash, $name = $line -split '  ', 2
+    $file = Join-Path $out "$test - $name"
+    if (-not (Test-Path $file)) { "MISSING  $test - $name"; $fail = $true; continue }
+    if ((Get-FileHash $file).Hash -eq $hash) { "same     $test - $name" } else { "CHANGED  $test - $name"; $fail = $true }
+  }
 }
 "rendered images: $out"
 

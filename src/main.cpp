@@ -13,13 +13,14 @@
 #include <data/set.hpp>
 #include <data/settings.hpp>
 #include <data/locale.hpp>
-#include <data/installer.hpp>
 #include <data/format/formats.hpp>
 #include <cli/cli_main.hpp>
 #include <cli/text_io_handler.hpp>
 #include <gui/welcome_window.hpp>
 #include <gui/set/window.hpp>
 #include <gui/thumbnail_thread.hpp>
+#include <gui/theme.hpp>
+#include <wx/toplevel.h>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 
@@ -82,6 +83,7 @@ int MSE::OnRun() {
       SetAppName(_("setsmith"));
     #endif
     wxInitAllImageHandlers();
+    theme::init(); // MSE Slim: fonts and dark mode, before any window exists
     init_script_variables();
     init_file_formats();
     cli.init();
@@ -105,32 +107,15 @@ int MSE::OnRun() {
         if (f.GetExt() == _("mse-symbol") || arg == _("--symbol-editor")) {
           // MSE Slim: the symbol editor was removed.
           throw Error(_("This build has no symbol editor."));
-        } else if (f.GetExt() == _("mse-set") || f.GetExt() == _("mse") || f.GetExt() == _("set")) {
+        } else if (f.GetExt() == _("mse-set") || f.GetExt() == _("set")) {
           // Show the set window
           Window* wnd = new SetWindow(nullptr, import_set(arg));
           wnd->Show();
           return runGUI();
-        } else if (f.GetExt() == _("mse-installer")) {
-          // MSE Slim: the package manager was removed.
-          throw Error(_("This build can't install .mse-installer files.\nCopy template folders into the data folder next to setsmith.exe instead."));
         } else if (f.GetExt() == _("mse-script")) {
           // Run a script file
           if (!run_script_file(arg)) return EXIT_FAILURE;
           if (cli.shown_errors()) return EXIT_FAILURE;
-          return EXIT_SUCCESS;
-        } else if (arg == _("--create-installer")) {
-          // create an installer
-          Installer inst;
-          FOR_EACH(arg, args) {
-            if (!starts_with(arg, _("--"))) {
-              inst.addPackage(arg);
-            }
-          }
-          if (inst.prefered_filename.empty()) {
-            throw Error(_("Specify packages to include in installer"));
-          } else {
-            inst.saveAs(inst.prefered_filename, false);
-          }
           return EXIT_SUCCESS;
         } else if (arg == _("--help") || arg == _("-?")) {
           // command line help
@@ -145,16 +130,10 @@ int MSE::OnRun() {
                              << BRIGHT << _("--version") << NORMAL;
           cli << _("\n         \tShow version information.");
           cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-set") << NORMAL << _(", ")
-                             << PARAM << _("FILE") << FILE_EXT << _(".set") << NORMAL << _(", ")
-                             << PARAM << _("FILE") << FILE_EXT << _(".mse") << NORMAL;
-          cli << _("\n         \tLoad the set file in the MSE user interface.");
+                             << PARAM << _("FILE") << FILE_EXT << _(".set") << NORMAL;
+          cli << _("\n         \tOpen the set file in Setsmith.");
           cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT << _(".mse-script") << NORMAL;
           cli << _("\n         \tRun a script file.");
-          cli << _("\n\n  ") << BRIGHT << _("--create-installer") << NORMAL << _(" [")
-                             << PARAM << _("OUTFILE") << FILE_EXT << _(".mse-installer") << NORMAL << _("] [")
-                             << PARAM << _("PACKAGE") << NORMAL << _(" [") << PARAM << _("PACKAGE") << NORMAL << _(" ...]]");
-          cli << _("\n         \tCreate an instaler, containing the listed packages.");
-          cli << _("\n         \tIf no output filename is specified, the name of the first package is used.");
           cli << _("\n\n  ") << BRIGHT << _("--export") << NORMAL << PARAM << _(" TEMPLATE SETFILE ") << NORMAL << _(" [") << PARAM << _("OUTFILE") << NORMAL << _("]");
           cli << _("\n         \tExport a set using an export template.");
           cli << _("\n         \tIf no output filename is specified, the result is written to stdout.");
@@ -191,7 +170,7 @@ int MSE::OnRun() {
           for (size_t i = 1; i < args.size(); ++i) {
             String const& arg = args[i];
             wxFileName f(arg);
-            if (f.GetExt() == _("mse-set") || f.GetExt() == _("mse") || f.GetExt() == _("set")) {
+            if (f.GetExt() == _("mse-set") || f.GetExt() == _("set")) {
               set = import_set(arg);
             } else if (arg == _("-q") || arg == _("--quiet")) {
               quiet = true;
@@ -254,7 +233,6 @@ int MSE::OnRun() {
 }
 
 int MSE::runGUI() {
-  //check_updates(); // FIXME: Disable update checking on startup. Likely want to either replace the Update Checker or remove it entirely.
   return wxApp::OnRun();
 }
 
@@ -293,10 +271,10 @@ void MSE::HandleEvent(wxEvtHandler *handler, wxEventFunction func, wxEvent& even
 // ----------------------------------------------------------------------------- : Events
 
 int MSE::FilterEvent(wxEvent& ev) {
-  /*if (ev.GetEventType() == wxEVT_MOUSE_CAPTURE_LOST) {
-    return 1;
-  } else {
-    return -1;
-  }*/
+  // MSE Slim: color every top level window (frames and dialogs) when it is shown
+  if (ev.GetEventType() == wxEVT_SHOW && static_cast<wxShowEvent&>(ev).IsShown()) {
+    wxTopLevelWindow* top = wxDynamicCast(ev.GetEventObject(), wxTopLevelWindow);
+    if (top) theme::apply(top);
+  }
   return -1;
 }

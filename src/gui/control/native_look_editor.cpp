@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/control/native_look_editor.hpp>
 #include <gui/value/editor.hpp>
 #include <gui/util.hpp>
@@ -28,7 +29,7 @@ Rotation NativeLookEditor::getRotation() const {
 
 void NativeLookEditor::draw(DC& dc) {
   RotatedDC rdc(dc, getRotation(), QUALITY_LOW);
-  DataViewer::draw(rdc, wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
+  DataViewer::draw(rdc, theme::colour(wxSYS_COLOUR_3DFACE));
 }
 void NativeLookEditor::drawViewer(RotatedDC& dc, ValueViewer& v) {
   if (!shouldDraw(v)) return;
@@ -38,7 +39,7 @@ void NativeLookEditor::drawViewer(RotatedDC& dc, ValueViewer& v) {
     draw_control_box(this, dc.getDC(), dc.getExternalRect().grow(1), current_editor == e, e != nullptr);
     // draw label
     dc.SetFont(*wxNORMAL_FONT);
-    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT));
+    dc.SetTextForeground(theme::colour(wxSYS_COLOUR_BTNTEXT));
     dc.DrawText(v.getField()->caption.get(), RealPoint(margin_left - v.bounding_box.x, 1));
   }
   // draw viewer

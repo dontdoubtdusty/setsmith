@@ -163,16 +163,51 @@ void blur_image_alpha(Image& img) {
   }
 }
 
+// MSE Slim: grow the alpha channel by a radius (in pixels), used for outlined text.
+// Each pixel takes the largest alpha within a disc; the disc edge is anti-aliased.
+static void dilate_alpha(Image& img, double radius) {
+  int w = img.GetWidth(), h = img.GetHeight();
+  Byte* alpha = img.GetAlpha();
+  if (!alpha || w <= 0 || h <= 0) return;
+  vector<Byte> src(alpha, alpha + w * h);
+  struct Offset { int dx, dy, weight; };
+  vector<Offset> offsets;
+  int r = static_cast<int>(ceil(radius));
+  for (int dy = -r ; dy <= r ; ++dy) {
+    for (int dx = -r ; dx <= r ; ++dx) {
+      double cover = radius + 0.5 - sqrt(double(dx * dx + dy * dy));
+      if (cover > 0) offsets.push_back({dx, dy, static_cast<int>(min(1.0, cover) * 256)});
+    }
+  }
+  for (int y = 0 ; y < h ; ++y) {
+    for (int x = 0 ; x < w ; ++x) {
+      int best = 0;
+      for (const Offset& o : offsets) {
+        int nx = x + o.dx, ny = y + o.dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        int v = (src[ny * w + nx] * o.weight) >> 8;
+        if (v > best) {
+          best = v;
+          if (best >= 255) break;
+        }
+      }
+      alpha[y * w + x] = static_cast<Byte>(min(best, 255));
+    }
+  }
+}
+
 // Draw text by first drawing it using a larger font and then downsampling it
 // optionally rotated by an angle
-void draw_resampled_text(DC& dc, const RealPoint& pos, const RealRect& rect, double stretch, Radians angle, Color color, const String& text, int blur_radius, int repeat) {
+void draw_resampled_text(DC& dc, const RealPoint& pos, const RealRect& rect, double stretch, Radians angle, Color color, const String& text, int blur_radius, int repeat, double dilate) {
   // transparent text can be ignored
   if (color.Alpha() == 0) return;
+  // MSE Slim: room around the text for an outline
+  int margin = dilate > 0 ? static_cast<int>(ceil(dilate)) + 1 : 0;
   // enlarge slightly; some fonts are larger then the GetTextExtent tells us (especially italic fonts)
-  int w = static_cast<int>(rect.width) + 3 + 2 * blur_radius, h = static_cast<int>(rect.height) + 1 + 2 * blur_radius;
+  int w = static_cast<int>(rect.width) + 3 + 2 * blur_radius + 2 * margin, h = static_cast<int>(rect.height) + 1 + 2 * blur_radius + 2 * margin;
   // determine sub-pixel position
-  int xi = static_cast<int>(rect.x) - blur_radius / text_scaling,
-      yi = static_cast<int>(rect.y) - blur_radius / text_scaling;
+  int xi = static_cast<int>(rect.x) - blur_radius / text_scaling - margin,
+      yi = static_cast<int>(rect.y) - blur_radius / text_scaling - margin;
   int xsub = static_cast<int>(text_scaling * (pos.x - xi)),
       ysub = static_cast<int>(text_scaling * (pos.y - yi));
   // draw text
@@ -193,6 +228,7 @@ void draw_resampled_text(DC& dc, const RealPoint& pos, const RealRect& rect, dou
   Image img_small(w, h, false);
   fill_image(img_small, color);
   downsample_to_alpha(buffer, img_small);
+  if (dilate > 0) dilate_alpha(img_small, dilate); // MSE Slim: outline
   // multiply alpha
   if (color.Alpha() != 255) {
     set_alpha(img_small, color.Alpha() / 255.);

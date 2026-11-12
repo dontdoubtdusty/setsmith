@@ -128,8 +128,6 @@ private:
   void onFileExportMenu      (wxCommandEvent&);
   void onFileExportImage     (wxCommandEvent&);
   void onFileExportImages    (wxCommandEvent&);
-  void onFileExportApprentice(wxCommandEvent&);
-  void onFileExportMWS       (wxCommandEvent&);
   void onFilePrint           (wxCommandEvent&);
   void onFilePrintPreview    (wxCommandEvent&);
   void onFileReload          (wxCommandEvent&);
@@ -161,8 +159,6 @@ private:
   void onWindowSelect        (wxCommandEvent&);
   // --------------------------------------------------- : Window events - menu - help
   
-  void onHelpIndex           (wxCommandEvent&);
-  void onHelpWebsite         (wxCommandEvent&);
   void onHelpAbout           (wxCommandEvent&);
   
   // --------------------------------------------------- : Window events - other

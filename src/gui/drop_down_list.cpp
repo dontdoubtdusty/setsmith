@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/drop_down_list.hpp>
 #include <gui/util.hpp>
 #include <render/value/viewer.hpp>
@@ -304,7 +305,7 @@ void DropDownList::draw(DC& dc) {
   wxSize cs = dc.GetSize();
   // Draw background & frame
   dc.SetPen  (*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+  dc.SetBrush(theme::colour(wxSYS_COLOUR_WINDOW));
   dc.DrawRectangle(0, 0, cs.x, cs.y);
   dc.SetFont(*wxNORMAL_FONT);
   // Draw items
@@ -322,24 +323,24 @@ void DropDownList::drawItem(DC& dc, int y, size_t item) {
   dc.SetPen(*wxTRANSPARENT_PEN);
   if (item == selected_item) {
     if (itemEnabled(item)) {
-      dc.SetBrush         (wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT));
-      dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT));
+      dc.SetBrush         (theme::colour(wxSYS_COLOUR_HIGHLIGHT));
+      dc.SetTextForeground(theme::colour(wxSYS_COLOUR_HIGHLIGHTTEXT));
     } else {
-      dc.SetBrush         (wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-      dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT));
+      dc.SetBrush         (theme::colour(wxSYS_COLOUR_GRAYTEXT));
+      dc.SetTextForeground(theme::colour(wxSYS_COLOUR_HIGHLIGHTTEXT));
     }
     dc.DrawRectangle(marginW, y, (int)item_size.width, (int)item_size.height);
   } else if (!itemEnabled(item)) {
     // mix between foreground and background
-    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+    dc.SetTextForeground(theme::colour(wxSYS_COLOUR_GRAYTEXT));
   } else if (highlightItem(item)) {
     // mix a color between selection and window
-    dc.SetBrush         (lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
-                              wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW), 0.75));
-    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetBrush         (lerp(theme::colour(wxSYS_COLOUR_HIGHLIGHT),
+                              theme::colour(wxSYS_COLOUR_WINDOW), 0.75));
+    dc.SetTextForeground(theme::colour(wxSYS_COLOUR_WINDOWTEXT));
     dc.DrawRectangle(marginW, y, (int)item_size.width, (int)item_size.height);
   } else {
-    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetTextForeground(theme::colour(wxSYS_COLOUR_WINDOWTEXT));
   }
   // draw text and icon
   drawIcon(dc, marginW, y, item, item == selected_item);  
@@ -350,7 +351,7 @@ void DropDownList::drawItem(DC& dc, int y, size_t item) {
   }
   // draw line below
   if (lineBelow(item) && item != itemCount()) {
-    dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetPen(theme::colour(wxSYS_COLOUR_WINDOWTEXT));
     dc.DrawLine(marginW, y + (int)item_size.height, marginW + (int)item_size.width, y + (int)item_size.height);
   }
 }

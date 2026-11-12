@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <gui/theme.hpp>
 #include <gui/control/gallery_list.hpp>
 #include <gui/util.hpp>
 #include <gfx/gfx.hpp>
@@ -281,12 +282,12 @@ void GalleryList::OnDraw(DC& dc) {
   end = min(end, itemCount());
   // clear background
   dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+  dc.SetBrush(theme::colour(wxSYS_COLOUR_WINDOW));
   dc.DrawRectangle(0, 0, cs.x, cs.y);
   // draw all visible items
-  Color unselected = lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-                        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), 0.1);
-  Color background = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+  Color unselected = lerp(theme::colour(wxSYS_COLOUR_WINDOW),
+                        theme::colour(wxSYS_COLOUR_WINDOWTEXT), 0.1);
+  Color background = theme::colour(wxSYS_COLOUR_WINDOW);
   bool has_focus = always_focused || FindFocus() == this;
   for (size_t i = start ; i < end ; ++i) {
     wxPoint pos = itemPos(i);
@@ -303,9 +304,9 @@ void GalleryList::OnDraw(DC& dc) {
         }
       #else
       Color c = selected ? ( focused
-                                  ? Color(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT))
-                                  : lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-                                         wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), subcolumnActivity(j))
+                                  ? Color(theme::colour(wxSYS_COLOUR_HIGHLIGHT))
+                                  : lerp(theme::colour(wxSYS_COLOUR_WINDOW),
+                                         theme::colour(wxSYS_COLOUR_WINDOWTEXT), subcolumnActivity(j))
                            )
                          : unselected;
       dc.SetPen(c);
