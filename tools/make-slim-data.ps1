@@ -140,22 +140,39 @@ foreach ($info in "card_fields", "card_fields_dfc", "card_fields_tfc") {
 }
 "{0,-48} {1,7}" -f "Setsmith patches (no Masterpiece)", "applied"
 
-# Keep rules and flavor text out of the P/T box corner. The pack's text box runs under the P/T box,
-# so a long last line (often the flavor text) was drawn beneath it. A mask (black = no text) covers that
-# corner whenever the card has a P/T. Etched foil can move its text box with "text chops"; the mask is
-# drawn for the default box, so it is only used when both chops are 0.
-$ptMask = Join-Path $PSScriptRoot "patches\m15-text-pt-mask.png"
-foreach ($p in "magic-m15.mse-style", "magic-m15-showcase-etched-foil.mse-style") {
-  Copy-Item -Force $ptMask (Join-Path (Join-Path $Output $p) "text-pt-mask.png")
+# Keep rules and flavor text out of the P/T box corner. The pack's text boxes run under the P/T box,
+# so a long last line (often the flavor text) was drawn beneath it. pt-mask.png is card sized (two faces
+# wide, for DFCs) and black (no text) over each P/T corner. Each text box crops its own piece of it from
+# its current position and size (card_style.<field>), so frames that move or resize the box with scripts
+# (borderless, DFC, adventure, text chops) still line up. The mask is only used when that face has a P/T.
+# $Show and $Image are script expressions: when to use the mask, and which image. They default to
+# "this face has a P/T" and pt-mask.png.
+function PT-Mask([string]$Field, [string]$Pt, [string]$Show = "card.$Pt != `"`"", [string]$Image = "`"pt-mask.png`"") {
+  $s = "card_style.$Field"
+  # Setsmith's engine runs mask scripts after the box's position and size are final (Style::update).
+  "`t`tmask: { if ($Show) and $s.width >= 1 and $s.height >= 1 then crop(input: $Image, " +
+  "width: to_int($s.width), height: to_int($s.height), offset_x: to_int($s.left), offset_y: to_int($s.top)) else `"`" }`n"
 }
-Patch-File "magic-m15.mse-style" "style" @(
-  @{ Name = "text P/T mask"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tleft: 29\r?\n\t\ttop: 327\r?\n\t\twidth: 314\r?\n\t\theight: 154\r?\n)'
-     With = '$1		mask: { if card.pt != "" then "text-pt-mask.png" else "" }' + "`n" }
-)
-Patch-File "magic-m15-showcase-etched-foil.mse-style" "style" @(
-  @{ Name = "text P/T mask"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tleft: 29\r?\n\t\ttop: \{327-\(-chop_top\(\)\)\}\r?\n\t\twidth: 314\r?\n\t\tbottom: \{481-chop_bot\(\)\}\r?\n)'
-     With = '$1		mask: { if card.pt != "" and chop_top() == 0 and chop_bot() == 0 then "text-pt-mask.png" else "" }' + "`n" }
-)
+$ptFrames = [ordered]@{
+  "magic-m15.mse-style"                      = @(,@("text", "pt"))
+  "magic-m15-showcase-etched-foil.mse-style" = @(,@("text", "pt"))
+  "magic-m15-altered.mse-style"              = @(,@("text", "pt"))
+  "magic-m15-adventure.mse-style"            = @(,@("text", "pt"))
+  # The DFC front can show the back face's P/T just above its own P/T box ("pt 2 copy", the hovering P/T).
+  # pt-mask-hover.png also blocks that spot, and is used whenever the hovering P/T is drawn.
+  "magic-m15-mainframe-dfc.mse-style"        = @(
+    @("text", "pt", 'card.pt != "" or (card.pt_2 != "" and extra_card_style.pt_2_copy.visible)',
+      'if card.pt_2 != "" and extra_card_style.pt_2_copy.visible then "pt-mask-hover.png" else "pt-mask.png"'),
+    @("text 2", "pt_2"))
+}
+foreach ($p in $ptFrames.Keys) {
+  Copy-Item -Force (Join-Path $PSScriptRoot "patches\pt-mask*.png") (Join-Path $Output $p)
+  $edits = foreach ($f in $ptFrames[$p]) {
+    $rest = @($f[1..($f.Count - 1)])
+    @{ Name = "$($f[0]) P/T mask"; Count = 1; Pattern = "(?m)(^\t$($f[0]):\r?\n)"; With = '$1' + (PT-Mask ($f[0] -replace ' ', '_') @rest) }
+  }
+  Patch-File $p "style" @($edits)
+}
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of P/T box)", "applied"
 
 # Remove packages that are no longer on the list.

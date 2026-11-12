@@ -89,4 +89,5 @@ Newest first. Keep each entry short: what changed, what was verified, what's nex
 ## 2026-11-12
 
 - **Text clear of the P/T box (permanent fix):** the text engine checks the mask over each line's full height, and M15 and etched foil get a P/T corner mask when the card has a P/T. Planeswalker and UVS wrapping improved too (two reference hashes regenerated). Verified with check.ps1 and a long-flavor Jensen render.
-- **Next:** extend the P/T mask to borderless (altered), DFC and adventure frames if their text hits the P/T box.
+- **P/T fix on every frame:** borderless, adventure and DFC (both faces, plus the hovering back-face P/T) now use one card-sized mask cropped per text box. Engine: mask scripts run after the box size is final, and masks no longer lose 1 px on the right. All checks pass with no reference changes.
+- **UVS Jensen card:** made as a Character in Claude UVS.mse-set.

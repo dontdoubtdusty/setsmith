@@ -151,7 +151,7 @@ int Style::update(Context& ctx) {
   changed |= bottom .update(ctx) * CHANGE_SIZE;
   changed |= angle  .update(ctx) * CHANGE_SIZE;
   changed |= visible.update(ctx) * CHANGE_OTHER;
-  changed |= mask   .update(ctx) * CHANGE_MASK;
+  // Setsmith: the mask is updated last (below), so a mask script can read this style's final position and size
   // determine automatic_side and attachment of rotation point
   if (automatic_side == AUTO_UNKNOWN) {
     if      (!is_set (right))  automatic_side = (AutomaticSide)(automatic_side | AUTO_RIGHT);
@@ -164,7 +164,13 @@ int Style::update(Context& ctx) {
     else                       automatic_side = (AutomaticSide)(automatic_side | AUTO_TB);
     changed |= CHANGE_SIZE;
   }
-  if (!changed) return CHANGE_NONE;
+  if (changed) updateAutomaticSide();
+  // Setsmith: masks last, see above
+  changed |= mask.update(ctx) * CHANGE_MASK;
+  return changed;
+}
+
+void Style::updateAutomaticSide() {
   // update the automatic_side
   if      (automatic_side & AUTO_LEFT)   left   = right - width;
   else if (automatic_side & AUTO_WIDTH)  width  = right - left;
@@ -188,8 +194,6 @@ int Style::update(Context& ctx) {
   }
   if (width  < 0) width  = -width;
   if (height < 0) height = -height;
-  // done
-  return changed;
 }
 
 bool Style::hasSize() const {

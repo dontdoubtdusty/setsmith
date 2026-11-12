@@ -140,6 +140,8 @@ public:
    *  The result is a combination of StyleChange flags
    */
   virtual int update(Context&);
+  /// Setsmith: work out the side (left, width, bottom, ...) that the template did not give, from the other two
+  void updateAutomaticSide();
   /// Add the given dependency to the dependent_scripts list for the variables this style depends on
   /** Only use for things that need invalidate() */
   virtual void initDependencies(Context&, const Dependency&) const;

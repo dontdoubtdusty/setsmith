@@ -34,6 +34,8 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 |---|---|
 | `src/data/font.*`, `src/util/rotation.cpp`, `src/gfx/resample_text.cpp` | Text outlines: `stroke color/width`, `stroke2 color/width` (alpha dilation) |
 | `src/render/text/viewer.*` | Masked text that is centered or bottom aligned is fitted against the right mask rows; the mask is checked over each line's full height |
+| `src/data/field.cpp` | `Style::update` runs the mask script last, so it can read the field's final position and size (`card_style.<field>.left/top/width/height`) |
+| `src/gfx/mask_image.cpp` | A mask row's right edge is one past its last white pixel (upstream lost 1 px on every masked box) |
 
 ## Branding (Setsmith)
 
@@ -85,4 +87,4 @@ Update checker and installer (`data/installer.*`, the installed-package database
 
 ## Magic data patches
 
-`tools/make-slim-data.ps1` patches the copied M15 pack after copying (no Masterpiece rarity, set code, set symbol or style option) and adds a P/T corner mask to the M15 and etched-foil text boxes. The mask image lives in `tools/patches/`. Each patch must match an exact number of times, or the script stops.
+`tools/make-slim-data.ps1` patches the copied M15 pack after copying (no Masterpiece rarity, set code, set symbol or style option) and adds a P/T corner mask to the text boxes of M15, etched foil, borderless (altered), adventure and DFC (both faces). Each box crops its piece of a card-sized mask, `tools/patches/pt-mask.png` (`pt-mask-hover.png` also blocks the DFC front's hovering back-face P/T). Each patch must match an exact number of times, or the script stops.

@@ -152,7 +152,7 @@ void AlphaMask::loadRowSizes() const {
     rights[y] = 0;
     for (int x = 0 ; x < size.x ; ++x) {
       if (alpha[y * size.x + x] >= 128) { // white enough
-        rights[y] = x;
+        rights[y] = x + 1; // Setsmith: the right edge is past the last white pixel, so a full white row is full width
         if (x < lefts[y]) lefts[y] = x;
       }
     }
