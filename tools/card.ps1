@@ -141,17 +141,30 @@ foreach ($pair in @(@("image", $Art), @("image 2", $Art2))) {
 }
 if ($index -ge 0) { $parts.cards[$index] = $block; "replaced: $name" } else { $parts.cards.Add($block); "added: $name" }
 
-# 5. Render just this card from a copy of the set holding only it.
+# 5. Render this card from a copy of the whole set, so its collector number counts the other cards.
+#    The copy marks the card with a note; the filename template names it "card" and every other card "skip".
+#    (An empty filename for the others is not an option: the exporter hangs on it.)
 $renderDir = Join-Path $work "render"
 Copy-Item $setDir $renderDir -Recurse
-$one = (@($parts.head) + @($block) + @($parts.tail)) -join "`n"
-[IO.File]::WriteAllText((Join-Path $renderDir "set"), $one + "`n", $utf8)
+$marked = New-Object Collections.Generic.List[string]
+$inNotes = $false
+foreach ($l in $block) {
+  if ($l -match "^`tnotes:") { $inNotes = $true; continue }
+  if ($inNotes -and $l -match "^`t`t") { continue }
+  $inNotes = $false; $marked.Add($l)
+}
+$marked.Add("`tnotes: setsmith-render-target")
+$renderCards = @($parts.cards | ForEach-Object { if ([object]::ReferenceEquals($_, $block)) { ,$marked } else { ,$_ } })
+$full = (@($parts.head) + @($renderCards | ForEach-Object { $_ }) + @($parts.tail)) -join "`n"
+[IO.File]::WriteAllText((Join-Path $renderDir "set"), $full + "`n", $utf8)
 $outDir = Join-Path $work "out"
 $zoom = if ($Game -eq "magic") { "2" } else { "1" }
+# Windows PowerShell 5.1 does not escape quotes for native programs, hence the \".
+$template = Join-Path $outDir '{if card.notes == \"setsmith-render-target\" then \"card\" else \"skip\"}.png'
 $oldPath = $env:PATH
 $env:PATH = "C:\Windows\system32;C:\Windows"
 Push-Location (Split-Path $exe)
-$msgs = & $exe --export-images $renderDir (Join-Path $outDir "card.png") --zoom $zoom 2>&1
+$msgs = & $exe --export-images $renderDir $template --zoom $zoom 2>&1
 Pop-Location
 $env:PATH = $oldPath
 $rendered = Join-Path $outDir "card.png"
