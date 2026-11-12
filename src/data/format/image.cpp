@@ -18,6 +18,9 @@
 
 // ----------------------------------------------------------------------------- : Single card export
 
+// Setsmith: zoom set by "--export-images --zoom N"; 0 means use the stylesheet setting
+double export_zoom_override = 0;
+
 void export_image(const SetP& set, const CardP& card, const String& filename) {
   Image img = export_bitmap(set, card).ConvertToImage();
   img.SaveFile(filename);  // can't use Bitmap::saveFile, it wants to know the file type
@@ -55,6 +58,8 @@ Rotation UnzoomedDataViewer::getRotation() const {
   }
 
   double export_zoom = settings.stylesheetSettingsFor(set->stylesheetFor(card)).export_zoom();
+  // Setsmith: the command line can force a zoom without touching the saved settings
+  if (export_zoom_override > 0) export_zoom = export_zoom_override;
   bool use_viewer_rotation = !settings.stylesheetSettingsFor(set->stylesheetFor(card)).card_normal_export();
 
   if (use_viewer_rotation) {

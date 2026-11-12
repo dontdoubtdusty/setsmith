@@ -286,6 +286,7 @@ public static class UvsAssets {
 
     // Character, Backup and Attack pieces
     CharacterArt();
+    ArtBlank();
     BonusBrush();
     RulesMask("rules-mask-col.png", 660, 284, 128, 284);      // Backup / Attack: right column kept free for the stat stack
     RulesMask("rules-mask-col-kw.png", 660, 248, 128, 248);
@@ -363,6 +364,16 @@ public static class UvsAssets {
       }
     }
     Save(b, "shade-character.png");
+  }
+
+  // Backdrop for a card with no art yet: plain charcoal, a little lighter at the top. Without it an empty
+  // art box exports as the editor's checkerboard. Small; the style stretches it.
+  public static void ArtBlank() {
+    var b = NewBmp(50, 70);
+    using (var g = G(b))
+    using (var br = new LinearGradientBrush(new RectangleF(0, 0, 50, 70), C("#3c3c41"), C("#1e1e21"), 90f))
+      g.FillRectangle(br, 0, 0, 50, 70);
+    Save(b, "art-blank.png");
   }
 
   // ---------------------------------------------------------------- Bonus Stage character theme

@@ -27,6 +27,8 @@ card style:
 		height: { if is_char() then 1039 + 2 * bleed_y else 700 }
 		z index: 0
 		mask: { if is_char() then common + "mask-white.png" else common + "art-mask.png" }
+		# A card without art gets a plain dark backdrop instead of the editor's checkerboard.
+		default: { common + "art-blank.png" }
 	# Characters: the cut-out character over the art and its shading, below the text.
 	cutout:
 		left: 0

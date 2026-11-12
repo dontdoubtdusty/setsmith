@@ -86,6 +86,9 @@ FileFormatP mse2_file_format();
 
 // ----------------------------------------------------------------------------- : Other ways to export
 
+/// Setsmith: zoom forced by "--export-images --zoom N" (0 = use the stylesheet setting)
+extern double export_zoom_override;
+
 /// Export images for each card in a set to a list of files
 void export_images(Window* parent, const SetP& set);
 

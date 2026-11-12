@@ -140,6 +140,7 @@ int MSE::OnRun() {
           cli << _("\n\n  ") << BRIGHT << _("--export-images") << NORMAL << PARAM << _(" FILE") << NORMAL << _(" [") << PARAM << _("IMAGE") << NORMAL << _("]");
           cli << _("\n         \tExport the cards in a set to image files,");
           cli << _("\n         \tIMAGE is the same format as for 'export all card images'.");
+          cli << _("\n         \tAdd ") << BRIGHT << _("--zoom N") << NORMAL << _(" to scale the images (default: the stylesheet's export zoom).");
           cli << _("\n\n  ") << BRIGHT << _("--cli") << NORMAL << _(" [")
                              << PARAM << _("FILE") << NORMAL << _("] [")
                              << BRIGHT << _("--quiet") << NORMAL << _("] [")
@@ -187,6 +188,11 @@ int MSE::OnRun() {
             return EXIT_FAILURE;
           }
           SetP set = import_set(args[1]);
+          // Setsmith: optional "--zoom N" anywhere after the file, e.g. 2 for print-size Magic cards
+          for (size_t i = 2; i + 1 < args.size(); ++i) {
+            double z;
+            if (args[i] == _("--zoom") && args[i + 1].ToDouble(&z) && z > 0) export_zoom_override = z;
+          }
           // path
           String out = args.size() >= 3 && !starts_with(args[2], _("--"))
             ? args[2]

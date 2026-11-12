@@ -15,6 +15,7 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 | `tools/make-uvs-assets.ps1` | Draws all UVS frame PNGs (boxes, numbers, shields, labels, icons, Character theme panels) into `templates/` |
 | `tools/extract-uvs-symbols.ps1` | Cuts the 13 resource symbols (circle + attuned) from the How to Play PDF into `sym-*.png` |
 | `tools/install-uvs-fonts.ps1` | Installs `templates/fonts` for the current Windows user (no admin) |
+| `tools/card.ps1`, `.claude/skills/card/SKILL.md` | `/card` skill: adds or replaces one card in `Documents\Setsmith Cards\Claude Magic/UVS.mse-set` and renders its PNG (uses `setsmith.com --export-images --zoom`) |
 
 ## UniVersus template (fork only, spec: `claude/uvs-template.md`)
 
