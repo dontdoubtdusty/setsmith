@@ -111,7 +111,7 @@ Characters have 2 or 3 symbols (98%), one or two traits, and usually 2 abilities
 
 ## 6. What this means for the template (proposed next steps)
 
-1. Replace the flat `num-d-*`, `num-c-*` digit PNGs with the FT01 cuts (default style). Keep `make-uvs-assets.ps1` for the shapes.
+1. Done 2026-11-12: the digits are the FT01 glyphs (`tools/uvs-study/make_digits.py`).
 2. Check shields (zone tab), speed (arrow direction) and damage against the cuts; redraw where they differ.
 3. Per-set number styles as a Set info option, starting with the TK802 squared face (cuts already exist).
 4. Optional: a "balance hint" in `/card` that warns when an attack's speed + damage is far off the table above.

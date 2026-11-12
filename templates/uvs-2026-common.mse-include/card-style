@@ -125,8 +125,8 @@ card style:
 			stroke2 color: { if glyph_id(card.difficulty) == "" then type_color() else rgba(0,0,0,0) }
 			stroke2 width: 5
 	check:
-		left: { bleed_x + 596 }
-		top: { bleed_y + 826 }
+		left: { bleed_x + 587 }
+		top: { bleed_y + 821 }
 		width: 126
 		height: 130
 		z index: 8
@@ -500,37 +500,37 @@ extra card style:
 		visible: { set.watermark == "ip logo" and not is_char() }
 		image: { set_alpha(set.ip_logo, alpha: 0.14) }
 	difficulty rim:
-		left: { bleed_x + 26 }
-		top: { bleed_y + 22 }
-		width: 126
-		height: 130
+		left: { bleed_x + 24 }
+		top: { bleed_y + 10 }
+		width: 130
+		height: 160
 		z index: 6
 		render style: image
 		visible: { not is_char() }
 		image: { number_rim(value: card.difficulty) }
 	difficulty image:
-		left: { bleed_x + 26 }
-		top: { bleed_y + 22 }
-		width: 126
-		height: 130
+		left: { bleed_x + 24 }
+		top: { bleed_y + 10 }
+		width: 130
+		height: 160
 		z index: 7
 		render style: image
 		visible: { not is_char() }
 		image: { number_image(value: card.difficulty, kind: "d") }
 	check rim:
-		left: { bleed_x + 596 }
-		top: { bleed_y + 826 }
-		width: 126
-		height: 130
+		left: { bleed_x + 586.5 }
+		top: { bleed_y + 807.5 }
+		width: 130
+		height: 160
 		z index: 6
 		render style: image
 		visible: { not is_char() }
 		image: { number_rim(value: card.check) }
 	check image:
-		left: { bleed_x + 596 }
-		top: { bleed_y + 826 }
-		width: 126
-		height: 130
+		left: { bleed_x + 586.5 }
+		top: { bleed_y + 807.5 }
+		width: 130
+		height: 160
 		z index: 7
 		render style: image
 		visible: { not is_char() }

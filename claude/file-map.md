@@ -13,9 +13,10 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 | `tools/JelloBoard/`, `Jello Board.bat` | Local task board (copied from birb-box) |
 | `tools/make-icon.ps1` | Generates the Setsmith app icon (`resource/icon/app.ico`) |
 | `tools/uvs-test.mse-set`, `uvs-test.reference.txt` | UniVersus test cards (generated art) and their render hashes |
-| `tools/make-uvs-assets.ps1` | Draws all UVS frame PNGs (boxes, numbers, shields, labels, icons, Character theme panels) into `templates/` |
+| `tools/make-uvs-assets.ps1` | Draws the UVS frame PNGs except the stat digits (boxes, shields, labels, icons, Character theme panels) into `templates/` |
 | `tools/extract-uvs-symbols.ps1` | Cuts the 13 resource symbols (circle + attuned) from the How to Play PDF into `sym-*.png` |
 | `tools/install-uvs-fonts.ps1` | Installs `templates/fonts` for the current Windows user (no admin) |
+| `tools/uvs-study/make_digits.py` | Builds `num-d/c/rim-*.png` from the official FT01 digits (run from the repo root; needs `study/`) |
 | `tools/uvs-study/` | UVS study scripts (MSYS2 Python + Pillow/numpy, run from the repo root): card text scrape, per-set median frames, official badge cuts, statistics. Output goes to git-ignored `study/`; findings in `claude/uvs-study.md` |
 | `tools/card.ps1`, `.claude/skills/card/SKILL.md` | `/card` skill: adds or replaces one card in `Documents\Setsmith Cards\Claude Magic/UVS.mse-set` and renders its PNG (uses `setsmith.com --export-images --zoom`) |
 

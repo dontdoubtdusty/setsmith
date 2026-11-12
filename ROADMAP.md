@@ -39,6 +39,7 @@ community-maintained version that the M15 template pack is built for. That versi
 | 2026-11-12 | UVS Character cards: the shading moved from the card type field to a non-editable extra field. The card type field covered the whole card above the art, so the art could not be clicked or loaded. On Characters the card type is now changed by clicking the printed type in the footer. |
 | 2026-11-12 | Magic text no longer runs under the P/T box. Two parts: (1) the text engine (`TextViewer::lineRight`) now checks the mask over a line's whole height, not just its top row, so a notch that starts partway down a line is seen; (2) `make-slim-data.ps1` gives the M15 and etched-foil text boxes a mask (`tools/patches/m15-text-pt-mask.png`) that blocks the P/T corner when the card has a P/T. A permanent fix instead of shortening flavor text per card. The engine part also improved planeswalker (loyalty box) and UVS (number notch) wrapping, so two reference hashes were regenerated. |
 | 2026-11-12 | P/T fix extended to borderless (altered), adventure and DFC (both faces), and all five frames now share one approach: a card-sized mask (two faces wide), cropped by each text box from its own `card_style.<field>` position and size, so scripted and chopped boxes still line up. Needed two engine fixes: `Style::update` now runs the mask script after the box's final size is worked out (it read a stale height for boxes given a `bottom`), and `AlphaMask` row right edges are one past the last white pixel (upstream made every masked box 1 px narrow, which wrapped a line that fit without a mask). DFC fronts also keep clear of the hovering back-face P/T. |
+| 2026-11-12 | UVS stat digits come from the real FT01 cards instead of being drawn with Figtree. The study showed the real digits are taller (130 units with outline), carry speed-line texture and a white inner line, and sit a few units off where we had them. The images are cut once by `tools/uvs-study/make_digits.py` (it needs the git-ignored scans) and committed; `make-uvs-assets.ps1` no longer draws digits, so rerunning it cannot overwrite them. 9, X and * never appear on real cards, so 9 is the 6 turned over and X/* are Figtree drawn with the real layers. |
 
 ## Phase 0: Baseline
 
@@ -128,7 +129,8 @@ copies 11 packages (180 MB, including the English spell-check dictionary):
 - [ ] Let the GUI load a cutout (today only builder scripts can set it)
 - [ ] Token
 - [x] Study of 3,816 real cards, their text and the How to Play guide: layout, official badge cuts, game rules and balance tables (`claude/uvs-study.md`, scripts in `tools/uvs-study/`, material in git-ignored `study/`)
-- [ ] Swap the flat stat digits for the official FT01 cuts; check shield tabs and speed arrows against the cuts (study section 6)
+- [x] Stat digits are the official FT01 glyphs (`tools/uvs-study/make_digits.py`): real fill, white line and outline for 0-8, 9 from the 6 turned over, X and * drawn to match; check digits get the real blue gradient. Boxes moved to the real glyph spots (130 x 160 at 24,10 and 586.5,807.5)
+- [ ] Check shield tabs and speed arrows against the cuts (study section 6)
 - [ ] Holo mask export for rare cards (the user prints on a proxy site and wants holo on some rares)
 - [ ] Keyword boxes in rules text (`QUEST: 1`, `ECHO`, `STUN: 2`), zone icons
 - [ ] `uvs-2026-arena.mse-style` (landscape); B sides are done (face field, number suffix)

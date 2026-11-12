@@ -264,13 +264,8 @@ public static class UvsAssets {
     };
     foreach (var t in types) { TextBox(t[0], t[1], t[2]); Strip(t[0], t[3]); }
 
-    string glyphs = "0123456789X*";
-    for (int i = 0; i < glyphs.Length; i++) {
-      string g = glyphs.Substring(i, 1);
-      string id = g == "*" ? "star" : g.ToLower();
-      Number(g, id, "d", "#FFE13A", "#FF8F1F", "#E4321E");
-      Number(g, id, "c", "#9BE4FF", "#2FA6EA", "#1559B5");
-    }
+    // The num-d/c/rim digit images are no longer drawn here: they are the official FT01 glyphs,
+    // cut by tools/uvs-study/make_digits.py (needs the git-ignored study/ scans) and committed as PNGs.
 
     Shield("high", "#F04A3C", "#B81F22", 0);
     Shield("mid",  "#FFA43A", "#E4701B", 1);
@@ -509,7 +504,9 @@ public static class UvsAssets {
     using (var b = new Bitmap(64, 64, PixelFormat.Format32bppArgb))
     using (var g = Graphics.FromImage(b)) {
       g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-      g.DrawImage(src, 0, 0, 64, 64);
+      float k = 64f / Math.Max(src.Width, src.Height); // keep the digit's proportions
+      float w = src.Width * k, h = src.Height * k;
+      g.DrawImage(src, (64 - w) / 2, (64 - h) / 2, w, h);
       b.Save(path, ImageFormat.Png);
     }
   }
@@ -518,7 +515,7 @@ public static class UvsAssets {
 
 [UvsAssets]::Run($Out, $Fonts)
 $templates = Split-Path $Out
-foreach ($pkg in "uvs.mse-game", "uvs-2026.mse-style", "uvs-2026-exact.mse-style") {
+foreach ($pkg in "uvs.mse-game", "uvs-2026.mse-style", "uvs-2026-exact.mse-style", "uvs-2026-mpc.mse-style") {
   [UvsAssets]::Icon((Join-Path $templates "$pkg\icon.png"))
 }
 "assets written to $Out"
