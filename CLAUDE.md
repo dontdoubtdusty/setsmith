@@ -39,7 +39,7 @@ Build and test. Run from the repo root in PowerShell.
 - Keep internal MSE identifiers (`.mse-*` extensions, `mse_version`, the `magicseteditor.exe` package ID). Templates depend on them.
 - Write plain comments. Mark changes from upstream with `Setsmith:` so upstream merges stay readable.
 - Reuse existing code (`filter_symbol`, `value_action`, `show_queued_messages`) before writing new code.
-- **Commits:** Claude commits on `main` and pushes to `origin` only when asked. Never push to `upstream`.
+- **Commits:** Claude may commit and push new changes to `origin` (`main`) without asking (standing permission, 2026-11-12). Never push to `upstream`.
 - **Decisions:** record each decision in the decisions table in `ROADMAP.md`, with the why.
 - **After changes:** give a short summary of what changed and what was verified.
 - **Wrap-up at the end of a session:**
