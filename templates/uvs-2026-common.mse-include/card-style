@@ -171,9 +171,9 @@ card style:
 	# Positions measured on SL Bear Bite (Attack), TK802-041 (Backup) and FT01-006 (Character).
 	attack zone:
 		left: { bleed_x + 599 }
-		top: { bleed_y + 601 }
-		width: 116
-		height: 100
+		top: { bleed_y + 589 }
+		width: 136
+		height: 124
 		z index: 7
 		render style: image
 		visible: { card.card_type == "attack" }
@@ -546,13 +546,13 @@ extra card style:
 		image: { recolor_image(common + "shield-rim.png", color: type_color()) }
 	speed rim:
 		left: { bleed_x + 599 }
-		top: { bleed_y + 601 }
-		width: 116
-		height: 100
+		top: { bleed_y + 589 }
+		width: 136
+		height: 124
 		z index: 6
 		render style: image
 		visible: { card.card_type == "attack" }
-		image: { recolor_image(common + "speed-rim.png", color: type_color()) }
+		image: { recolor_image(common + "speed-rim-" + card.attack_zone + ".png", color: type_color()) }
 	damage rim:
 		left: { bleed_x + 591 }
 		top: { bleed_y + 701 }

@@ -42,8 +42,8 @@ Method (`tools/uvs-study/extract_by_value.py`, then `clean.py`): group cards who
 What the cuts show that the template does not do yet:
 - **The stat numbers change typeface per set.** FT01, SF62X and KF0X share a rounded heavy italic (the house default). TK802 uses a squared Tekken face, GDZ01 a splattered one, TMNT01 a graffiti one. So "per-set number fonts" on the roadmap is real, and the default style should copy FT01.
 - The digits are not flat gradients: they carry fine speed lines (difficulty) or highlights (check). Our `num-d-*.png` and `num-c-*.png` are flat. The FT01 cuts can replace them directly, since the template already draws numbers as images.
-- **The shield's `+` tab marks the zone**: `+` in the top slot (high), middle (mid) or bottom slot inside a yellow box (low). Our shields should match the cuts.
-- Speed arrow direction encodes the zone (see the table). Check `speed-*.png` against the cuts.
+- **The shield's `+` tab marks the zone**: the zone's slot (top high, middle mid, bottom low) is filled with the zone color and holds a white `+`. Checked 2026-11-12: our shields already match.
+- Speed arrow direction encodes the zone (see the table). Redrawn 2026-11-12 to match: big zone-colored arrow toward the zone, grey arrowheads on the other two.
 - Known bad cuts: GDZ01 speed circles (only the digit survived), FT01 damage 4 (cleanup kept the wrong piece). Some FT01 cuts carry a scrap of the black ink border; crop before use.
 - Not cut: ability label boxes (they move with the text) and inline icons. The resource symbols already come from the How to Play vector page.
 
@@ -112,6 +112,6 @@ Characters have 2 or 3 symbols (98%), one or two traits, and usually 2 abilities
 ## 6. What this means for the template (proposed next steps)
 
 1. Done 2026-11-12: the digits are the FT01 glyphs (`tools/uvs-study/make_digits.py`).
-2. Check shields (zone tab), speed (arrow direction) and damage against the cuts; redraw where they differ.
+2. Done 2026-11-12: shields matched already; speed badges redrawn with the zone arrow. Damage still differs a little (the print's starburst has uneven points; ours is a regular 12-point star).
 3. Per-set number styles as a Set info option, starting with the TK802 squared face (cuts already exist).
 4. Optional: a "balance hint" in `/card` that warns when an attack's speed + damage is far off the table above.

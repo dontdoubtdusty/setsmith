@@ -75,7 +75,7 @@ The text box tint shows the card type.
   - The outer rim is the type color.
 - **Check** (bottom-right, about x 80-98%, y 80-92%): a big italic number with a light-blue-to-blue gradient and a dark outline, in a rim of the type color.
 - **Attack only:** these two stack on the right edge of the text box, above the check.
-  - **Speed** is in a circle filled with the attack zone color, with an arrow notch pointing out.
+  - **Speed** is in a circle filled with the attack zone color, with three arrows on its right (up-right, right, down-right). The one toward the attack zone is large and in the zone color; the other two are small grey arrowheads.
   - **Damage** is in a yellow starburst.
 - **Backup:** **stamina** in a green heart on the right edge of the text box.
 - **Character:**

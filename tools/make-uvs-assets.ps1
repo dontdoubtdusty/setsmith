@@ -460,25 +460,50 @@ public static class UvsAssets {
     Save(b, "hand-size.png"); Save(rim, "hand-size-rim.png");
   }
 
-  // Speed badge (116 x 100 units): a circle in the attack zone's color with two arrow tips on its right side.
+  // Arrow pointing along `angle` (degrees, 0 = right, negative = up) from (cx, cy): a stem from `from` out,
+  // then a triangular head of length `head` and width `width` whose tip sits at distance `tip`.
+  static GraphicsPath SpeedArrow(float cx, float cy, float angle, float from, float tip, float head, float width, float stem) {
+    float b = tip - head, s = stem / 2, w = width / 2;
+    var p = new GraphicsPath();
+    p.AddPolygon(new[] {
+      new PointF(from, -s), new PointF(b, -s), new PointF(b, -w), new PointF(tip, 0),
+      new PointF(b, w), new PointF(b, s), new PointF(from, s) });
+    var m = new Matrix(); m.Translate(cx, cy); m.Rotate(angle); p.Transform(m);
+    return p;
+  }
+
+  // Speed badge (136 x 124 units, circle centered at 55, 62): a circle in the attack zone's color with three
+  // arrows on its right (up-right, right, down-right). The zone's arrow is large and in the zone color, merged
+  // into the circle; the other two are small grey arrowheads behind it. Matches the FT01 and TK802 prints.
   public static void Speed(string zone, string light, string dark) {
-    var b = NewBmp(116, 100); var rim = NewBmp(116, 100);
-    var circle = new GraphicsPath(); circle.AddEllipse(14, 9, 82, 82);
-    var arrows = new GraphicsPath();
-    arrows.AddPolygon(new[] { new PointF(84, 22), new PointF(108, 12), new PointF(100, 38) });
-    arrows.AddPolygon(new[] { new PointF(84, 78), new PointF(108, 88), new PointF(100, 62) });
+    var b = NewBmp(136, 124); var rim = NewBmp(136, 124);
+    const float cx = 55, cy = 62, r = 41;
+    var circle = new GraphicsPath(); circle.AddEllipse(cx - r, cy - r, 2 * r, 2 * r);
+    float[] angles = { -45f, 0f, 45f };
+    int pick = zone == "high" ? 0 : zone == "mid" ? 1 : 2;
+    var main = SpeedArrow(cx, cy, angles[pick], 20, 72, 26, 28, 13);
+    var greys = new GraphicsPath();
+    for (int i = 0; i < 3; i++) if (i != pick) greys.AddPath(SpeedArrow(cx, cy, angles[i], 30, 66, 19, 19, 6), false);
     using (var g = G(b)) {
-      g.FillPath(Brushes.Black, arrows);
-      g.DrawPath(RoundPen(Color.Black, 6f), circle);
-      using (var br = new LinearGradientBrush(new PointF(0, 9), new PointF(0, 91), C(light), C(dark))) g.FillPath(br, circle);
-      using (var hl = new SolidBrush(Color.FromArgb(50, 255, 255, 255))) g.FillEllipse(hl, 30, 16, 44, 22);
+      // grey arrows sit behind the circle, so only their outer stem and head show
+      var thin = RoundPen(Color.Black, 4f);
+      g.DrawPath(thin, greys);
+      using (var gb = new SolidBrush(C("#5E5E5E"))) g.FillPath(gb, greys);
+      // outline circle and main arrow first, then fill both so they read as one shape
+      var thick = RoundPen(Color.Black, 6f);
+      g.DrawPath(thick, circle); g.DrawPath(thick, main);
+      using (var br = new LinearGradientBrush(new PointF(0, cy - r), new PointF(0, cy + r), C(light), C(dark))) {
+        br.WrapMode = WrapMode.TileFlipXY;
+        g.FillPath(br, circle); g.FillPath(br, main);
+      }
     }
     using (var g = G(rim)) {
+      // rim follows this zone's shape, so each zone has its own rim file
       var w = RoundPen(Color.Red, 14f);
-      g.DrawPath(w, circle); g.FillPath(Brushes.Red, circle); g.DrawPath(w, arrows); g.FillPath(Brushes.Red, arrows);
+      foreach (var p in new[] { circle, main, greys }) { g.DrawPath(w, p); g.FillPath(Brushes.Red, p); }
     }
     Save(b, "speed-" + zone + ".png");
-    if (zone == "high") Save(rim, "speed-rim.png"); else rim.Dispose();
+    Save(rim, "speed-rim-" + zone + ".png");
   }
 
   // Damage badge (116 x 100 units): a yellow starburst.
