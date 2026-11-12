@@ -15,7 +15,7 @@ class SymbolUploadPreview;
 
 // ----------------------------------------------------------------------------- : SymbolUploadWindow
 
-/// Dialog for picking an image as the set symbol (MSE Slim; replaces the symbol editor).
+/// Dialog for picking an image as the set symbol (Setsmith; replaces the symbol editor).
 /** Lists best practices for set symbols, lets the user choose an image file, previews it in each
  *  rarity before it is used, and warns about images that won't print well.
  */

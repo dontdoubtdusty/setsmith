@@ -147,7 +147,7 @@ void WelcomeWindow::onOpenLast(wxCommandEvent&) {
 }
 
 void WelcomeWindow::onIdle(wxIdleEvent&) {
-  // MSE Slim: show errors such as "Error loading set" (there is no Console tab to collect them)
+  // Setsmith: show errors such as "Error loading set" (there is no Console tab to collect them)
   show_queued_messages(this);
 }
 

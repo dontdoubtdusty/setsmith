@@ -171,7 +171,7 @@ void queue_message(MessageType type, String const& msg) {
   if (show_message_box_for_fatal_errors && type == MESSAGE_FATAL_ERROR && wxThread::IsMain()) {
     // bring this to the user's attention right now!
     wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
-    // MSE Slim: already shown. Upstream also queued it for the Console tab; queuing it now would
+    // Setsmith: already shown. Upstream also queued it for the Console tab; queuing it now would
     // show it a second time through show_queued_messages.
     return;
   }

@@ -216,7 +216,7 @@ String user_settings_dir() {
 }
 
 String Settings::settingsFile() {
-  return user_settings_dir() + _("setsmith.config"); // MSE Slim: own file, not mse.config
+  return user_settings_dir() + _("setsmith.config"); // Setsmith: own file, not mse.config
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {

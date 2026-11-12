@@ -395,7 +395,7 @@ void TextViewer::prepareLines(RotatedDC& dc, const String& text, TextStyle& styl
   prepareLinesTryScales(dc, text, style, chars);
   assert(!lines.empty());
 
-  // MSE Slim: the layout checks the mask at each line's position, but vertical alignment only moves the
+  // Setsmith: the layout checks the mask at each line's position, but vertical alignment only moves the
   // lines afterwards. For masked text that isn't top aligned, lay it out again starting where the
   // alignment will put it, so lines are fitted against the mask rows they are drawn on.
   if (style.mask.getFromCache().isLoaded() && style.paragraph_height <= 0 && !(style.alignment() & ALIGN_TOP)) {
@@ -580,7 +580,7 @@ bool TextViewer::prepareLinesAtScale(RotatedDC& dc, const vector<CharInfo>& char
 
   // first line
   Line line;
-  line.top = style.padding_top + mask_top_offset; // MSE Slim: offset for masked, aligned text
+  line.top = style.padding_top + mask_top_offset; // Setsmith: offset for masked, aligned text
   line.margin_left  = elements.paragraphs[0].margin_left;
   line.margin_right = elements.paragraphs[0].margin_right;
   line.alignment = elements.paragraphs[0].alignment;
@@ -765,7 +765,7 @@ void TextViewer::alignLines(RotatedDC& dc, const vector<CharInfo>& chars, const 
   if (style.paragraph_height <= 0) {
     // whole text box alignment
     assert(!lines.empty());
-    double top = lines[0].top - mask_top_offset; // MSE Slim: lines already start at the aligned position
+    double top = lines[0].top - mask_top_offset; // Setsmith: lines already start at the aligned position
     alignParagraph(0, lines.size(), chars, style, RealRect(RealPoint(0,top),s));
   } else {
     // per paragraph alignment

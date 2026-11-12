@@ -38,7 +38,7 @@ bool Font::update(Context& ctx) {
   changes |= underline   .update(ctx);
   changes |= color       .update(ctx);
   changes |= shadow_color.update(ctx);
-  changes |= stroke_color.update(ctx);  // MSE Slim: outlines
+  changes |= stroke_color.update(ctx);  // Setsmith: outlines
   changes |= stroke2_color.update(ctx);
   flags = (flags & ~FONT_BOLD & ~FONT_ITALIC)
         | (weight() == _("bold")   ? FONT_BOLD   : FONT_NORMAL)
@@ -54,7 +54,7 @@ void Font::initDependencies(Context& ctx, const Dependency& dep) const {
   underline   .initDependencies(ctx, dep);
   color       .initDependencies(ctx, dep);
   shadow_color.initDependencies(ctx, dep);
-  stroke_color.initDependencies(ctx, dep);  // MSE Slim: outlines
+  stroke_color.initDependencies(ctx, dep);  // Setsmith: outlines
   stroke2_color.initDependencies(ctx, dep);
 }
 
@@ -74,7 +74,7 @@ FontP Font::make(int add_flags, bool add_underline, String const* other_family, 
   if (add_flags & FONT_SOFT) {
     f->color = f->separator_color;
     f->shadow_displacement = RealSize(0,0); // no shadow
-    f->stroke_width = f->stroke2_width = 0; // MSE Slim: no outline either
+    f->stroke_width = f->stroke2_width = 0; // Setsmith: no outline either
   }
   if (add_underline) {
     f->underline = true;
@@ -142,7 +142,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Font) {
   REFLECT_N("shadow_displacement_y", shadow_displacement.height);
   REFLECT(shadow_color);
   REFLECT(shadow_blur);
-  REFLECT(stroke_color);  // MSE Slim: outlines
+  REFLECT(stroke_color);  // Setsmith: outlines
   REFLECT(stroke_width);
   REFLECT(stroke2_color);
   REFLECT(stroke2_width);

@@ -83,7 +83,7 @@ private:
 };
 
 
-// MSE Slim: the Updates page was removed along with the update checker.
+// Setsmith: the Updates page was removed along with the update checker.
 
 
 // ----------------------------------------------------------------------------- : PreferencesWindow

@@ -77,13 +77,13 @@ void nag_about_ascii_version() {
 int MSE::OnRun() {
   try {
     #ifdef __WXMSW__
-      SetAppName(_("Setsmith")); // MSE Slim: own settings folder, separate from MSE
+      SetAppName(_("Setsmith")); // Setsmith: own settings folder, separate from MSE
     #else
       // Platform friendly appname
       SetAppName(_("setsmith"));
     #endif
     wxInitAllImageHandlers();
-    theme::init(); // MSE Slim: fonts and dark mode, before any window exists
+    theme::init(); // Setsmith: fonts and dark mode, before any window exists
     init_script_variables();
     init_file_formats();
     cli.init();
@@ -105,7 +105,7 @@ int MSE::OnRun() {
         // Find the extension
         wxFileName f(arg.Mid(0,arg.find_last_not_of(_("\\/")) + 1));
         if (f.GetExt() == _("mse-symbol") || arg == _("--symbol-editor")) {
-          // MSE Slim: the symbol editor was removed.
+          // Setsmith: the symbol editor was removed.
           throw Error(_("This build has no symbol editor."));
         } else if (f.GetExt() == _("mse-set") || f.GetExt() == _("set")) {
           // Show the set window
@@ -271,7 +271,7 @@ void MSE::HandleEvent(wxEvtHandler *handler, wxEventFunction func, wxEvent& even
 // ----------------------------------------------------------------------------- : Events
 
 int MSE::FilterEvent(wxEvent& ev) {
-  // MSE Slim: color every top level window (frames and dialogs) when it is shown
+  // Setsmith: color every top level window (frames and dialogs) when it is shown
   if (ev.GetEventType() == wxEVT_SHOW && static_cast<wxShowEvent&>(ev).IsShown()) {
     wxTopLevelWindow* top = wxDynamicCast(ev.GetEventObject(), wxTopLevelWindow);
     if (top) theme::apply(top);

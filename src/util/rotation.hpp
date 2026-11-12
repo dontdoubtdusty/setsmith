@@ -158,7 +158,7 @@ public:
   
   /// Draw text
   void DrawText  (const String& text, const RealPoint& pos,              int blur_radius = 0, int boldness = 1, double stretch = 1.0);
-  /// MSE Slim: dilate > 0 grows the letters by that many units, to draw an outline
+  /// Setsmith: dilate > 0 grows the letters by that many units, to draw an outline
   void DrawText  (const String& text, const RealPoint& pos, Color color, int blur_radius = 0, int boldness = 1, double stretch = 1.0, double dilate = 0);
   /// Draw text with the shadow and color settings of the given font
   void DrawTextWithShadow(const String& text, const Font& font, const RealPoint& pos, double scale = 1.0, double stretch = 1.0);

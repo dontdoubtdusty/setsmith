@@ -465,7 +465,7 @@ Image SymbolToImage::generate(const Options& opt) const {
   // TODO : use opt.width and opt.height?
   Package* package = is_local ? opt.local_package : opt.package;
   if (!package) throw ScriptError(_("Can only load images in a context where an image is expected"));
-  // MSE Slim: an uploaded image symbol, colored for this variation like a vector symbol
+  // Setsmith: an uploaded image symbol, colored for this variation like a vector symbol
   if (!filename.empty() && is_image_symbol_file(filename.toStringForKey())) {
     Image source;
     auto stream = package->openIn(filename);

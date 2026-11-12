@@ -1,6 +1,6 @@
-# Setsmith (MSE Slim): working notes for Claude
+# Setsmith: working notes for Claude
 
-Setsmith is its own card editor, built on Magic Set Editor 2 (credited in the About box and README). The exe is `build/setsmith.exe`, and settings live in `%APPDATA%\Setsmith`. It is based on haganbmj/MagicSetEditor2 2.5.6 (Unofficial) and lives on branch `slim`.
+Setsmith is its own card editor, built on Magic Set Editor 2 (credited in the About box and README). The exe is `build/setsmith.exe`, and settings live in `%APPDATA%\Setsmith`. It is based on haganbmj/MagicSetEditor2 2.5.6 (Unofficial) and lives on branch `main` of github.com/dontdoubtdusty/setsmith (remote `origin`); `upstream` is haganbmj/MagicSetEditor2, kept for pulling fixes.
 - `ROADMAP.md` is the plan and the decisions record (with the why behind each decision). Read it first.
 - `claude/` holds the working docs: the file map, session log, QA plan and the task board.
 
@@ -37,9 +37,9 @@ Build and test. Run from the repo root in PowerShell.
 - Ask multiple-choice questions with at most 4 options, the recommended one first. Push back on ideas that hurt simplicity or speed.
 - Build features fully, then verify them with `check.ps1`. For UI changes, also check the real GUI.
 - Keep internal MSE identifiers (`.mse-*` extensions, `mse_version`, the `magicseteditor.exe` package ID). Templates depend on them.
-- Write plain comments. Mark fork changes with `MSE Slim:` so upstream merges stay readable.
+- Write plain comments. Mark changes from upstream with `Setsmith:` so upstream merges stay readable.
 - Reuse existing code (`filter_symbol`, `value_action`, `show_queued_messages`) before writing new code.
-- **Commits:** Claude commits on `slim` only when asked. Claude never pushes; the fork is local only.
+- **Commits:** Claude commits on `main` and pushes to `origin` only when asked. Never push to `upstream`.
 - **Decisions:** record each decision in the decisions table in `ROADMAP.md`, with the why.
 - **After changes:** give a short summary of what changed and what was verified.
 - **Wrap-up at the end of a session:**

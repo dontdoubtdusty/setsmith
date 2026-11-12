@@ -5,7 +5,7 @@
 
 #pragma once
 
-// MSE Slim: the look of the app. One place for the palette, so a color is changed once.
+// Setsmith: the look of the app. One place for the palette, so a color is changed once.
 // No animation and no custom drawing loops: colors are set once per window.
 
 #include <util/prec.hpp>

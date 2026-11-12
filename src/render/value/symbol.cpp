@@ -27,7 +27,7 @@ void SymbolValueViewer::draw(RotatedDC& dc) {
   if (symbols.empty() && !value().filename.empty()) {
     try {
       if (is_image_symbol_file(value().filename.toStringForKey())) {
-        // MSE Slim: uploaded image symbol, one preview per variation (common, uncommon, ...)
+        // Setsmith: uploaded image symbol, one preview per variation (common, uncommon, ...)
         Image source;
         auto stream = getLocalPackage().openIn(value().filename);
         image_load_file(source, *stream);

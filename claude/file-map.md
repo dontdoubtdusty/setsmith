@@ -1,6 +1,6 @@
 # File map
 
-The places where MSE Slim differs from upstream. Use `git diff upstream/master..slim --stat` for the full list.
+The places where Setsmith differs from upstream. Use `git diff upstream/master..main --stat` for the full list.
 
 ## Tools (fork only)
 

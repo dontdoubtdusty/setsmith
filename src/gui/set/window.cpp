@@ -136,7 +136,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   addPanel(menuWindow, tabBar, new CardsPanel     (this, wxID_ANY), 0, _("window_cards"),      _("cards tab"));
   addPanel(menuWindow, tabBar, new StylePanel     (this, wxID_ANY), 1, _("window_style"),      _("style tab"));
   addPanel(menuWindow, tabBar, new SetInfoPanel   (this, wxID_ANY), 2, _("window_set_info"),   _("set info tab"));
-  // MSE Slim: the Keywords, Statistics, Random Pack and Console panels were removed.
+  // Setsmith: the Keywords, Statistics, Random Pack and Console panels were removed.
   // Template errors that the Console used to list now show in a message box (see onIdle).
   selectPanel(ID_WINDOW_CARDS); // select cards panel
   

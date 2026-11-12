@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Build MSE Slim, then check that nothing broke.
+  Build Setsmith, then check that nothing broke.
 
 .DESCRIPTION
   1. Builds with MSYS2 (UCRT64) and Ninja.

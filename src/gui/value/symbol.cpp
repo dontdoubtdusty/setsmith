@@ -14,7 +14,7 @@
 
 // ----------------------------------------------------------------------------- : SymbolValueEditor
 
-// MSE Slim: an Upload button (and double click) open SymbolUploadWindow instead of the symbol editor.
+// Setsmith: an Upload button (and double click) open SymbolUploadWindow instead of the symbol editor.
 IMPLEMENT_VALUE_EDITOR(Symbol)
   , button_down(false)
 {

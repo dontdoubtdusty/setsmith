@@ -15,7 +15,7 @@
 // ----------------------------------------------------------------------------- : SymbolValueEditor
 
 /// Shows a SymbolValue (such as the set symbol) and lets the user upload an image for it.
-/** MSE Slim: the vector symbol editor was removed. An uploaded image is stored in the set as a
+/** Setsmith: the vector symbol editor was removed. An uploaded image is stored in the set as a
  *  .png and colored per rarity (render_image_symbol). Older vector symbols still show and render.
  */
 class SymbolValueEditor : public SymbolValueViewer, public ValueEditor {

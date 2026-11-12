@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 
 static class JelloServer
 {
-    // Default 5178 (Birb Box's board). Pass --port so two projects' boards can run at once; MSE Slim uses 5179.
+    // Default 5178 (Birb Box's board). Pass --port so two projects' boards can run at once; Setsmith uses 5179.
     static int Port = 5178;
     static string Url => $"http://localhost:{Port}/";
     static readonly Regex IdPattern = new("^[A-Za-z0-9_-]{1,60}$");

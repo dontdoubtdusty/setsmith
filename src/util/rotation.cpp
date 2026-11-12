@@ -189,7 +189,7 @@ void RotatedDC::DrawText(const String& text, const RealPoint& pos, int blur_radi
 void RotatedDC::DrawText(const String& text, const RealPoint& pos, Color color, int blur_radius, int boldness, double stretch_, double dilate) {
   if (text.empty()) return;
   if (color.Alpha() == 0) return;
-  if (dilate > 0 && quality < QUALITY_AA) return; // MSE Slim: outlines are only drawn in anti-aliased mode
+  if (dilate > 0 && quality < QUALITY_AA) return; // Setsmith: outlines are only drawn in anti-aliased mode
   if (quality >= QUALITY_AA) {
     RealRect r(pos, GetTextExtent(text));
     RealRect r_ext = trRectToBB(r);
@@ -220,7 +220,7 @@ void RotatedDC::DrawText(const String& text, const RealPoint& pos, Color color, 
 }
 
 void RotatedDC::DrawTextWithShadow(const String& text, const Font& font, const RealPoint& pos, double scale, double stretch) {
-  // MSE Slim: optional outlines. The shadow takes the shape of the outlined text.
+  // Setsmith: optional outlines. The shadow takes the shape of the outlined text.
   double inner = font.stroke_width > 0 ? font.stroke_width * scale : 0;
   double outer = inner + (font.stroke2_width > 0 ? font.stroke2_width * scale : 0);
   DrawText(text, pos + font.shadow_displacement * scale, font.shadow_color, font.shadow_blur * scale, 1, stretch, font.hasShadow() ? outer : 0);

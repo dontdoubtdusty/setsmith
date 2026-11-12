@@ -59,7 +59,7 @@ enum MenuID {
   ID_WINDOW_CARDS = ID_WINDOW_MIN + 0,
   ID_WINDOW_SET = ID_WINDOW_MIN + 1,
   ID_WINDOW_STYLE = ID_WINDOW_MIN + 2,
-  // MSE Slim: Keywords, Statistics and Random Pack panels removed.
+  // Setsmith: Keywords, Statistics and Random Pack panels removed.
   ID_WINDOW_MAX = 220,
 
   // Help menu (MainWindow)

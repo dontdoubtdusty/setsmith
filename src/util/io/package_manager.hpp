@@ -15,7 +15,7 @@
 DECLARE_POINTER_TYPE(Packaged);
 class PackageDependency;
 
-// MSE Slim: the installer, the installed-package database and the update data were removed.
+// Setsmith: the installer, the installed-package database and the update data were removed.
 // Packages are plain folders in the data directory next to the exe.
 
 // ----------------------------------------------------------------------------- : PackageDirectory

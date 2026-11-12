@@ -34,7 +34,7 @@ void AboutWindow::onPaint(wxPaintEvent& ev) {
   draw(dc);
 }
 
-// MSE Slim: Setsmith is built on Magic Set Editor 2. The people who wrote it are credited here.
+// Setsmith: Setsmith is built on Magic Set Editor 2. The people who wrote it are credited here.
 static const char* MSE_AUTHORS[] = {"Twan van Laarhoven (twanvl)", "Sean Hunt (coppro)", "Alissa Rao (Lymia)", "haganbmj", "CaiCai (247321453)"};
 
 void AboutWindow::draw(DC& dc) {

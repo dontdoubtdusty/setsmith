@@ -1,4 +1,4 @@
-# MSE Slim: cuts the 13 official UniVersus resource symbols out of the How to Play guide (page 21, vector art),
+# Setsmith: cuts the 13 official UniVersus resource symbols out of the How to Play guide (page 21, vector art),
 # for private use only. Writes sym-<name>.png (circle) and sym-at_<name>.png (attuned, rounded square) into the
 # UVS common include, 164 px = 41 card units (4x).
 #

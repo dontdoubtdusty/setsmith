@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Builds the slim template folder for MSE Slim.
+  Builds the slim template folder for Setsmith.
 
 .DESCRIPTION
   Starts from the frames we keep, follows each package's declared "depends on" entries,

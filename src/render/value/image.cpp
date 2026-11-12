@@ -52,7 +52,7 @@ void ImageValueViewer::draw(RotatedDC& dc) {
       }
     }
     // checkerboard placeholder
-    // MSE Slim: not for non-editable fields: an optional layer the user never fills in (e.g. the UVS
+    // Setsmith: not for non-editable fields: an optional layer the user never fills in (e.g. the UVS
     // character cutout, drawn over the whole card) stays empty instead of covering the card with a checkerboard.
     if (!image.Ok() && !bitmap.Ok() && style().width > 40 && field().editable) {
       // placeholder bitmap

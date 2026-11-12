@@ -14,7 +14,7 @@
 #include <wx/dcbuffer.h>
 #include <wx/filename.h>
 
-// MSE Slim: the upload dialog that replaces the symbol editor.
+// Setsmith: the upload dialog that replaces the symbol editor.
 
 namespace {
   const int  ID_CHOOSE    = wxID_HIGHEST + 1;

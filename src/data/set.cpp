@@ -210,7 +210,7 @@ IMPLEMENT_REFLECTION(Set) {
     REFLECT(pack_types);
   }
   reflect_set_info_get_member(handler,data);
-  // MSE Slim: version control support was removed. Old sets still have this key, so read it and ignore it.
+  // Setsmith: version control support was removed. Old sets still have this key, so read it and ignore it.
   REFLECT_IF_READING { IgnoredVersionControl ignored; REFLECT_N("version_control", ignored); }
   REFLECT(apprentice_code);
 }

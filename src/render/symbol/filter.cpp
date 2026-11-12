@@ -54,7 +54,7 @@ Image render_symbol(const SymbolP& symbol, const SymbolFilter& filter, double bo
   return i;
 }
 
-// ----------------------------------------------------------------------------- : Image symbols (MSE Slim)
+// ----------------------------------------------------------------------------- : Image symbols (Setsmith)
 
 bool is_image_symbol_file(const String& filename) {
   return filename.Lower().EndsWith(_(".png"));

@@ -27,7 +27,7 @@ namespace theme {
 
 // ----------------------------------------------------------------------------- : Palette
 
-// MSE Slim: charcoal with a gold accent (the gold of the Setsmith diamond).
+// Setsmith: charcoal with a gold accent (the gold of the Setsmith diamond).
 wxColour backdrop()    { return wxColour(0x16, 0x17, 0x1a); }
 wxColour panel()       { return wxColour(0x26, 0x28, 0x2d); }
 wxColour field()       { return wxColour(0x1d, 0x1f, 0x23); }

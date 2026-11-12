@@ -26,7 +26,7 @@ void filter_symbol(Image& symbol, const SymbolFilter& filter);
 /// Render a Symbol to an Image and filter it
 Image render_symbol(const SymbolP& symbol, const SymbolFilter& filter, double border_radius = 0.05, int width = 100, int height = 100, bool edit_hints = false, bool allow_smaller = false);
 
-// MSE Slim: uploaded image symbols (replace the removed symbol editor).
+// Setsmith: uploaded image symbols (replace the removed symbol editor).
 
 /// Is this symbol file an uploaded image (a .png in the set) rather than a vector .mse-symbol?
 bool is_image_symbol_file(const String& filename);

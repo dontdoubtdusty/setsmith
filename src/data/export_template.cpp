@@ -62,7 +62,7 @@ ExportInfo::ExportInfo() : allow_writes_outside(false) {}
 // ----------------------------------------------------------------------------- : Exporting a set
 
 // Used by the --export command line option.
-// MSE Slim: moved here from the removed gui/html_export_window.cpp, unchanged.
+// Setsmith: moved here from the removed gui/html_export_window.cpp, unchanged.
 ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTemplateP const& exp, String const& outname) {
   wxBusyCursor wait;
   // export info for script
