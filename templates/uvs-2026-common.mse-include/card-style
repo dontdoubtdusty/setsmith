@@ -193,8 +193,8 @@ card style:
 			stroke color: black
 			stroke width: 3.5
 	damage:
-		left: { bleed_x + 609 }
-		top: { bleed_y + 726 }
+		left: { bleed_x + 615 }
+		top: { bleed_y + 731 }
 		width: 80
 		height: 50
 		z index: 9
@@ -554,19 +554,19 @@ extra card style:
 		visible: { card.card_type == "attack" }
 		image: { recolor_image(common + "speed-rim-" + card.attack_zone + ".png", color: type_color()) }
 	damage rim:
-		left: { bleed_x + 591 }
-		top: { bleed_y + 701 }
-		width: 116
-		height: 100
+		left: { bleed_x + 593 }
+		top: { bleed_y + 698 }
+		width: 124
+		height: 116
 		z index: 6
 		render style: image
 		visible: { card.card_type == "attack" }
 		image: { recolor_image(common + "damage-rim.png", color: type_color()) }
 	damage image:
-		left: { bleed_x + 591 }
-		top: { bleed_y + 701 }
-		width: 116
-		height: 100
+		left: { bleed_x + 593 }
+		top: { bleed_y + 698 }
+		width: 124
+		height: 116
 		z index: 7
 		render style: image
 		visible: { card.card_type == "attack" }

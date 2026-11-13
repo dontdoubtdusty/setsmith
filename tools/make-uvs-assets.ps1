@@ -506,18 +506,48 @@ public static class UvsAssets {
     Save(rim, "speed-rim-" + zone + ".png");
   }
 
-  // Damage badge (116 x 100 units): a yellow starburst.
-  public static void Damage() {
-    var b = NewBmp(116, 100); var rim = NewBmp(116, 100);
-    var star = new GraphicsPath(); int n = 12; var pts = new PointF[n * 2];
-    for (int i = 0; i < n * 2; i++) {
-      double a = Math.PI * i / n - Math.PI / 2; float r = (i % 2 == 0) ? 46f : 31f;
-      pts[i] = new PointF(58 + (float)Math.Cos(a) * r * 1.05f, 50 + (float)Math.Sin(a) * r);
+  // Moves every corner of a closed polygon inward by d (each edge shifted along its normal, neighbours intersected).
+  static PointF[] Inset(PointF[] p, float d) {
+    int n = p.Length; double area = 0;
+    for (int i = 0; i < n; i++) { var a = p[i]; var c = p[(i + 1) % n]; area += a.X * c.Y - c.X * a.Y; }
+    float side = area > 0 ? 1 : -1;
+    var lines = new double[n, 4];
+    for (int i = 0; i < n; i++) {
+      var a = p[i]; var c = p[(i + 1) % n];
+      double dx = c.X - a.X, dy = c.Y - a.Y, len = Math.Sqrt(dx * dx + dy * dy);
+      double nx = -dy / len * side, ny = dx / len * side;
+      lines[i, 0] = a.X + nx * d; lines[i, 1] = a.Y + ny * d; lines[i, 2] = dx; lines[i, 3] = dy;
     }
-    star.AddPolygon(pts);
+    var o = new PointF[n];
+    for (int i = 0; i < n; i++) {
+      int j = (i + n - 1) % n;
+      double cross = lines[j, 2] * lines[i, 3] - lines[j, 3] * lines[i, 2];
+      double t = ((lines[i, 0] - lines[j, 0]) * lines[i, 3] - (lines[i, 1] - lines[j, 1]) * lines[i, 2]) / cross;
+      o[i] = new PointF((float)(lines[j, 0] + t * lines[j, 2]), (float)(lines[j, 1] + t * lines[j, 3]));
+    }
+    return o;
+  }
+
+  // Damage badge (124 x 116 units, number centered at 62, 58): the uneven 11-point starburst of the print,
+  // traced from FT01 cards 016, 017, 019 and 020. Each pair is (angle in degrees, 0 = right, clockwise;
+  // radius to the outer edge of the black outline), measured from 2 units left of and 0.4 below the number center.
+  public static void Damage() {
+    var b = NewBmp(124, 116); var rim = NewBmp(124, 116);
+    float[] traced = {
+      15.0f, 48.2f,  31.5f, 34.1f,  49.5f, 61.4f,  67.5f, 37.2f,  85.0f, 49.7f,  105.5f, 33.2f,
+      128.0f, 56.6f, 148.5f, 36.8f, 162.5f, 52.3f, 178.5f, 28.5f, 191.5f, 52.6f, 211.0f, 34.6f,
+      216.5f, 46.1f, 224.0f, 40.0f, 233.5f, 59.4f, 254.0f, 33.2f, 273.0f, 50.1f, 290.0f, 36.2f,
+      308.5f, 59.4f, 325.5f, 38.1f, 340.5f, 54.6f, 358.5f, 28.5f };
+    var pts = new PointF[traced.Length / 2];
+    for (int i = 0; i < pts.Length; i++) {
+      double a = traced[2 * i] * Math.PI / 180; float r = traced[2 * i + 1];
+      pts[i] = new PointF(62 - 2 + (float)Math.Cos(a) * r, 58 + 0.4f + (float)Math.Sin(a) * r);
+    }
+    // the outline pen is 6 wide and centered on the path, so pull the path in by 3 to keep the traced outer edge
+    var star = new GraphicsPath(); star.AddPolygon(Inset(pts, 3f));
     using (var g = G(b)) {
       var pen = new Pen(Color.Black, 6f); pen.LineJoin = LineJoin.Miter; g.DrawPath(pen, star);
-      using (var br = new LinearGradientBrush(new PointF(0, 4), new PointF(0, 96), C("#FFF07A"), C("#F5A81C"))) g.FillPath(br, star);
+      using (var br = new LinearGradientBrush(new PointF(0, 6), new PointF(0, 110), C("#FFF07A"), C("#F5A81C"))) g.FillPath(br, star);
     }
     using (var g = G(rim)) { var w = new Pen(Color.Red, 14f); w.LineJoin = LineJoin.Round; g.DrawPath(w, star); g.FillPath(Brushes.Red, star); }
     Save(b, "damage.png"); Save(rim, "damage-rim.png");

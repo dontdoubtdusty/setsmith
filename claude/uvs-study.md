@@ -112,6 +112,6 @@ Characters have 2 or 3 symbols (98%), one or two traits, and usually 2 abilities
 ## 6. What this means for the template (proposed next steps)
 
 1. Done 2026-11-12: the digits are the FT01 glyphs (`tools/uvs-study/make_digits.py`).
-2. Done 2026-11-12: shields matched already; speed badges redrawn with the zone arrow. Damage still differs a little (the print's starburst has uneven points; ours is a regular 12-point star).
+2. Done 2026-11-12: shields matched already; speed badges redrawn with the zone arrow. Damage starburst redrawn the same day: the print's uneven 11 points, traced from four FT01 cards, with the number moved to the print's spot (center 655, 756).
 3. Per-set number styles as a Set info option, starting with the TK802 squared face (cuts already exist).
 4. Optional: a "balance hint" in `/card` that warns when an attack's speed + damage is far off the table above.
