@@ -102,6 +102,58 @@ public static class M15Hd {
         return o;
     }
 
+    // Repaints the crown with the frame trim's crisp texture. The kit's crowns are soft upscales with big
+    // light blotches (one smears the right end), while the trim has the printed grain. The trim's side
+    // strip (columns sx..sx+sw, rows sy..sy+sh) is laid on its side in overlapping bands across the crown;
+    // the crown keeps only its fine shading (brightness against a small blur: the bevel and edge lines).
+    public static void Retexture(byte[] crown, byte[] trim, int w, int h, int sx, int sw, int sy, int sh) {
+        int step = sw - 4;                                   // 4 px overlap between bands, cross-faded
+        var lum = new double[w * h];
+        for (int i = 0; i < lum.Length; i++)
+            lum[i] = (0.299 * crown[i * 4 + 2] + 0.587 * crown[i * 4 + 1] + 0.114 * crown[i * 4]) * (crown[i * 4 + 3] / 255.0);
+        var alpha = new double[w * h];
+        for (int i = 0; i < alpha.Length; i++) alpha[i] = crown[i * 4 + 3] / 255.0;
+        var bl = BoxBlur(lum, w, h, 5); var ba = BoxBlur(alpha, w, h, 5);
+        for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++) {
+                int i = y * w + x;
+                if (crown[i * 4 + 3] == 0) continue;
+                double[] col = new double[3]; double wsum = 0;
+                int k0 = Math.Max(0, (y - sw) / step);
+                for (int k = k0; k <= y / step; k++) {
+                    int v = y - k * step; if (v < 0 || v >= sw) continue;
+                    double wt = Math.Min(1.0, Math.Min(v + 1, sw - v) / 4.0);
+                    int row = sy + ((x + k * 211) % sh);         // shift each band so the grain does not repeat
+                    int j = (row * w + sx + v) * 4;
+                    for (int c = 0; c < 3; c++) col[c] += trim[j + c] * wt;
+                    wsum += wt;
+                }
+                // Where the trim itself lies under the crown (the pillars beside the art), use it directly.
+                double ta = trim[i * 4 + 3] / 255.0;
+                for (int c = 0; c < 3; c++) col[c] = col[c] / wsum * (1 - ta) + trim[i * 4 + c] * ta;
+                wsum = 1;
+                double mean = ba[i] > 0 ? bl[i] / ba[i] : 0;
+                double f = mean > 1 ? Math.Max(0.45, Math.Min(1.6, lum[i] / alpha[i] / mean)) : 1;
+                for (int c = 0; c < 3; c++) crown[i * 4 + c] = (byte)Math.Max(0, Math.Min(255, Math.Round(col[c] / wsum * f)));
+            }
+    }
+
+    // Box blur of a value map with radius r (separable, edges clamped).
+    static double[] BoxBlur(double[] v, int w, int h, int r) {
+        var t = new double[v.Length]; var o = new double[v.Length];
+        for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++) {
+                double s = 0; for (int d = -r; d <= r; d++) s += v[y * w + Math.Max(0, Math.Min(w - 1, x + d))];
+                t[y * w + x] = s / (2 * r + 1);
+            }
+        for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++) {
+                double s = 0; for (int d = -r; d <= r; d++) s += t[Math.Max(0, Math.Min(h - 1, y + d)) * w + x];
+                o[y * w + x] = s / (2 * r + 1);
+            }
+        return o;
+    }
+
     public static void Save(byte[] px, int w, int h, string path) {
         using (var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb)) {
             var d = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
@@ -166,6 +218,8 @@ $nameLines = "nameline_left\trim", "nameline_right\trim"
 $typeLines = "typeline_left\trim", "typeline_right\trim"
 
 $colors = "w", "u", "b", "r", "g", "a", "c", "m"
+# The thin black line printed cards have around the name and type boxes (a 3 px ring mask per box).
+$boxLines = $src; $boxRing = "744x1039\m15\normal\base\border_mask.png"
 
 # ---- Card frames
 $cards = Join-Path $dst "cards\744 m15 hd"
@@ -181,6 +235,7 @@ foreach ($land in $false, $true) {
     $layers += "$(L 'nameboxes')\base\bright\${c}namebox.png",
                "$(L 'typeboxes')\base\bright\${c}typebox.png",
                "$(L 'textboxes')\base\bright\${text}textbox.png",
+               "fill:$boxLines\nameboxes\$boxRing", "fill:$boxLines\typeboxes\$boxRing",
                "fill:$(L 'borders')\base.png"
     $name = if ($land) { "${c}lcard.png" } else { "${c}card.png" }
     Stack (Join-Path $cards $name) $layers
@@ -220,11 +275,19 @@ New-Item -ItemType Directory -Force $crowns | Out-Null
 foreach ($c in $colors) {
   # Only the name lines' dark shadow, no colored line: on printed legends the crown meets the name box
   # with a thin dark edge.
-  $layers = @("$(L 'crowns')\base\bright\shadow.png", "$(L 'crowns')\base\bright\${c}crown.png")
+  $px = [M15Hd]::Load((Need "$(L 'crowns')\base\bright\${c}crown.png"), $W, $H)
+  $tx = [M15Hd]::Load((Need "$(L 'trims')\base\bright\${c}background.png"), $W, $H)
+  [M15Hd]::Retexture($px, $tx, $W, $H, 31, 14, 120, 720)   # left trim strip: x 31-44, y 120-839
+  New-Item -ItemType Directory -Force "$tmp\crowns" | Out-Null
+  [M15Hd]::Save($px, $W, $H, "$tmp\crowns\${c}crown.png")
+  $layers = @("$(L 'crowns')\base\bright\shadow.png", "$tmp\crowns\${c}crown.png")
   $layers += foreach ($p in $nameLines) { "fill:$(L 'pinlines')\$p\base_shadow.png" }
   $out = Join-Path $crowns "${c}crown.png"
   Stack $out $layers
-  $px = [M15Hd]::Load($out, $W, $H); [M15Hd]::Cut($px, $name); [M15Hd]::Save($px, $W, $H, $out)
+  $px = [M15Hd]::Load($out, $W, $H); [M15Hd]::Cut($px, $name)
+  # The crown covers the frame's name box outline, so draw it again on top.
+  [M15Hd]::Over($px, [M15Hd]::Solid($W, $H, 0, 0, 0), [M15Hd]::Load("$boxLines\nameboxes\$boxRing", $W, $H))
+  [M15Hd]::Save($px, $W, $H, $out)
 }
 foreach ($m in "artifact", "hybrid", "multicolor") {
   Enlarge "$src\crowns\375\${m}_blend_crown.png" (Join-Path $crowns "${m}_blend_crown.png")

@@ -139,6 +139,8 @@ Patch-File "magic-m15-altered.mse-style" "style" @(
   @{ Name = "hd card suffix"; Count = 1; Pattern = 'card: "card\.jpg"'; With = 'card: "card.png"' }
   @{ Name = "hd pt folder";   Count = 1; Pattern = 'pt: "/magic-modules\.mse-include/pts/375 m15/"'; With = 'pt: "/magic-modules.mse-include/pts/744 m15 hd/"' }
   @{ Name = "hd crowns";      Count = 1; Pattern = 'crown: "/magic-modules\.mse-include/crowns/375/"'; With = 'crown: "/magic-modules.mse-include/crowns/744 m15 hd/"' }
+  # mainframe_card_base (applied last, via harder_script) names the plain frame directly, bypassing template_prefix.
+  @{ Name = "hd standard frame"; Count = 1; Pattern = 'standard: "/magic-modules\.mse-include/cards/375 m15 simple/" \+ (\(if land and input == "a" then "cl" else if land then input \+ "l" else input\)) \+ "card\.jpg"'; With = 'standard: "/magic-modules.mse-include/cards/744 m15 hd/" + $1 + "card.png"' }
   @{ Name = "hd crown folder"; Count = 1; Pattern = '"/magic-modules\.mse-include/crowns/375/" \+ \(if is_planeshifted'; With = '"/magic-modules.mse-include/crowns/744 m15 hd/" + (if is_planeshifted' }
 )
 Patch-File "magic-modules.mse-include" "rarities/choice_images" @(
