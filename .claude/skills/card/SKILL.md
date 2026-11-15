@@ -58,7 +58,7 @@ Frames (set with a `stylesheet:` line; leave it out for plain M15):
 
 Colors: `white`, `blue`, `black`, `red`, `green` (also for `indicator` / `card color` on the front).
 
-Legend crown: a legendary card on M15 Altered, Adventure or DFC can take the smooth borderless crown (the look of the Spock card the user matches) with `has styling: true`, `styling data:`, then `	legend crown: borderless`. Plain M15 has no crown option. Use it when the user asks for "the Spock frame" or the borderless crown.
+Legend crown: a legendary card on M15 Altered, Adventure or DFC can take the smooth borderless crown (the look of the Spock card the user matches) with `has styling: true`, `styling data:`, then `	legend crown: borderless`. Plain M15 has no crown option. Use it when the user asks for "the Spock frame" or the borderless crown. Every gold (multicolored) card uses this look: `card.ps1` adds it on its own when the card has no `stylesheet:` line and two or more colors in its cost (hybrid pairs don't count), so don't write those lines for gold cards.
 
 Planeswalkers: `stylesheet: m15-mainframe-planeswalker`, `loyalty: 4`, then each ability as `loyalty cost 1: +1` with `level 1 text: ...`, `loyalty cost 2: -2` with `level 2 text: ...`, and so on (up to 4 abilities). A static ability goes in a `level N text` with no `loyalty cost N`.
 

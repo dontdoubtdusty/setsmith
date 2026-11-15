@@ -125,6 +125,19 @@ foreach ($l in ([IO.File]::ReadAllText((Resolve-Path $CardFile)) -replace "`r", 
 $name = Get-Field $block "name"
 if (-not $name) { throw "The card file has no 'name:' line." }
 
+# Gold cards (two or more colors in the cost, hybrid pairs not counted) on the default frame get the
+# Spock look: M15 Altered, plus the smooth borderless crown when legendary.
+if ($Game -eq "magic" -and -not (Get-Field $block "stylesheet")) {
+  $cost = (Get-Field $block "casting cost").ToUpper() -replace "[WUBRG]/[WUBRG]", ""
+  $colors = @([regex]::Matches($cost, "[WUBRG]") | ForEach-Object { $_.Value } | Select-Object -Unique)
+  if ($colors.Count -ge 2) {
+    $block.Add("`tstylesheet: m15-altered")
+    if ((Get-Field $block "super type") -match "Legendary" -and -not (Get-Field $block "has styling")) {
+      $block.Add("`thas styling: true"); $block.Add("`tstyling data:"); $block.Add("`t`tlegend crown: borderless")
+    }
+  }
+}
+
 # 3. Find a card with the same name to replace.
 $index = -1
 for ($i = 0; $i -lt $parts.cards.Count; $i++) { if ((Get-Field $parts.cards[$i] "name") -eq $name) { $index = $i } }
