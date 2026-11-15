@@ -78,6 +78,8 @@ function Get-ArtAspect($block, [string]$setStyle) {
   }
   # Borderless art (frame option of m15-altered) covers the whole card.
   if ($block -match "^`t`tframes:.*(borderless|frameless) art") { return 375 / 523 }
+  # Modern (M20 and later) tokens: art behind the whole frame.
+  if ($block -match "^`t`tframes:.*M20") { return 375 / 523 }
   switch ($style) {
     "m15-saga"                   { return 157 / 379 }
     "m15-mainframe-planeswalker" { return 324 / 427.5 }

@@ -125,9 +125,52 @@ void resample_pass(const Image& img_in, Image& img_out, int offset_in, int offse
 void resample(const Image& img_in, Image& img_out) {
   resample_and_clip(img_in, img_out, wxRect(0, 0, img_in.GetWidth(), img_in.GetHeight()));
 }
+// Setsmith: smooth enlargement. The box filter above copies one source pixel into a block of
+// output pixels when enlarging, so frame art drawn at 2x or 4x export zoom came out blocky.
+// Bilinear interpolation with premultiplied alpha, so transparent edges don't darken.
+static Image upscale_bilinear(const Image& img_in, int width, int height) {
+  int iw = img_in.GetWidth(), ih = img_in.GetHeight();
+  bool has_alpha = img_in.HasAlpha();
+  Image img_out(width, height, false);
+  if (has_alpha) img_out.InitAlpha();
+  const Byte* in  = img_in.GetData();
+  const Byte* in_a = has_alpha ? img_in.GetAlpha() : nullptr;
+  Byte* out   = img_out.GetData();
+  Byte* out_a = has_alpha ? img_out.GetAlpha() : nullptr;
+  double fx = (double)iw / width, fy = (double)ih / height;
+  for (int y = 0 ; y < height ; ++y) {
+    double sy = max(0.0, min((double)(ih - 1), (y + 0.5) * fy - 0.5));
+    int y0 = (int)sy, y1 = min(y0 + 1, ih - 1);
+    double wy = sy - y0;
+    for (int x = 0 ; x < width ; ++x) {
+      double sx = max(0.0, min((double)(iw - 1), (x + 0.5) * fx - 0.5));
+      int x0 = (int)sx, x1 = min(x0 + 1, iw - 1);
+      double wx = sx - x0;
+      int idx[4]   = { y0 * iw + x0, y0 * iw + x1, y1 * iw + x0, y1 * iw + x1 };
+      double w[4]  = { (1-wx)*(1-wy), wx*(1-wy), (1-wx)*wy, wx*wy };
+      double r = 0, g = 0, b = 0, a = 0;
+      for (int k = 0 ; k < 4 ; ++k) {
+        double pa = in_a ? in_a[idx[k]] / 255.0 : 1.0;
+        double ww = w[k] * pa;
+        r += in[3*idx[k]] * ww; g += in[3*idx[k]+1] * ww; b += in[3*idx[k]+2] * ww; a += ww;
+      }
+      Byte* o = out + 3 * (y * width + x);
+      if (a > 0) {
+        o[0] = (Byte)min(255.0, r / a + 0.5); o[1] = (Byte)min(255.0, g / a + 0.5); o[2] = (Byte)min(255.0, b / a + 0.5);
+      } else {
+        o[0] = o[1] = o[2] = 0;
+      }
+      if (out_a) out_a[y * width + x] = (Byte)min(255.0, a * 255.0 + 0.5);
+    }
+  }
+  return img_out;
+}
+
 Image resample(const Image& img_in, int width, int height) {
   if (img_in.GetWidth() == width && img_in.GetHeight() == height) {
     return img_in; // already the right size
+  } else if (width >= img_in.GetWidth() && height >= img_in.GetHeight()) {
+    return upscale_bilinear(img_in, width, height); // Setsmith: enlarging
   } else {
     Image img_out(width,height,false);
     resample(img_in, img_out);

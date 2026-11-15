@@ -475,6 +475,15 @@ Image SymbolToImage::generate(const Options& opt) const {
     if (opt.width > 1 && opt.height > 1) {
       width  = size * opt.width  / max(opt.width,opt.height);
       height = size * opt.height / max(opt.width,opt.height);
+      // Setsmith: shrink the canvas to the symbol's shape, like render_symbol's allow_smaller,
+      // so the field's alignment (e.g. middle right on the type line) places it like a vector symbol
+      double ar  = image_symbol_aspect_ratio(source);
+      double par = (double)width / height;
+      if (par > ar && (ar > 1 || height < width)) {
+        width  = max(1, int(height * ar));
+      } else if (par < ar && (ar < 1 || width < height)) {
+        height = max(1, int(width / ar));
+      }
     }
     return render_image_symbol(source, *variation->filter, variation->border_radius, width, height);
   }
