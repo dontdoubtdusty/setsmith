@@ -58,6 +58,8 @@ Frames (set with a `stylesheet:` line; leave it out for plain M15):
 
 Colors: `white`, `blue`, `black`, `red`, `green` (also for `indicator` / `card color` on the front).
 
+Legend crown: a legendary card on M15 Altered, Adventure or DFC can take the smooth borderless crown (the look of the Spock card the user matches) with `has styling: true`, `styling data:`, then `	legend crown: borderless`. Plain M15 has no crown option. Use it when the user asks for "the Spock frame" or the borderless crown.
+
 Planeswalkers: `stylesheet: m15-mainframe-planeswalker`, `loyalty: 4`, then each ability as `loyalty cost 1: +1` with `level 1 text: ...`, `loyalty cost 2: -2` with `level 2 text: ...`, and so on (up to 4 abilities). A static ability goes in a `level N text` with no `loyalty cost N`.
 
 Tokens: `stylesheet: m15-mainframe-tokens`, `super type: Token Creature` (or `Token Artifact`), `sub type`, `power`, `toughness`, `rule text` if it has abilities, with reminder text for keywords like Equip (real tokens print it). No casting cost or rarity. Use the modern frame that current sets print (art behind the whole card, grey bars, centered white name) by adding `has styling: true`, `styling data:`, then `	frames: M20`; the art is cropped to the whole card, so a wide image loses its sides.

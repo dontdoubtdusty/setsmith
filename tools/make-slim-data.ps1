@@ -182,6 +182,13 @@ Patch-File "magic-m15.mse-style" "style" @(
 )
 "{0,-48} {1,7}" -f "Setsmith patches (type line, name gap, stamp)", "applied"
 
+# Offer the borderless legend crown (smooth, no bevel) on framed cards. The game script and the choice icon
+# already support it; the pack just leaves it out of the list.
+Patch-File "magic-modules.mse-include" "crowns/styling_fields" @(
+  @{ Name = "borderless crown choice"; Count = 1; Pattern = '(?m)^(\tchoice: standard\r?\n)'; With = "`$1`tchoice: borderless`r`n" }
+)
+"{0,-48} {1,7}" -f "Setsmith patches (borderless crown choice)", "applied"
+
 # Keep rules and flavor text out of the P/T box corner. The pack's text boxes run under the P/T box,
 # so a long last line (often the flavor text) was drawn beneath it. pt-mask.png is card sized (two faces
 # wide, for DFCs) and black (no text) over each P/T corner. Each text box crops its own piece of it from
