@@ -94,11 +94,24 @@ bool BlankImage::operator == (const GeneratedImage& that) const {
   return that2;
 }
 
+// Setsmith: blends used to need every image at one size, so a 744 px frame could not be mixed with a
+// 375 px trim or mask. Scale the smaller image up to the larger one instead, as set_mask already does.
+static void match_sizes(Image& a, Image& b) {
+  int w = max(a.GetWidth(), b.GetWidth()), h = max(a.GetHeight(), b.GetHeight());
+  if (a.GetWidth() != w || a.GetHeight() != h) a = resample(a, w, h);
+  if (b.GetWidth() != w || b.GetHeight() != h) b = resample(b, w, h);
+}
+// Setsmith: scale a blend mask to the size of the images it blends.
+static void match_size(Image& img, int w, int h) {
+  if (img.GetWidth() != w || img.GetHeight() != h) img = resample(img, w, h);
+}
+
 // ----------------------------------------------------------------------------- : LinearBlendImage
 
 Image LinearBlendImage::generate(const Options& opt) const {
-  Image img = image1->generate(opt);
-  linear_blend(img, image2->generate(opt), x1, y1, x2, y2);
+  Image img = image1->generate(opt), img2 = image2->generate(opt);
+  match_sizes(img, img2); // Setsmith
+  linear_blend(img, img2, x1, y1, x2, y2);
   return img;
 }
 ImageCombine LinearBlendImage::combine() const {
@@ -115,8 +128,10 @@ bool LinearBlendImage::operator == (const GeneratedImage& that) const {
 // ----------------------------------------------------------------------------- : MaskedBlendImage
 
 Image MaskedBlendImage::generate(const Options& opt) const {
-  Image img = light->generate(opt);
-  mask_blend(img, dark->generate(opt), mask->generate(opt));
+  Image img = light->generate(opt), img_dark = dark->generate(opt), img_mask = mask->generate(opt);
+  match_sizes(img, img_dark);                            // Setsmith
+  match_size(img_mask, img.GetWidth(), img.GetHeight()); // Setsmith
+  mask_blend(img, img_dark, img_mask);
   return img;
 }
 ImageCombine MaskedBlendImage::combine() const {
@@ -132,8 +147,9 @@ bool MaskedBlendImage::operator == (const GeneratedImage& that) const {
 // ----------------------------------------------------------------------------- : CombineBlendImage
 
 Image CombineBlendImage::generate(const Options& opt) const {
-  Image img = image1->generate(opt);
-  combine_image(img, image2->generate(opt), image_combine);
+  Image img = image1->generate(opt), img2 = image2->generate(opt);
+  match_sizes(img, img2); // Setsmith
+  combine_image(img, img2, image_combine);
   return img;
 }
 ImageCombine CombineBlendImage::combine() const {

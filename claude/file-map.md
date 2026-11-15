@@ -8,6 +8,7 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 |---|---|
 | `tools/check.ps1` | Build, render test and GUI smoke test |
 | `tools/make-slim-data.ps1` | Copies M15, planeswalker, token and blend packages into `build/data` |
+| `tools/make-m15-hd.ps1` | Builds the 744 x 1039 M15 frames, crowns, P/T boxes and blend masks from the pack's layer kit (run by `make-slim-data.ps1`) |
 | `tools/slim-test.mse-set`, `slim-test.reference.txt` | Seven test cards and their render hashes |
 | `tools/frames-test.mse-set`, `frames-test.reference.txt` | Saga, DFC, adventure, borderless and etched foil test cards and their render hashes |
 | `tools/JelloBoard/`, `Jello Board.bat` | Local task board (copied from birb-box) |

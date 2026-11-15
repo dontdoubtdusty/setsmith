@@ -43,7 +43,7 @@ if (-not (Test-Path $exe)) { throw "Setsmith is not built: $exe is missing. Run 
 
 # Header for a brand new set, per game.
 $newHeader = @{
-  magic = "mse version: 2.0.0`ngame: magic`nstylesheet: m15`nset info:`n`ttitle: Claude Magic`n`tset code: CLD`n`tset language: EN`n`tcard language: EN`n"
+  magic = "mse version: 2.0.0`ngame: magic`nstylesheet: m15`nset info:`n`ttitle: Claude Magic`n`tcorner shape: none`n`tset code: CLD`n`tset language: EN`n`tcard language: EN`n"
   uvs   = "mse version: 2.0.0`ngame: uvs`nstylesheet: 2026-exact`nset info:`n`ttitle: Claude UVS`n`tset code: CL01`n"
 }
 

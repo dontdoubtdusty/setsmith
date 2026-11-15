@@ -126,6 +126,20 @@ Patch-File "magic.mse-game" "set_fields" @(
 )
 Patch-File "magic-m15.mse-style" "style" @(
   @{ Name = "style option"; Count = 1; Pattern = '(?m)^styling field:\r?\n\ttype: boolean\r?\n\tname: masterpiece\r?\n\tdescription:[^\r\n]*\r?\n\tinitial: no\r?\n' }
+  # Double-size frames, crowns and P/T boxes built by make-m15-hd.ps1 (below) instead of the 375 ones.
+  @{ Name = "hd card folder"; Count = 1; Pattern = 'cards/375 m15 simple/'; With = 'cards/744 m15 hd/' }
+  @{ Name = "hd card suffix"; Count = 1; Pattern = 'card: "card\.jpg"'; With = 'card: "card.png"' }
+  @{ Name = "hd pt folder";   Count = 1; Pattern = 'pts/375 m15/'; With = 'pts/744 m15 hd/' }
+  @{ Name = "hd crowns";      Count = 1; Pattern = '(?m)^(\ttemplate_suffix := \[)'; With = "`tcrowns_folder := {`"/magic-modules.mse-include/crowns/744 m15 hd/`"}`r`n`$1" }
+)
+# The same double-size images for M15 Altered (pinline and frame options on top of M15). Its 375 trims
+# and masks still blend with them: the engine scales mismatched blend images (generated_image.cpp).
+Patch-File "magic-m15-altered.mse-style" "style" @(
+  @{ Name = "hd card folder"; Count = 1; Pattern = 'card: "/magic-modules\.mse-include/cards/375 m15 simple/"'; With = 'card: "/magic-modules.mse-include/cards/744 m15 hd/"' }
+  @{ Name = "hd card suffix"; Count = 1; Pattern = 'card: "card\.jpg"'; With = 'card: "card.png"' }
+  @{ Name = "hd pt folder";   Count = 1; Pattern = 'pt: "/magic-modules\.mse-include/pts/375 m15/"'; With = 'pt: "/magic-modules.mse-include/pts/744 m15 hd/"' }
+  @{ Name = "hd crowns";      Count = 1; Pattern = 'crown: "/magic-modules\.mse-include/crowns/375/"'; With = 'crown: "/magic-modules.mse-include/crowns/744 m15 hd/"' }
+  @{ Name = "hd crown folder"; Count = 1; Pattern = '"/magic-modules\.mse-include/crowns/375/" \+ \(if is_planeshifted'; With = '"/magic-modules.mse-include/crowns/744 m15 hd/" + (if is_planeshifted' }
 )
 Patch-File "magic-modules.mse-include" "rarities/choice_images" @(
   @{ Name = "rarity image"; Count = 1; Pattern = '(?m)^\tmasterpiece:\r?\n\t\tscript:\r?\n(\t\t\t[^\r\n]*\r?\n)+' }
@@ -174,6 +188,9 @@ foreach ($p in $ptFrames.Keys) {
   Patch-File $p "style" @($edits)
 }
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of P/T box)", "applied"
+
+# Double-size M15 frames, crowns and P/T boxes from the pack's 744 x 1039 layer kit.
+& (Join-Path $PSScriptRoot "make-m15-hd.ps1") -Source $Source -Output $Output
 
 # Remove packages that are no longer on the list.
 $keepNames = @($needed.Keys) + $ownPackages + "en.mse-locale" + "dictionaries"
