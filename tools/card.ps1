@@ -43,7 +43,9 @@ if (-not (Test-Path $exe)) { throw "Setsmith is not built: $exe is missing. Run 
 
 # Header for a brand new set, per game.
 $newHeader = @{
-  magic = "mse version: 2.0.0`ngame: magic`nstylesheet: m15`nset info:`n`ttitle: Claude Magic`n`tcorner shape: none`n`tset code: CLD`n`tset language: EN`n`tcard language: EN`n"
+  # The copyright line is built from char codes (TM and copyright signs) so the script stays plain ASCII.
+  magic = "mse version: 2.0.0`ngame: magic`nstylesheet: m15`nset info:`n`ttitle: Claude Magic`n`tcorner shape: none`n`tset code: CLD`n`tset language: EN`n`tcard language: EN`n" +
+          "`tcopyright: $([char]0x2122) & $([char]0xA9) $((Get-Date).Year) Don't Doubt Dusty`n`tautomatic copyright: yes`n`tshorten types for rarity: yes`n"
   uvs   = "mse version: 2.0.0`ngame: uvs`nstylesheet: 2026-exact`nset info:`n`ttitle: Claude UVS`n`tset code: CL01`n"
 }
 

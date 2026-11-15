@@ -156,6 +156,32 @@ foreach ($info in "card_fields", "card_fields_dfc", "card_fields_tfc") {
 }
 "{0,-48} {1,7}" -f "Setsmith patches (no Masterpiece)", "applied"
 
+# Closer to printed cards: the type line stops before the set symbol by default (new sets), the card name
+# keeps a small gap before the mana cost, and the holo stamp uses the sharp 744 x 1039 image instead of
+# the 375 one scaled up.
+Patch-File "magic.mse-game" "set_fields" @(
+  @{ Name = "shorten types default"; Count = 1; Pattern = '(?m)(^\tname: shorten types for rarity\r?\n)'; With = "`$1`tinitial: yes`r`n" }
+)
+Patch-File "magic.mse-game" "script" @(
+  @{ Name = "sharp stamp"; Count = 1; Pattern = '(card_stamp_possible_dimensions :=\r?\n\[\r?\n)\t"375x523":\t"375x523"\r?\n\t"523x375":\t"523x375"'; With = "`$1`t`"375x523`":`t`"744x1039`"`r`n`t`"523x375`":`t`"1039x744`"" }
+)
+foreach ($p in "magic-m15.mse-style", "magic-m15-altered.mse-style", "magic-m15-adventure.mse-style", "magic-m15-mainframe-dfc.mse-style") {
+  Patch-File $p "style" @(
+    @{ Name = "name gap"; Count = 1; Pattern = '(?m)(^\t\tright:\s+\{[^\r\n]*?)- card_style\.casting_cost\.content_width \}'; With = '$1- card_style.casting_cost.content_width - 4 }' }
+  )
+}
+# The type line also keeps a small gap before the set symbol (the pack frees exactly the symbol's width).
+Patch-File "magic.mse-game" "script" @(
+  @{ Name = "type gap"; Count = 1; Pattern = '(?m)^(\tif card_style\.rarity\.width == 0 then 0 else cw)\r?$'; With = '$1 + 4' }
+)
+Patch-File "magic-m15-altered.mse-style" "style" @(
+  @{ Name = "type gap"; Count = 1; Pattern = '(?m)^(\t\tif card_style\.rarity\.width == 0 then 0 else cw)\r?$'; With = '$1 + 4' }
+)
+Patch-File "magic-m15.mse-style" "style" @(
+  @{ Name = "type gap"; Count = 1; Pattern = '- max\(22,card_style\.rarity\.content_width\) \}'; With = '- max(22,card_style.rarity.content_width) - 4 }' }
+)
+"{0,-48} {1,7}" -f "Setsmith patches (type line, name gap, stamp)", "applied"
+
 # Keep rules and flavor text out of the P/T box corner. The pack's text boxes run under the P/T box,
 # so a long last line (often the flavor text) was drawn beneath it. pt-mask.png is card sized (two faces
 # wide, for DFCs) and black (no text) over each P/T corner. Each text box crops its own piece of it from
