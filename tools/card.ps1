@@ -13,6 +13,8 @@
   The card goes into "<Documents>\Setsmith Cards\Claude Magic.mse-set" or "Claude UVS.mse-set"
   (created on first use). A card with the same name is replaced, so a redo updates the card
   instead of adding a copy. The old set is kept as .bak.
+  -Variant N (alt arts) works on the Nth card with that name instead, adding it if there are fewer,
+  and names the PNG "<name> (N).png".
 
   -Art crops the image to the art box's shape (center crop) and stores it in the set.
   -Art2 does the same for the second image (the back face of a double-faced card).
@@ -25,7 +27,8 @@ param(
   [Parameter(Mandatory)][string]$CardFile,
   [string]$Art,
   [string]$Art2,
-  [string]$Set
+  [string]$Set,
+  [int]$Variant = 0
 )
 
 $ErrorActionPreference = "Stop"
@@ -139,8 +142,11 @@ if ($Game -eq "magic" -and -not (Get-Field $block "stylesheet")) {
 }
 
 # 3. Find a card with the same name to replace.
+#    With -Variant N, the Nth card with that name (none yet means a new card).
 $index = -1
-for ($i = 0; $i -lt $parts.cards.Count; $i++) { if ((Get-Field $parts.cards[$i] "name") -eq $name) { $index = $i } }
+$same = @(for ($i = 0; $i -lt $parts.cards.Count; $i++) { if ((Get-Field $parts.cards[$i] "name") -eq $name) { $i } })
+if ($Variant -gt 0) { if ($same.Count -ge $Variant) { $index = $same[$Variant - 1] } }
+elseif ($same.Count -gt 0) { $index = $same[-1] }
 
 # 4. Art: crop a new image into the set, or keep the replaced card's image. "image 2" is the back face.
 $block = [Collections.Generic.List[string]]($block | Where-Object { $_ -notmatch "^`timage( 2)?:" })
@@ -196,6 +202,7 @@ if (Test-Path $Set) { Copy-Item $Set "$Set.bak" -Force }
 Copy-Item $newZip $Set -Force
 New-Item -ItemType Directory $pngDir -Force | Out-Null
 $safe = ($name -replace '[\\/:*?"<>|]', "").Trim()
+if ($Variant -gt 0) { $safe = "$safe ($Variant)" }
 $png = Join-Path $pngDir "$safe.png"
 Copy-Item $rendered $png -Force
 Remove-Item $work -Recurse -Force
