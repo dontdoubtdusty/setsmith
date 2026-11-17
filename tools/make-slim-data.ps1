@@ -224,6 +224,16 @@ foreach ($p in $ptFrames.Keys) {
 }
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of P/T box)", "applied"
 
+# Keep rules and flavor text above the holo stamp. The pack's text box runs down to y 481 but the stamp
+# starts at y 471, so a full text box drew its last line over the stamp. Printed cards keep a bottom
+# margin there instead, so the box gets bottom padding (text that does not fit shrinks, as on real cards).
+foreach ($p in "magic-m15.mse-style", "magic-m15-showcase-etched-foil.mse-style", "magic-m15-altered.mse-style") {
+  Patch-File $p "style" @(
+    @{ Name = "text stamp margin"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n)'; With = "`$1`t`tpadding bottom: 12`n" }
+  )
+}
+"{0,-48} {1,7}" -f "Setsmith patches (text clear of holo stamp)", "applied"
+
 # Double-size M15 frames, crowns and P/T boxes from the pack's 744 x 1039 layer kit.
 & (Join-Path $PSScriptRoot "make-m15-hd.ps1") -Source $Source -Output $Output
 
