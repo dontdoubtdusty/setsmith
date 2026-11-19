@@ -41,6 +41,7 @@ Build and test. Run from the repo root in PowerShell.
 - Reuse existing code (`filter_symbol`, `value_action`, `show_queued_messages`) before writing new code.
 - **Commits:** Claude may commit and push new changes to `origin` (`main`) without asking (standing permission, 2026-11-12). Never push to `upstream`.
 - **Decisions:** record each decision in the decisions table in `ROADMAP.md`, with the why.
+- `README.md` follows `claude/readme-format.md` (user-facing only, Drowse format); convert an old README the next time you work here.
 - **After changes:** give a short summary of what changed and what was verified.
 - **Wrap-up at the end of a session:**
   - Add a dated entry to `claude/session-log.md`.

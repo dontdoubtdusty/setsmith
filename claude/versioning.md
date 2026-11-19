@@ -24,6 +24,8 @@ Bump it here and nowhere else. Two-part numbers (`v0.45`) are read as `0.45.0` a
 | maury-simulator | `Version` in `GameEngine.cs` (`"Maury Sim 0.05 Alpha"`) |
 | dotburg-app | `Version` in `Program.cs` |
 | sleepytime_ambience | `Version` in `Program.cs` |
+| dustys-ganjaria | `Version` in `Program.cs` |
+| knot-shop | `Version` in `Program.cs` |
 | srd-helper | `@version` in `srd-helper.user.js` and the panel constant below it (keep in step) |
 | srd-desk | `DeskApp.Version` |
 | custom-uvs | `version` in `package.json` |
