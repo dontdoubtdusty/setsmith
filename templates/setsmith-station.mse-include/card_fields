@@ -6,12 +6,13 @@
 card style:
 	station 1 threshold:
 		left: 10
-		top: { station_top(1) + station_h(1) / 2 - 14.75 }
+		top: { station_top(1) + station_h(1) / 2 - 14 }
 		width: 29.5
 		height: 29.5
 		z index: 960
 		visible: { card.station_1_threshold != "" }
 		alignment: middle center shrink-overflow
+		padding left: 1.4
 		padding bottom: 3
 		font:
 			name: Beleren Bold
@@ -28,7 +29,7 @@ card style:
 		alignment: middle left
 		padding left: 4
 		padding right: 4
-		padding bottom: 3
+		padding bottom: 1
 		font:
 			name: MPlantin
 			italic name: MPlantin-Italic
@@ -38,16 +39,17 @@ card style:
 		symbol font:
 			name: { styling.text_box_mana_symbols }
 			size: { station_rules_size() * card_style.text.content_scale }
-		line height hard: 1.2
+		line height hard: 1.128
 		line height soft: { station_line_soft() }
 	station 2 threshold:
 		left: 10
-		top: { station_top(2) + station_h(2) / 2 - 14.75 }
+		top: { station_top(2) + station_h(2) / 2 - 14 }
 		width: 29.5
 		height: 29.5
 		z index: 960
 		visible: { card.station_2_threshold != "" }
 		alignment: middle center shrink-overflow
+		padding left: 1.4
 		padding bottom: 3
 		font:
 			name: Beleren Bold
@@ -64,7 +66,7 @@ card style:
 		alignment: middle left
 		padding left: 4
 		padding right: 4
-		padding bottom: 3
+		padding bottom: 1
 		font:
 			name: MPlantin
 			italic name: MPlantin-Italic
@@ -74,7 +76,7 @@ card style:
 		symbol font:
 			name: { styling.text_box_mana_symbols }
 			size: { station_rules_size() * card_style.text.content_scale }
-		line height hard: 1.2
+		line height hard: 1.128
 		line height soft: { station_line_soft() }
 extra card field:
 	type: choice
@@ -122,7 +124,7 @@ extra card style:
 	# The round "N+" badge, its rim in the card's colour.
 	station badge 1:
 		left: 10
-		top: { station_top(1) + station_h(1) / 2 - 14.75 }
+		top: { station_top(1) + station_h(1) / 2 - 14 }
 		width: 29.5
 		height: 29.5
 		z index: 955
@@ -131,7 +133,7 @@ extra card style:
 		image: { "/setsmith-station.mse-include/badge-" + station_color() + ".png" }
 	station badge 2:
 		left: 10
-		top: { station_top(2) + station_h(2) / 2 - 14.75 }
+		top: { station_top(2) + station_h(2) / 2 - 14 }
 		width: 29.5
 		height: 29.5
 		z index: 955

@@ -7,23 +7,23 @@ station_last := {
 	else 0
 }
 # Line spacing inside a row, the same as the frame's rules text.
-station_line_soft := { 0.82 }
+station_line_soft := { 0.827 }
 # Font size of the "N+" badge text.
-station_badge_size := { 10.5 }
+station_badge_size := { 12.5 }
 # Estimated font size the whole text box (rules plus rows) will be set in, found before drawing so the rows
 # can be sized: the largest size, in steps of 0.25, at which the rules paragraphs and the rows fit the frame's
-# box (154 units). Letters average 0.405 of the size wide and lines are 0.94 of the size apart, measured on
+# box (154 units). Letters average 0.405 of the size wide, lines are 1.0 of the size apart and paragraphs 0.37 more, measured on
 # printed cards. The rows then follow the size the rules text is actually fitted at (content_scale).
 station_lines := { to_int((length(remove_tags(input)) * 0.405 * size + width - 1) / width) }
 station_rows_h := {
-	h1 := if card.station_1_threshold == "" then 0 else max(41, 14 + station_lines(card.station_1_text, size: size, width: if station_last() == 1 and card.pt != "" then 244 else 291) * 0.94 * size)
-	h2 := if card.station_2_threshold == "" then 0 else max(41, 14 + station_lines(card.station_2_text, size: size, width: if card.pt != "" then 244 else 291) * 0.94 * size)
+	h1 := if card.station_1_threshold == "" then 0 else max(39, 12 + station_lines(card.station_1_text, size: size, width: if station_last() == 1 and card.pt != "" then 244 else 291) * 1.0 * size)
+	h2 := if card.station_2_threshold == "" then 0 else max(39, 12 + station_lines(card.station_2_text, size: size, width: if card.pt != "" then 244 else 291) * 1.0 * size)
 	h1 + h2
 }
 station_rules_h := {
 	paras := split_text(match: "\n", remove_tags(card.rule_text))
 	lines := for each p in paras do station_lines(p, size: size, width: 300)
-	8 + lines * 0.94 * size + (number_of_items(in: paras) - 1) * 0.5 * size
+	8 + lines * 1.0 * size + (number_of_items(in: paras) - 1) * 0.37 * size
 }
 # Size steps tried, as fractions of the frame's rules size (about a quarter point apart), largest first.
 station_fit_steps := [1, 0.985, 0.97, 0.955, 0.94, 0.925, 0.91, 0.895, 0.88, 0.865, 0.85, 0.835, 0.82, 0.805, 0.79, 0.775, 0.76, 0.745, 0.73, 0.715, 0.7, 0.685, 0.67, 0.655, 0.64, 0.625, 0.61, 0.595, 0.58, 0.565, 0.55, 0.535, 0.52, 0.505, 0.49, 0.475, 0.46, 0.445, 0.43, 0.415]
@@ -35,10 +35,10 @@ station_size := {
 		station_rules_size() * (if number_of_items(in: fitting) > 0 then fitting[0] else 0.4)
 	)
 }
-# Height of row 1 or 2 (0 when unused): 41 units for one line, more when its text wraps at station_size.
+# Height of row 1 or 2 (0 when unused): 39 units for one line, more when its text wraps at station_size.
 station_h := {
 	if card["station_" + input + "_threshold"] == "" then 0
-	else max(41, 14 + station_lines(card["station_" + input + "_text"], size: station_size(), width: if input == station_last() and card.pt != "" then 244 else 291) * 0.94 * station_size())
+	else max(39, 12 + station_lines(card["station_" + input + "_text"], size: station_size(), width: if input == station_last() and card.pt != "" then 244 else 291) * 1.0 * station_size())
 }
 station_pt := { station_last() > 0 and card.pt != "" }
 # Vertical middle of the last row, where the P/T box sits.

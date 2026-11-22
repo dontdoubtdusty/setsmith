@@ -224,27 +224,48 @@ foreach ($p in $ptFrames.Keys) {
 }
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of P/T box)", "applied"
 
-# Keep rules and flavor text above the holo stamp. The pack's text box runs down to y 481 but the stamp
-# starts at y 471, so a full text box drew its last line over the stamp. Printed cards keep a bottom
-# margin there instead, so the box gets bottom padding (text that does not fit shrinks, as on real cards).
+# Keep the last line of a full text box off the holo stamp. Printed cards run their text down to about
+# 2 units above the box bottom (measured on Captain Jean-Luc Picard: the flavor line ends at y 476.5 of 481)
+# and centre it in the whole box, so the margin is small (it was 12, which pushed text up and shrank it).
 foreach ($p in "magic-m15.mse-style", "magic-m15-showcase-etched-foil.mse-style", "magic-m15-altered.mse-style") {
   Patch-File $p "style" @(
-    @{ Name = "text stamp margin"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n)'; With = "`$1`t`tpadding bottom: 12`n" }
+    @{ Name = "text stamp margin"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n)'; With = "`$1`t`tpadding bottom: 2`n" }
   )
 }
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of holo stamp)", "applied"
 
-# Rules text set like printed M15 cards (measured on Star Trek scans: Borg Cube, Romulan Bird-of-Prey, Deep
-# Space 9, Rogue Artificial Intelligence, Command Subadjunct). Printed text starts 4 units in from the box,
-# not 6, and its lines sit closer (soft line height 0.82, not 0.9). The largest size stays the pack's 14: short
-# printed text (Command Subadjunct) is set at about that size.
+# Rules text set like printed M15 cards, measured line by line on Star Trek scans (Captain Jean-Luc Picard and
+# The Caretaker match to within 2 px at 750 wide; Lieutenant Commander Data checked). Printed text starts 4
+# units in from the box, not 6. The largest size is 15.45 (the pack's 14, and 13 on M15 Altered, are 9-16%
+# small). Line spacing: soft 0.827, paragraph 1.128 and flavor bar 1.629 when the box is full. A box with room
+# to spare spreads its paragraphs, as printed cards do (Romulan Bird-of-Prey), up to 1.28.
 $textBlock = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?'
+$printedText = @(
+  @{ Name = "text padding left";    Count = 1; Pattern = $textBlock + '\t\tpadding left:\s*)6'; With = '${1}4' }
+  @{ Name = "text line height";     Count = 1; Pattern = $textBlock + '\t\tline height soft:\s*)0\.9'; With = '${1}0.827' }
+  @{ Name = "text paragraph";       Count = 1; Pattern = $textBlock + '\t\tline height hard:[^\r\n]*?)\b1\.2\b'; With = '${1}1.128' }
+  @{ Name = "text paragraph max";   Count = 1; Pattern = $textBlock + '\t\tline height hard max:[^\r\n]*?)\b1\.3\b'; With = '${1}1.28' }
+  @{ Name = "text flavor bar";      Count = 1; Pattern = $textBlock + '\t\tline height line:\s*)1\.5\b'; With = '${1}1.629' }
+  @{ Name = "text flavor bar max";  Count = 1; Pattern = $textBlock + '\t\tline height line max:\s*)1\.6\b'; With = '${1}1.737' }
+)
+Patch-File "magic-m15.mse-style" "style" @($printedText + @(
+  @{ Name = "text size";        Count = 1; Pattern = $textBlock + '\t\t\tsize:\s*)14(?=\r?$)'; With = '${1}15.45' }
+  @{ Name = "text symbol size"; Count = 1; Pattern = $textBlock + '\t\t\tsize:\s*)14(?=\r?$)'; With = '${1}15.45' }
+))
+# A long card name or type line is set in a smaller size, as on printed cards (Lieutenant Commander Data's
+# type line), instead of being squeezed narrower: the fonts may scale down before the box squeezes.
 foreach ($p in "magic-m15.mse-style", "magic-m15-altered.mse-style") {
   Patch-File $p "style" @(
-    @{ Name = "text padding left"; Count = 1; Pattern = $textBlock + '\t\tpadding left:\s*)6'; With = '${1}4' }
-    @{ Name = "text line height";  Count = 1; Pattern = $textBlock + '\t\tline height soft:\s*)0\.9'; With = '${1}0.82' }
+    foreach ($f in "name", "type") {
+      @{ Name = "$f scales down"; Count = 1; Pattern = "(?ms)(^card style:\r?\n.*?^\t$($f):\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tfont:\r?\n)"; With = "`$1`t`t`tscale down to: 6`n" }
+    }
   )
 }
+# M15 Altered keeps its font swap option: its size is scaled from the swap default (13) instead of replaced.
+Patch-File "magic-m15-altered.mse-style" "style" @($printedText + @(
+  @{ Name = "text size";        Count = 1; Pattern = $textBlock + '\t\t\tsize:\s*)\{ ?body_font_size\(\) ?\}'; With = '${1}{ body_font_size() * 15.45 / 13 }' }
+  @{ Name = "text symbol size"; Count = 1; Pattern = $textBlock + '\t\t\tsize:\s*)\{ ?body_font_size\(\) ?\}'; With = '${1}{ body_font_size() * 15.45 / 13 }' }
+))
 "{0,-48} {1,7}" -f "Setsmith patches (printed text setting)", "applied"
 
 # Alias bar: a reskinned or Godzilla series card prints its real (Oracle) name in a bar hanging under the title
@@ -296,7 +317,10 @@ Patch-File "magic-m15-saga.mse-style" "style" @(
 
 # Station rows (Edge of Eternities and Star Trek Spacecraft): templates\setsmith-station.mse-include adds the
 # fields, bands and badges. Here the game gets the fields, and M15 and M15 Altered (gold cards) get the layout
-# and a text box shortened by the rows' height. station_bottom is the bottom of each frame's text box.
+# and a text box shortened by the rows' height. station_bottom is the bottom of the rows: 1.5 units below the
+# frame's text box, as measured on printed Spacecraft. The rules text box reaches 4.5 units into the first band:
+# the engine keeps the font's full descent free below the last line, and without the overlap the text shrank
+# about 7% below printed cards (Romulan Bird-of-Prey). The glyphs still end above the band.
 $stationDepends = @{ Name = "station dependency"; Count = 1; Pattern = '(?m)(^version:[^\r\n]*\r?\n)'; With = "`$1depends on:`n`tpackage: setsmith-station.mse-include`n`tversion: 2026-11-22`n" }
 Patch-File "magic.mse-game" "game" @(
   $stationDepends
@@ -304,14 +328,14 @@ Patch-File "magic.mse-game" "game" @(
 )
 $stationFrames = [ordered]@{
   "magic-m15.mse-style" = @{
-    Bottom = "481"
-    Size   = "14"
-    Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\theight:\s*)154'; With = '${1}{ 154 - station_height() }' }
+    Bottom = "482.5"
+    Size   = "15.45"
+    Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\theight:\s*)154'; With = '${1}{ 154 - max(0, station_height() - 6) }' }
   }
   "magic-m15-altered.mse-style" = @{
-    Bottom = "bottom_of_textbox()"
-    Size   = "body_font_size()"
-    Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tbottom:\s*)\{ bottom_of_textbox\(\) \}'; With = '${1}{ bottom_of_textbox() - station_height() }' }
+    Bottom = "bottom_of_textbox() + 1.5"
+    Size   = "body_font_size() * 15.45 / 13"
+    Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tbottom:\s*)\{ bottom_of_textbox\(\) \}'; With = '${1}{ bottom_of_textbox() - max(0, station_height() - 6) }' }
   }
 }
 # On a station card the P/T sits in the last station row, in a smaller dark rounded box (57 x 28) with a rim
@@ -322,8 +346,8 @@ function Patch-StationPt([string]$Package) {
   $path = Join-Path (Join-Path $Output $Package) "style"
   $text = [IO.File]::ReadAllText($path)
   $plan = [ordered]@{
-    "pt"     = [ordered]@{ "z index" = "=960"; "left" = "298"; "top" = "station_pt_mid() - 14"; "width" = "57"; "`tsize" = "12.2"; "`tcolor" = '"white"' }
-    "pt box" = [ordered]@{ "z index" = "=952"; "left" = "298"; "top" = "station_pt_mid() - 14"; "width" = "57"; "height" = "28"; "image" = "station_pt_image()" }
+    "pt"     = [ordered]@{ "z index" = "=960"; "left" = "298"; "top" = "station_pt_mid() - 13.25"; "width" = "57"; "`tsize" = "12.2"; "`tcolor" = '"white"' }
+    "pt box" = [ordered]@{ "z index" = "=952"; "left" = "298"; "top" = "station_pt_mid() - 13.25"; "width" = "57"; "height" = "28"; "image" = "station_pt_image()" }
   }
   foreach ($block in $plan.Keys) {
     $bm = [regex]::Matches($text, "(?ms)^\t$([regex]::Escape($block)):\r?\n.*?(?=^\S|^\t\S)")
@@ -351,7 +375,9 @@ foreach ($p in $stationFrames.Keys) {
     @{ Name = "station layout"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = "include file: /setsmith-station.mse-include/card_fields`n`$1" }
     $f.Text
     # The holo stamp sits under the station band, so the rules text only keeps a small margin above the band.
-    @{ Name = "station text margin"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tpadding bottom: )12'; With = '${1}{ if station_height() > 0 then 4 else 12 }' }
+    @{ Name = "station text margin"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tpadding bottom: )2'; With = '${1}{ if station_height() > 0 then 1 else 2 }' }
+    # On a station card the P/T sits in the last row, not in the text box, so the text keeps its full width.
+    @{ Name = "station no P/T mask"; Count = 1; Pattern = '(?m)(^\t\tmask: \{ if \(card\.pt != ""\))( and card_style\.text\.width)'; With = '$1 and station_height() == 0$2' }
   )
   Patch-StationPt $p
 }

@@ -29,6 +29,21 @@ function New-RoundRect([double]$x, [double]$y, [double]$w, [double]$h, [double]$
   return $p
 }
 
+# Returns the printed station P/T shape inside the given box: straight top and bottom edges, ends that bulge
+# outward by b (a soft arc over the full height) and small rounded corners (c) where they meet.
+function New-PtShape([double]$x, [double]$y, [double]$w, [double]$h, [double]$b, [double]$c) {
+  $p = New-Object Drawing.Drawing2D.GraphicsPath
+  $x0 = $x + $b; $x1 = $x + $w - $b; $ym = $y + $h / 2; $y1 = $y + $h; $xr = $x + $w
+  $p.AddLine([single]($x0 + $c), [single]$y, [single]($x1 - $c), [single]$y)
+  $p.AddBezier([single]($x1 - $c), [single]$y, [single]($x1 + $c * 0.6), [single]$y, [single]$xr, [single]($y + $h * 0.22), [single]$xr, [single]$ym)
+  $p.AddBezier([single]$xr, [single]$ym, [single]$xr, [single]($y1 - $h * 0.22), [single]($x1 + $c * 0.6), [single]$y1, [single]($x1 - $c), [single]$y1)
+  $p.AddLine([single]($x1 - $c), [single]$y1, [single]($x0 + $c), [single]$y1)
+  $p.AddBezier([single]($x0 + $c), [single]$y1, [single]($x0 - $c * 0.6), [single]$y1, [single]$x, [single]($y1 - $h * 0.22), [single]$x, [single]$ym)
+  $p.AddBezier([single]$x, [single]$ym, [single]$x, [single]($y + $h * 0.22), [single]($x0 - $c * 0.6), [single]$y, [single]($x0 + $c), [single]$y)
+  $p.CloseFigure()
+  return $p
+}
+
 # Fills a path with the dark centre gradient printed boxes use: darker at the top and bottom edges.
 function Fill-Centre($g, $path, [Drawing.RectangleF]$rect) {
   $brush = New-Object Drawing.Drawing2D.LinearGradientBrush $rect, ([Drawing.Color]::Black), ([Drawing.Color]::Black), ([single]90)
@@ -82,13 +97,14 @@ foreach ($key in $rims.Keys) {
   Fill-Centre $c[1] $disc (New-Object Drawing.RectangleF ([single]($in * $k)), ([single]($in * $k)), ([single](($bd - 2 * $in) * $k)), ([single](($bd - 2 * $in) * $k)))
   $c[1].DrawPath($innerEdge, $disc)
   Save-Canvas $c "badge-$key.png"
-  # P/T box: 57 x 28, corner radius 6, dark centre 50 x 20.5 (corner radius 3.5), measured on Borg Cube.
+  # P/T box: 57 x 28 with ends bulging 2.2 units, dark centre 50.5 x 21.5 bulging 1.6, measured on the 745 px
+  # scan of U.S.S. Enterprise-A, Free Spirit.
   $c = New-Canvas 57 28 ""
-  $outer = New-RoundRect (0.3 * $k) (0.3 * $k) (56.4 * $k) (27.4 * $k) (5.8 * $k)
+  $outer = New-PtShape (0.3 * $k) (0.3 * $k) (56.4 * $k) (27.4 * $k) (2.2 * $k) (1.4 * $k)
   Fill-Rim $c[1] $outer (New-Object Drawing.RectangleF 0, 0, ([single](57 * $k)), ([single](28 * $k))) $rim[0] $rim[1]
   $c[1].DrawPath($edge, $outer)
-  $box = New-RoundRect (3.5 * $k) (3.75 * $k) (50 * $k) (20.5 * $k) (3.5 * $k)
-  Fill-Centre $c[1] $box (New-Object Drawing.RectangleF ([single](3.5 * $k)), ([single](3.75 * $k)), ([single](50 * $k)), ([single](20.5 * $k)))
+  $box = New-PtShape (3.25 * $k) (3.25 * $k) (50.5 * $k) (21.5 * $k) (1.6 * $k) (1.1 * $k)
+  Fill-Centre $c[1] $box (New-Object Drawing.RectangleF ([single](3.25 * $k)), ([single](3.25 * $k)), ([single](50.5 * $k)), ([single](21.5 * $k)))
   $c[1].DrawPath($innerEdge, $box)
   Save-Canvas $c "pt-$key.png"
 }
