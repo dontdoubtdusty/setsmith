@@ -34,7 +34,7 @@ private:
   // One clickable thing on the page and where it was last drawn
   struct Hit { int id; wxRect rect; };
   // Ids of the fixed buttons; tiles use 0 (New set) and 1.. (set index + 1); filter pills use HIT_FILTER - n
-  enum { HIT_OPEN = -1, HIT_FOLDERS = -2, HIT_CONTINUE = -3, HIT_FILTER = -100 };
+  enum { HIT_OPEN = -1, HIT_FOLDERS = -2, HIT_CONTINUE = -3, HIT_FULLSCREEN = -4, HIT_MINIMIZE = -5, HIT_CLOSE = -6, HIT_FILTER = -100 };
 
   Bitmap logo;
   vector<SetSummary> sets;      ///< every set found, newest first
@@ -71,7 +71,8 @@ private:
   void onTimer     (wxTimerEvent&);
   void onActivate  (wxActivateEvent&);
   void onIdle      (wxIdleEvent& ev);
-  void onKey       (wxCommandEvent& ev); ///< Ctrl+O and Ctrl+N
+  void onKey       (wxCommandEvent& ev); ///< Ctrl+O, Ctrl+N and F11
+  void setFullscreen(bool on);
   bool step();      ///< advances the animations one frame; true while anything still moves
   void startAnimation();
 

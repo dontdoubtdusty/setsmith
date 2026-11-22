@@ -11,14 +11,18 @@
 
 #include <util/prec.hpp>
 
+class wxGraphicsContext;
+
 namespace theme {
 
 // ----------------------------------------------------------------------------- : Palette
 
 wxColour backdrop();   ///< darkest: behind the card preview, workspace areas
-wxColour panel();      ///< panels, toolbars, dialogs
+wxColour header();     ///< the header band, menu bar and status strip of the editor
+wxColour panel();      ///< panels, dialogs
 wxColour field();      ///< lists and text boxes
 wxColour border();     ///< thin lines
+wxColour raised();     ///< hovered buttons and menu items
 wxColour text();
 wxColour text_dim();   ///< disabled and secondary text
 wxColour accent();     ///< logo gold: selection, focus
@@ -38,5 +42,26 @@ wxFont font(int point_size = 0, bool bold = false);
 
 /// Color a window and everything inside it. Safe to call again.
 void apply(wxWindow* window);
+
+// ----------------------------------------------------------------------------- : Drawing
+
+/// A rounded "pill" button background: hover 0..1 lifts it, active fills it with gold.
+void draw_pill(wxGraphicsContext& gc, const wxRect& r, double hover, bool active, bool pressed = false);
+
+/// The thin gold line under a header band, fading out at both ends
+void draw_gold_rule(wxGraphicsContext& gc, double x, double y, double width);
+
+/// Full screen as Setsmith uses it: no title bar, border or menu bar (the header has a menu button)
+long fullscreen_style();
+
+// ----------------------------------------------------------------------------- : Windows only
+
+/// Paint the menu bar of a frame dark. Call first thing in the frame's MSWWindowProc;
+/// returns true when the message was handled and *result must be returned.
+bool menu_bar_message(wxWindow* frame, WXUINT msg, WXWPARAM wp, WXLPARAM lp, WXLRESULT* result);
+
+/// Paint over the light line Windows draws under the menu bar. Call after the default
+/// MSWWindowProc for WM_NCPAINT and WM_NCACTIVATE.
+void cover_menu_bar_line(wxWindow* frame, WXUINT msg);
 
 }

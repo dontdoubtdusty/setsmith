@@ -82,9 +82,14 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 
 | File | Purpose |
 |---|---|
-| `src/gui/theme.*` | Dark palette, `theme::colour` (replaces `wxSystemSettings::GetColour` everywhere), UI font, `apply()` that colors a window tree. `main.cpp` calls `theme::init()` at start and `apply()` when a top level window is shown |
+| `src/gui/theme.*` | Blue-black palette, pill and gold-rule drawing, full screen style, dark menu bar (UAH messages), `theme::colour` (replaces `wxSystemSettings::GetColour` everywhere), UI font, `apply()` that colors a window tree. `main.cpp` calls `theme::init()` at start and `apply()` when a top level window is shown |
 | `src/gui/welcome_window.*` | The dashboard: set tiles, game filters, Folders menu, tile-picture picker, hover animation, all drawn with `wxGraphicsContext` |
 | `src/gui/set_library.*` | Finds sets (watched folders + recent) and reads a tile's data from a set without loading the game |
+| `src/gui/set/header_bar.*` | The editor's header band (diamond and name, tab pills, toolbar, full screen / minimize / close buttons, menu button in full screen) and the dark status strip |
+| `src/gui/control/themed_toolbar.*` | The header's toolbar: native toolbar with pill hover and checked states (Windows custom draw) |
+| `src/gui/icons.*` | Flat line icons drawn in code for toolbars, tabs and menus (`draw_icon`); `load_resource_tool_image` and `add_tool` use them first |
+| `resource/setsmith.manifest` | Common Controls 6 and Windows 10 compatibility; without it there are no visual styles and the dark themes do nothing |
+
 | `resource/fonts/` | Figtree (OFL), loaded at start for the UI font |
 | `tools/make-icon.ps1` | Draws `resource/icon/app.ico` (exe and window) and `set.ico` (set files) |
 

@@ -10,6 +10,10 @@
 #include <gui/control/item_list.hpp>
 #include <gui/util.hpp>
 #include <wx/imaglist.h>
+#ifdef __WXMSW__
+  #include <windows.h>
+  #include <commctrl.h>
+#endif
 
 // ----------------------------------------------------------------------------- : ItemList
 
@@ -31,6 +35,33 @@ ItemList::ItemList(Window* parent, int id, long additional_style, bool multi_sel
     ListView_SetExtendedListViewStyle(GetHwnd(), ListView_GetExtendedListViewStyle(GetHwnd()) | LVS_EX_DOUBLEBUFFER);
   #endif
 }
+
+#ifdef __WXMSW__
+bool ItemList::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM* result) {
+  NMHDR* hdr = (NMHDR*)lParam;
+  if (hdr->code != NM_CUSTOMDRAW || hdr->hwndFrom != GetHwnd()) {
+    return wxListView::MSWOnNotify(idCtrl, lParam, result);
+  }
+  // wx sets the row's text color from OnGetItemAttr; we only take over selected rows
+  bool handled = wxListView::MSWOnNotify(idCtrl, lParam, result);
+  NMLVCUSTOMDRAW* cd = (NMLVCUSTOMDRAW*)lParam;
+  if (cd->nmcd.dwDrawStage == CDDS_PREPAINT) {
+    *result = (handled ? *result : CDRF_DODEFAULT) | CDRF_NOTIFYITEMDRAW;
+    return true;
+  }
+  if (cd->nmcd.dwDrawStage == CDDS_ITEMPREPAINT) {
+    if (!handled) *result = CDRF_DODEFAULT;
+    long item = (long)cd->nmcd.dwItemSpec;
+    if (ListView_GetItemState(GetHwnd(), item, LVIS_SELECTED)) {
+      cd->nmcd.uItemState &= ~(CDIS_SELECTED | CDIS_FOCUS);
+      cd->clrTextBk = (COLORREF)(0x4a | (0x3d << 8) | (0x1f << 16)); // gold over the dark field
+      cd->clrText   = (COLORREF)(0xf6 | (0xe8 << 8) | (0xc8 << 16));
+    }
+    return true;
+  }
+  return handled;
+}
+#endif
 
 // ----------------------------------------------------------------------------- : ItemList : Selection
 

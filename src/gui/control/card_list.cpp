@@ -11,6 +11,7 @@
 #include <gui/control/card_list_column_select.hpp>
 #include <gui/set/window.hpp> // for sorting all cardlists in a window
 #include <gui/util.hpp>
+#include <gui/theme.hpp>
 #include <data/game.hpp>
 #include <data/field.hpp>
 #include <data/field/choice.hpp>
@@ -321,7 +322,9 @@ int CardListBase::OnGetItemImage(long pos) const {
 wxListItemAttr* CardListBase::OnGetItemAttr(long pos) const {
   if (!set->game->card_list_color_script) return nullptr;
   Context& ctx = set->getContext(getCard(pos));
-  item_attr.SetTextColour(set->game->card_list_color_script.invoke(ctx)->toColor());
+  // Setsmith: the game's color, pulled toward the text color so dark colors (black, land) stay readable on the dark list
+  Color c = set->game->card_list_color_script.invoke(ctx)->toColor();
+  item_attr.SetTextColour(lerp(c, Color(theme::text()), 0.4));
   return &item_attr;
 }
 

@@ -135,6 +135,7 @@ public:
   
   // --------------------------------------------------- : Set window
   bool set_window_maximized;
+  bool set_window_fullscreen; ///< Setsmith: the editor and dashboard open full screen (default on)
   UInt set_window_width;
   UInt set_window_height;
   UInt card_notes_height;

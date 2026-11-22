@@ -16,6 +16,8 @@
 class SetWindowPanel;
 class CardListBase;
 class wxFindDialogEvent;
+class HeaderBar;
+class StatusStrip;
 struct CardSelectEvent;
 
 // ----------------------------------------------------------------------------- : SetWindow
@@ -29,8 +31,10 @@ public:
   SetWindow(Window* parent, const SetP& set);
   ~SetWindow();
   
-  /// Set the icon of one of the panels
-  void setPanelIcon(SetWindowPanel* panel, wxBitmap const& icon);
+  /// Setsmith: show the window, full screen the first time if that was how it was left
+  bool Show(bool show = true) override;
+  /// Setsmith: status text goes to the dark status strip
+  void SetStatusText(const wxString& text, int number = 0) override;
  
   /// Get all card lists on all panels
   vector<CardListBase*> getCardLists();
@@ -46,6 +50,18 @@ private:
   vector<SetWindowPanel*> panels;        ///< All panels on this window
   SetWindowPanel*         current_panel;
   wxMenu*                 export_menu = nullptr;
+  HeaderBar*              header = nullptr; ///< Setsmith: logo, tabs and toolbar
+  StatusStrip*            status = nullptr; ///< Setsmith: dark status line
+  bool                    shown_once = false;
+
+  /// The toolbar in the header, handed to panels
+  wxToolBar* toolBar() const;
+  void setFullscreen(bool on);
+  void onWindowFullscreen(wxCommandEvent&);
+  void DoGiveHelp(const wxString& text, bool show) override;
+  #ifdef __WXMSW__
+    WXLRESULT MSWWindowProc(WXUINT msg, WXWPARAM wp, WXLPARAM lp) override;
+  #endif
   
   /// Number of items in the recent sets list
   size_t number_of_recentSets;
@@ -59,7 +75,7 @@ private:
   /// Add a panel to the window, as well as to the menu and tab bar
   /** The position only determines the order in which events will be send.
    */
-  void addPanel(wxMenu* windowMenu, wxToolBar* tabBar, SetWindowPanel* panel, UInt pos, const String& image_name, const String& name);
+  void addPanel(wxMenu* windowMenu, SetWindowPanel* panel, UInt pos, const String& image_name, const String& name);
   
   /// Select a panel, based on a tab id
   void selectPanel(int id);

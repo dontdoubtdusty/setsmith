@@ -10,6 +10,7 @@
 #include <gui/welcome_window.hpp>
 #include <gui/util.hpp>
 #include <gui/theme.hpp>
+#include <gui/icons.hpp>
 #include <gui/new_window.hpp>
 #include <gui/set/window.hpp>
 #include <util/window_id.hpp>
@@ -100,11 +101,14 @@ WelcomeWindow::WelcomeWindow()
   SetClientSize(FromDIP(wxSize(1180, 760)));
   SetMinClientSize(FromDIP(wxSize(760, 520)));
   CentreOnScreen();
-  wxAcceleratorEntry keys[2];
+  wxAcceleratorEntry keys[3];
   keys[0].Set(wxACCEL_CTRL, (int)'O', ID_FILE_OPEN);
   keys[1].Set(wxACCEL_CTRL, (int)'N', ID_FILE_NEW);
-  SetAcceleratorTable(wxAcceleratorTable(2, keys));
+  keys[2].Set(wxACCEL_NORMAL, WXK_F11, ID_WINDOW_FULLSCREEN);
+  SetAcceleratorTable(wxAcceleratorTable(3, keys));
   rescan();
+  // Setsmith: open full screen like the editor, once the window is on screen (owner's choice, 2026-11-22)
+  if (settings.set_window_fullscreen) CallAfter([this] { setFullscreen(true); });
 }
 
 // ----------------------------------------------------------------------------- : Data
@@ -272,8 +276,31 @@ void WelcomeWindow::draw(wxGraphicsContext& gc) {
     double lh = FromDIP(38), lw = logo.GetWidth() * lh / logo.GetHeight();
     gc.DrawBitmap(logo, margin - FromDIP(6), (header - lh) / 2, lw, lh);
   }
+  // Window buttons at the far right: full screen, plus minimize and close while full screen
+  int is = FromDIP(34), right = ws.x - FromDIP(16);
+  auto icon_button = [&](int id, const String& name) {
+    right -= is;
+    wxRect r(right, (header - is) / 2, is, is);
+    double h = glow[id];
+    if (id == HIT_CLOSE && h > 0.01) {
+      gc.SetPen(*wxTRANSPARENT_PEN);
+      gc.SetBrush(wxBrush(wxColour(0xc4, 0x2b, 0x1c, (unsigned char)(255 * h))));
+      gc.DrawRoundedRectangle(r.x, r.y, r.width, r.height, r.height / 2.0);
+    } else if (h > 0.01) {
+      theme::draw_pill(gc, r, h, false);
+    }
+    int s = FromDIP(16);
+    wxImage img = draw_icon(name, s, with_alpha(ink, 0.7 + 0.3 * h));
+    if (img.Ok()) gc.DrawBitmap(wxBitmap(img), r.x + (is - s) / 2, r.y + (is - s) / 2, s, s);
+    hits.push_back({id, r});
+    right -= FromDIP(4);
+  };
+  if (IsFullScreen()) icon_button(HIT_CLOSE, _("close"));
+  icon_button(HIT_FULLSCREEN, IsFullScreen() ? _("fullscreen_exit") : _("fullscreen"));
+  if (IsFullScreen()) icon_button(HIT_MINIMIZE, _("minimize"));
+
   int bw = FromDIP(112), bh = FromDIP(36);
-  wxRect open_r(ws.x - margin - bw, (header - bh) / 2, bw, bh);
+  wxRect open_r(right - FromDIP(16) - bw, (header - bh) / 2, bw, bh);
   wxRect fold_r(open_r.x - bw - FromDIP(10), open_r.y, bw, bh);
   drawButton(gc, HIT_FOLDERS, fold_r, _("Folders"), false);
   drawButton(gc, HIT_OPEN, open_r, _("Open..."), false);
@@ -516,6 +543,9 @@ void WelcomeWindow::onLeftUp(wxMouseEvent& ev) {
   int id = hitAt(ev.GetPosition());
   if (id == INT_MIN) return;
   if (id == HIT_OPEN)          onOpenSet();
+  else if (id == HIT_FULLSCREEN) setFullscreen(!IsFullScreen());
+  else if (id == HIT_MINIMIZE) Iconize();
+  else if (id == HIT_CLOSE)    Close();
   else if (id == HIT_FOLDERS)  { for (const Hit& h : hits) if (h.id == HIT_FOLDERS) showFoldersMenu(h.rect); }
   else if (id == HIT_CONTINUE) openSet(settings.recent_sets.front());
   else if (id <= HIT_FILTER) {
@@ -535,7 +565,15 @@ void WelcomeWindow::onRightUp(wxMouseEvent& ev) {
 
 void WelcomeWindow::onKey(wxCommandEvent& ev) {
   if (ev.GetId() == ID_FILE_OPEN) onOpenSet();
+  else if (ev.GetId() == ID_WINDOW_FULLSCREEN) setFullscreen(!IsFullScreen());
   else onNewSet();
+}
+
+// Full screen on or off; remembered for the next start and for the editor
+void WelcomeWindow::setFullscreen(bool on) {
+  ShowFullScreen(on, theme::fullscreen_style());
+  settings.set_window_fullscreen = on;
+  Refresh(false);
 }
 
 void WelcomeWindow::onActivate(wxActivateEvent& ev) {
@@ -664,6 +702,7 @@ BEGIN_EVENT_TABLE(WelcomeWindow, wxFrame)
   EVT_IDLE         (WelcomeWindow::onIdle)
   EVT_MENU         (ID_FILE_OPEN, WelcomeWindow::onKey)
   EVT_MENU         (ID_FILE_NEW,  WelcomeWindow::onKey)
+  EVT_MENU         (ID_WINDOW_FULLSCREEN, WelcomeWindow::onKey)
 END_EVENT_TABLE  ()
 
 // ----------------------------------------------------------------------------- : Hover button with label

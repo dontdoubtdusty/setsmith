@@ -24,8 +24,33 @@
 #include <util/tagged_string.hpp>
 #include <util/window_id.hpp>
 #include <wx/splitter.h>
+#include <wx/dcbuffer.h>
+#include <wx/graphics.h>
+#include <gui/theme.hpp>
 
 // ----------------------------------------------------------------------------- : CardsPanel
+
+// Setsmith: the stage behind the card, a dark backdrop with a soft glow and a shadow under the card
+// (Stage 5, 2026-11-22). Only the panel's own background; the card and the list draw themselves.
+static void paint_stage(wxWindow* panel, wxWindow* card) {
+  wxAutoBufferedPaintDC dc(panel);
+  wxSize cs = panel->GetClientSize();
+  unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
+  if (!gc) return;
+  gc->SetPen(*wxTRANSPARENT_PEN);
+  gc->SetBrush(wxBrush(theme::backdrop()));
+  gc->DrawRectangle(0, 0, cs.x, cs.y);
+  wxRect r = card->GetRect();
+  double cx = r.x + r.width / 2.0, cy = r.y + r.height * 0.45;
+  gc->SetBrush(gc->CreateRadialGradientBrush(cx, cy, cx, cy, r.height * 0.9, wxColour(0x3c, 0x5a, 0xa0, 46), wxColour(0x3c, 0x5a, 0xa0, 0)));
+  gc->DrawRectangle(0, 0, cs.x, cs.y);
+  gc->SetBrush(gc->CreateRadialGradientBrush(cx, r.y, cx, r.y, r.width * 0.9, wxColour(0xe0, 0xb0, 0x3a, 26), wxColour(0xe0, 0xb0, 0x3a, 0)));
+  gc->DrawRectangle(0, 0, cs.x, cs.y);
+  for (int i = 1; i <= 8; ++i) {
+    gc->SetBrush(wxBrush(wxColour(0, 0, 0, (unsigned char)(34 - i * 4))));
+    gc->DrawRoundedRectangle(r.x - i, r.y - i + 6, r.width + 2 * i, r.height + 2 * i, 12 + i);
+  }
+}
 
 CardsPanel::CardsPanel(Window* parent, int id)
   : SetWindowPanel(parent, id)
@@ -56,8 +81,10 @@ CardsPanel::CardsPanel(Window* parent, int id)
   // init sizer
   wxSizer* s = new wxBoxSizer(wxHORIZONTAL);
     s_left = new wxBoxSizer(wxVERTICAL);
-    s_left->Add(editor);
+    s_left->Add(editor, 0, wxALL, 22);
   s->Add(s_left,   0, wxEXPAND | wxRIGHT, 2);
+  SetBackgroundStyle(wxBG_STYLE_PAINT);
+  Bind(wxEVT_PAINT, [this](wxPaintEvent&) { paint_stage(this, editor); });
   s->Add(splitter, 1, wxEXPAND);
   s->SetSizeHints(this);
   SetSizer(s);

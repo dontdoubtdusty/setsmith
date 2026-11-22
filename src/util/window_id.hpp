@@ -64,6 +64,7 @@ enum MenuID {
 
   // Help menu (MainWindow)
   ID_HELP_DOCUMENTATION,
+  ID_WINDOW_FULLSCREEN, // Setsmith: F11 turns full screen on and off
   ID_HELP_ABOUT = wxID_ABOUT,
 
   // Mode menu (SymbolWindow)

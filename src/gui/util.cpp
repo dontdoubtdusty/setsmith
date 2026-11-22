@@ -8,6 +8,7 @@
 
 #include <util/prec.hpp>
 #include <gui/theme.hpp>
+#include <gui/icons.hpp>
 #include <gui/util.hpp>
 #include <util/error.hpp>
 #include <util/rotation.hpp>
@@ -308,6 +309,12 @@ wxToolBarToolBase* add_tool(wxToolBar* toolbar, int id, const char* resource, co
     // Note: the bitmap must match the toolbar bitmap size, otherwise disabled and normal bitmap look different
     // if the size doesn't match, we center the image
     auto size = toolbar->GetToolBitmapSize();
+    // Setsmith: a drawn icon at the toolbar's own size, with a dim copy for the disabled state
+    Image drawn = draw_icon(resource, size.GetWidth(), theme::text());
+    if (drawn.Ok()) {
+      Image disabled = draw_icon(resource, size.GetWidth(), wxColour(0x4c, 0x53, 0x64));
+      return toolbar->AddTool(id, label, drawn, disabled, kind, tooltip, help);
+    }
     Image bitmap = load_resource_tool_image(resource);
     if (bitmap.GetSize() != size) {
       wxPoint pos((size.GetWidth() - bitmap.GetWidth()) / 2, (size.GetHeight() - bitmap.GetHeight()) / 2);
@@ -393,6 +400,9 @@ wxIcon load_resource_icon(const String& name) {
 }
 
 wxImage load_resource_tool_image(const String& name) {
+  // Setsmith: drawn icons first (menus use 16 px), the old PNGs only for names without a drawing
+  wxImage drawn = draw_icon(name, 16, theme::text());
+  if (drawn.Ok()) return drawn;
   return load_resource_image(_("tool/") + name);
 }
 

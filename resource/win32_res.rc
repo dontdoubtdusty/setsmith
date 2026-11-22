@@ -12,6 +12,9 @@
 icon/app ICON "icon/app.ico" // has to come first in alphabet!!
 icon/set ICON "icon/set.ico"
 
+// Setsmith: modern controls and Windows 10 dark mode (see the comment in the file)
+1 24 "setsmith.manifest"
+
 // -------------------------------------------------------- : Toolbar
 
 cursor/rot_text CURSOR "cursor/rot_text.cur"

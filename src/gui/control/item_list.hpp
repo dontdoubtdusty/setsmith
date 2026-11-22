@@ -25,7 +25,12 @@
 class ItemList : public wxListView {
 public:
   ItemList(Window* parent, int id, long additional_style = 0, bool multi_sel = false);
-  
+
+  #ifdef __WXMSW__
+    /// Setsmith: selected rows in a soft gold instead of Windows' light highlight
+    bool MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM* result) override;
+  #endif
+
   // --------------------------------------------------- : Selection
   
   /// Is there a previous item to select?

@@ -12,6 +12,9 @@
 #include <gui/set/cards_panel.hpp>
 #include <gui/set/set_info_panel.hpp>
 #include <gui/set/style_panel.hpp>
+#include <gui/set/header_bar.hpp>
+#include <gui/control/themed_toolbar.hpp>
+#include <gui/theme.hpp>
 #include <wx/spinctrl.h> // EVT_SPINCTRL below; was pulled in by the removed random_pack_panel.hpp
 #include <gui/control/card_list.hpp>
 #include <gui/control/card_viewer.hpp>
@@ -88,6 +91,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   
   auto menuWindow = new wxMenu();
     add_menu_item_tr(menuWindow, ID_WINDOW_NEW, nullptr, "new_window");
+    menuWindow->Append(ID_WINDOW_FULLSCREEN, _("&Full screen\tF11"), _("Show the editor full screen, or as a normal window"), wxITEM_CHECK);
     menuWindow->AppendSeparator();
   menuBar->Append(menuWindow, _MENU_("window"));
   
@@ -97,13 +101,14 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   
   SetMenuBar(menuBar);
   
-  // status bar
-  CreateStatusBar();
+  // Setsmith: a header band (logo, tab pills, toolbar) and a dark status strip replace the native
+  // toolbar, tab bar and status bar, which Windows won't color (Stage 5, 2026-11-22).
+  header = new HeaderBar(this);
+  status = new StatusStrip(this);
   SetStatusText(_HELP_("welcome"));
-  
+
   // tool bar
-  wxToolBar* tb = CreateToolBar(wxTB_FLAT | wxNO_BORDER | wxTB_HORIZONTAL);
-  tb->SetToolBitmapSize(wxSize(20,20));
+  wxToolBar* tb = header->tools();
   add_tool_tr(tb, ID_FILE_NEW, "new", "new_set");
   add_tool_tr(tb, ID_FILE_OPEN, "open", "open_set");
   add_tool_tr(tb, ID_FILE_SAVE, "save", "save_set");
@@ -116,32 +121,23 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   tb->AddSeparator();
   add_tool(tb, ID_EDIT_UNDO, "undo", {}, _TOOLTIP_1_("undo", {}), _HELP_("undo"));
   add_tool(tb, ID_EDIT_REDO, "redo", {}, _TOOLTIP_1_("redo", {}), _HELP_("redo"));
-  tb->AddSeparator();
   tb->Realize();
-  
-  // tab bar, sizer
-  wxToolBar* tabBar = new wxToolBar(this, ID_TAB_BAR, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxNO_BORDER | wxTB_HORIZONTAL | wxTB_HORZ_TEXT | wxTB_NOALIGN);
-  tabBar->SetToolBitmapSize(wxSize(18,18));
+
+  // sizer: header, the panels, status strip
   wxSizer* s = new wxBoxSizer(wxVERTICAL);
-  s->Add(tabBar, 0, wxEXPAND | wxBOTTOM, 0);
+  s->Add(header, 0, wxEXPAND);
   SetSizer(s);
-  #if defined(__WXMSW__) && defined(TBSTYLE_EX_DOUBLEBUFFER)
-    // Use double buffering
-    HWND hWND = (HWND)tabBar->GetHWND();
-    int style = ::SendMessage(hWND, TB_GETEXTENDEDSTYLE, 0, 0);
-    ::SendMessage(hWND, TB_SETEXTENDEDSTYLE, style | LVS_EX_DOUBLEBUFFER, 0);
-  #endif
-  
+
   // panels
-  addPanel(menuWindow, tabBar, new CardsPanel     (this, wxID_ANY), 0, _("window_cards"),      _("cards tab"));
-  addPanel(menuWindow, tabBar, new StylePanel     (this, wxID_ANY), 1, _("window_style"),      _("style tab"));
-  addPanel(menuWindow, tabBar, new SetInfoPanel   (this, wxID_ANY), 2, _("window_set_info"),   _("set info tab"));
+  addPanel(menuWindow, new CardsPanel     (this, wxID_ANY), 0, _("window_cards"),      _("cards tab"));
+  addPanel(menuWindow, new StylePanel     (this, wxID_ANY), 1, _("window_style"),      _("style tab"));
+  addPanel(menuWindow, new SetInfoPanel   (this, wxID_ANY), 2, _("window_set_info"),   _("set info tab"));
   // Setsmith: the Keywords, Statistics, Random Pack and Console panels were removed.
   // Template errors that the Console used to list now show in a message box (see onIdle).
+  s->Add(status, 0, wxEXPAND);
   selectPanel(ID_WINDOW_CARDS); // select cards panel
-  
+
   // loose ends
-  tabBar->Realize();
   SetSize(settings.set_window_width, settings.set_window_height);
   if (settings.set_window_maximized) {
     Maximize();
@@ -151,15 +147,14 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
   // note: this still sends events for menu and toolbar items!
   wxUpdateUIEvent::SetMode(wxUPDATE_UI_PROCESS_SPECIFIED);
   SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
-  tabBar->SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
-  
+
   try {
     setSet(set);
   } catch (...) {
     // clean up!
     // if we don't destroy the panel we could crash in ~CardsPanel, since it expected
     // the insertSymbolMenu to be removed by destroyUI but not deleted.
-    current_panel->destroyUI(GetToolBar(), GetMenuBar());
+    current_panel->destroyUI(toolBar(), GetMenuBar());
     set_windows.erase(remove(set_windows.begin(), set_windows.end(), this));
     throw;
   }
@@ -174,15 +169,18 @@ wxMenu* SetWindow::makeExportMenu() {
 }
 
 SetWindow::~SetWindow() {
-  // store window size in settings
-  wxSize s = GetSize();
-  settings.set_window_maximized = IsMaximized();
-  if (!IsMaximized()) {
-    settings.set_window_width  = s.GetWidth();
-    settings.set_window_height = s.GetHeight();
+  // store window size in settings (the size before full screen is not known here, so keep the old one)
+  settings.set_window_fullscreen = IsFullScreen();
+  if (!IsFullScreen()) {
+    wxSize s = GetSize();
+    settings.set_window_maximized = IsMaximized();
+    if (!IsMaximized()) {
+      settings.set_window_width  = s.GetWidth();
+      settings.set_window_height = s.GetHeight();
+    }
   }
   // destroy ui of selected panel
-  current_panel->destroyUI(GetToolBar(), GetMenuBar());
+  current_panel->destroyUI(toolBar(), GetMenuBar());
   // cleanup (see find stuff)
   delete export_menu;
   // remove from list of set windows
@@ -191,7 +189,7 @@ SetWindow::~SetWindow() {
 
 // ----------------------------------------------------------------------------- : Panel managment
 
-void SetWindow::addPanel(wxMenu* windowMenu, wxToolBar* tabBar, SetWindowPanel* panel, UInt pos, const String& image_name, const String& name) {
+void SetWindow::addPanel(wxMenu* windowMenu, SetWindowPanel* panel, UInt pos, const String& image_name, const String& name) {
   // insert in list
   if (panels.size() <= pos) panels.resize(pos + 1);
   panels[pos] = panel;
@@ -202,8 +200,7 @@ void SetWindow::addPanel(wxMenu* windowMenu, wxToolBar* tabBar, SetWindowPanel* 
   String tab_help    = tr(LOCALE_CAT_TOOLTIP, name);
   // add to tab bar
   int id = ID_WINDOW_MIN + pos;
-  tabBar->AddTool(id, tab_name + _("   "), load_resource_tool_image(image_name), wxNullBitmap, wxITEM_CHECK, tab_help, description);
-  tabBar->AddSeparator();
+  header->addTab(id, tab_name, image_name, tab_help);
   // add to menu bar
   auto menu_item = windowMenu->Append(id, menu_name, description, wxITEM_CHECK);
   set_menu_item_image(menu_item, image_name);
@@ -213,27 +210,19 @@ void SetWindow::addPanel(wxMenu* windowMenu, wxToolBar* tabBar, SetWindowPanel* 
 
 void SetWindow::selectPanel(int id) {
   SetWindowPanel* toSelect = panels.at(id - ID_WINDOW_MIN);
-  if (current_panel == toSelect) {
-    // don't change, but fix tab bar
-    wxToolBar* tabBar  = (wxToolBar*)FindWindow(ID_TAB_BAR);
-    int wid = ID_WINDOW_MIN;
-    FOR_EACH(p, panels) {
-      tabBar->ToggleTool(wid++, p == current_panel);
-    }
-    return;
-  }
+  if (current_panel == toSelect) return;
   // destroy & create menus
-  if (current_panel) current_panel->destroyUI(GetToolBar(), GetMenuBar());
+  if (current_panel) current_panel->destroyUI(toolBar(), GetMenuBar());
   current_panel = toSelect;
-  current_panel->initUI(GetToolBar(), GetMenuBar());
+  current_panel->initUI(toolBar(), GetMenuBar());
+  header->arrange(); // the panel's tools change the toolbar's width
+  header->selectTab(id);
   // show/hide panels and select tabs
   wxSizer*   sizer   = GetSizer();
-  wxToolBar* tabBar  = (wxToolBar*)FindWindow(ID_TAB_BAR);
   wxMenuBar* menuBar = GetMenuBar();
   int wid = ID_WINDOW_MIN;
   FOR_EACH(p, panels) {
     sizer->Show       (p,   p == current_panel);
-    tabBar->ToggleTool(wid, p == current_panel);
     menuBar->Check    (wid, p == current_panel);
     ++wid;
   }
@@ -243,34 +232,50 @@ void SetWindow::selectPanel(int id) {
   current_panel->SetFocus();
 }
 
-void toolbar_SetToolNormalBitmap(wxToolBar* toolbar, int id, wxBitmap const& bitmap) {
-  #if wxVERSION_NUMBER < 2800
-    // copied from wx2.8.11, tbar95.cpp
-    wxToolBarToolBase* tool = wx_static_cast(wxToolBarToolBase*, toolbar->FindById(id));
-    if (tool) {
-      tool->SetNormalBitmap(bitmap);
-      toolbar->Realize();
-    }
-  #else
-    toolbar->SetToolNormalBitmap(id, bitmap);
-  #endif
+wxToolBar* SetWindow::toolBar() const {
+  return header->tools();
 }
 
-void SetWindow::setPanelIcon(SetWindowPanel* panel, wxBitmap const& icon) {
-  for (size_t i = 0 ; i < panels.size() ; ++i) {
-    if (panels[i] == panel) {
-      wxToolBar* tabBar = (wxToolBar*)FindWindow(ID_TAB_BAR);
-      toolbar_SetToolNormalBitmap(tabBar, ID_WINDOW_MIN+(int)i, icon);
-      #if wxVERSION_NUMBER < 2800
-        // This is needed at least in wx2.6, other versions seem not to need it, but maybe they do
-        Layout();
-      #endif
-      // TODO: this could be done better, wx requires a full new Realize of the toolbar, but on win32 a single message would do
-      // if only we could set up the imagelist correctly.
-      return;
-    }
+// ----------------------------------------------------------------------------- : Full screen, status, menu bar
+
+// Setsmith: the editor opens full screen unless the user left it as a window last time.
+bool SetWindow::Show(bool show) {
+  bool changed = wxFrame::Show(show);
+  if (show && !shown_once) {
+    shown_once = true;
+    // after the window is on screen, so Windows knows which monitor to fill
+    if (settings.set_window_fullscreen) CallAfter([this] { setFullscreen(true); });
   }
+  return changed;
 }
+
+void SetWindow::setFullscreen(bool on) {
+  ShowFullScreen(on, theme::fullscreen_style());
+  header->setFullscreen(on);
+  GetMenuBar()->Check(ID_WINDOW_FULLSCREEN, on);
+}
+
+void SetWindow::onWindowFullscreen(wxCommandEvent&) {
+  setFullscreen(!IsFullScreen());
+}
+
+void SetWindow::SetStatusText(const wxString& text, int) {
+  if (status) status->setText(text);
+}
+
+void SetWindow::DoGiveHelp(const wxString& text, bool show) {
+  if (status) status->setText(show ? text : wxString());
+}
+
+#ifdef __WXMSW__
+WXLRESULT SetWindow::MSWWindowProc(WXUINT msg, WXWPARAM wp, WXLPARAM lp) {
+  WXLRESULT result;
+  if (theme::menu_bar_message(this, msg, wp, lp, &result)) return result;
+  result = wxFrame::MSWWindowProc(msg, wp, lp);
+  theme::cover_menu_bar_line(this, msg);
+  return result;
+}
+#endif
 
 // ----------------------------------------------------------------------------- : Window managment
 
@@ -492,13 +497,13 @@ void SetWindow::onUpdateUI(wxUpdateUIEvent& ev) {
       ev.Enable(set->actions.canUndo());
       String label = set->actions.undoName();
       ev.SetText(_MENU_1_("undo", label));
-      GetToolBar()->SetToolShortHelp(ID_EDIT_UNDO, _TOOLTIP_1_("undo", label));
+      toolBar()->SetToolShortHelp(ID_EDIT_UNDO, _TOOLTIP_1_("undo", label));
       break;
     } case ID_EDIT_REDO: {
       ev.Enable(set->actions.canRedo());
       String label = set->actions.redoName();
       ev.SetText(_MENU_1_("redo", label));
-      GetToolBar()->SetToolShortHelp(ID_EDIT_REDO, _TOOLTIP_1_("redo", label));
+      toolBar()->SetToolShortHelp(ID_EDIT_REDO, _TOOLTIP_1_("redo", label));
       break;
     }
     // copy & paste & find
@@ -603,7 +608,7 @@ void SetWindow::onFileInspect(wxCommandEvent&) {
 
 void SetWindow::onFileExportMenu(wxCommandEvent& ev) {
   // find position of export tool bar button
-  wxToolBar* tb = GetToolBar();
+  wxToolBar* tb = toolBar();
   int pos = tb->GetToolPos(ev.GetId());
   wxRect tool_rect;
   #if defined(__WXMSW__)
@@ -825,6 +830,7 @@ BEGIN_EVENT_TABLE(SetWindow, wxFrame)
   EVT_MENU      (ID_EDIT_PREFERENCES,  SetWindow::onEditPreferences)
   EVT_MENU      (ID_WINDOW_NEW,      SetWindow::onWindowNewWindow)
   EVT_TOOL_RANGE    (ID_WINDOW_MIN, ID_WINDOW_MAX, SetWindow::onWindowSelect)
+  EVT_MENU          (ID_WINDOW_FULLSCREEN, SetWindow::onWindowFullscreen)
   EVT_MENU      (ID_HELP_ABOUT,      SetWindow::onHelpAbout)
   EVT_MENU_OPEN    (            SetWindow::onMenuOpen)
   EVT_TOOL_RANGE    (ID_CHILD_MIN, ID_CHILD_MAX,   SetWindow::onChildMenu)

@@ -148,6 +148,7 @@ Settings settings;
 Settings::Settings()
   : locale               (_("en"))
   , set_window_maximized (false)
+  , set_window_fullscreen(true)
   , set_window_width     (790)
   , set_window_height    (300)
   , card_notes_height    (40)
@@ -229,6 +230,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
   REFLECT(default_symbol_dir);
   REFLECT(default_export_dir);
   REFLECT(set_window_maximized);
+  REFLECT(set_window_fullscreen);
   REFLECT(set_window_width);
   REFLECT(set_window_height);
   REFLECT(card_notes_height);
