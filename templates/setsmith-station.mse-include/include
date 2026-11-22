@@ -1,0 +1,13 @@
+mse version: 2.0.0
+short name: Setsmith station
+full name: Setsmith station rows for Magic frames
+version: 2026-11-21
+
+# Station cards (Edge of Eternities, Star Trek): the threshold rows at the bottom of the text box, each with
+# a round "N+" badge at the left edge and a grey band behind it. Up to two rows.
+# Files:
+#   game_fields  the four card fields, included by magic.mse-game (patched in by tools\make-slim-data.ps1)
+#   script       layout functions, included in each frame's init script; the frame defines station_bottom
+#   card_fields  field layout, bands and badges, included at the top level of each frame
+# The PNGs are drawn by tools\make-station-assets.ps1; edit that script, not the images.
+# Card file keys: "station 1 threshold: 6+", "station 1 text: Flying", and the same with 2.

@@ -44,6 +44,8 @@ Leave out fields that don't apply. Never write an `image:` line; the script hand
 | `power`, `toughness` | Creatures only. |
 | `illustrator` | Artist credit when the user gives one. |
 | `stylesheet` | Only for other frames, see below. |
+| `alias` | The real (Oracle) name of a reskinned card, printed small under the title on every frame. Only when the user reskins a real card or asks for it. |
+| `station 1 threshold`, `station 1 text` | Station cards (Spacecraft): the first threshold row, e.g. `6+` and `Flying`. Put only the `Station (...)` line in `rule text`, never the threshold rows themselves (Oracle text writes them as `6+`, a bar, then the abilities). A second row uses `station 2 threshold` and `station 2 text`. Works on plain M15 and gold (M15 Altered) cards. |
 
 Frames (set with a `stylesheet:` line; leave it out for plain M15):
 

@@ -1,0 +1,136 @@
+############################################################## Station rows (Setsmith)
+# Layout for the station fields in game_fields. Positions are in 375 x 523 frame units.
+# Bands sit above the frame and below all text (z 850); the frame's own text box is shortened by
+# station_height() (patched into each frame by tools\make-slim-data.ps1).
+card style:
+	station 1 threshold:
+		left: 12
+		top: { station_top(1) + station_h(1) / 2 - 17 }
+		width: 34
+		height: 34
+		z index: 960
+		visible: { card.station_1_threshold != "" }
+		alignment: middle center shrink-overflow
+		padding top: 1
+		font:
+			name: Beleren Bold
+			size: 11
+			scale down to: 7
+			color: white
+	station 1 text:
+		left: 47
+		top: { station_top(1) }
+		width: { if station_last() == 1 and card.pt != "" then 236 else 294 }
+		height: { max(1, station_h(1)) }
+		z index: 905
+		visible: { card.station_1_threshold != "" }
+		alignment: middle left
+		padding left: 4
+		padding right: 4
+		font:
+			name: MPlantin
+			italic name: MPlantin-Italic
+			size: { station_size() }
+			scale down to: 6
+			color: black
+		symbol font:
+			name: { styling.text_box_mana_symbols }
+			size: { station_size() }
+		line height hard: 1.2
+		line height soft: 0.9
+	station 2 threshold:
+		left: 12
+		top: { station_top(2) + station_h(2) / 2 - 17 }
+		width: 34
+		height: 34
+		z index: 960
+		visible: { card.station_2_threshold != "" }
+		alignment: middle center shrink-overflow
+		padding top: 1
+		font:
+			name: Beleren Bold
+			size: 11
+			scale down to: 7
+			color: white
+	station 2 text:
+		left: 47
+		top: { station_top(2) }
+		width: { if card.pt != "" then 236 else 294 }
+		height: { max(1, station_h(2)) }
+		z index: 905
+		visible: { card.station_2_threshold != "" }
+		alignment: middle left
+		padding left: 4
+		padding right: 4
+		font:
+			name: MPlantin
+			italic name: MPlantin-Italic
+			size: { station_size() }
+			scale down to: 6
+			color: black
+		symbol font:
+			name: { styling.text_box_mana_symbols }
+			size: { station_size() }
+		line height hard: 1.2
+		line height soft: 0.9
+extra card field:
+	type: choice
+	name: station band 1
+	choice: band
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: station band 2
+	choice: band
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: station badge 1
+	choice: badge
+	editable: false
+	save value: false
+extra card field:
+	type: choice
+	name: station badge 2
+	choice: badge
+	editable: false
+	save value: false
+extra card style:
+	station band 1:
+		left: 29
+		top: { station_top(1) }
+		width: 314
+		height: { max(1, station_h(1)) }
+		z index: 850
+		visible: { card.station_1_threshold != "" }
+		render style: image
+		image: { "/setsmith-station.mse-include/band1.png" }
+	station band 2:
+		left: 29
+		top: { station_top(2) }
+		width: 314
+		height: { max(1, station_h(2)) }
+		z index: 851
+		visible: { card.station_2_threshold != "" }
+		render style: image
+		image: { "/setsmith-station.mse-include/band2.png" }
+	station badge 1:
+		left: 12
+		top: { station_top(1) + station_h(1) / 2 - 17 }
+		width: 34
+		height: 34
+		z index: 955
+		visible: { card.station_1_threshold != "" }
+		render style: image
+		image: { "/setsmith-station.mse-include/badge.png" }
+	station badge 2:
+		left: 12
+		top: { station_top(2) + station_h(2) / 2 - 17 }
+		width: 34
+		height: 34
+		z index: 955
+		visible: { card.station_2_threshold != "" }
+		render style: image
+		image: { "/setsmith-station.mse-include/badge.png" }

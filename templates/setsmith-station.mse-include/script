@@ -1,0 +1,27 @@
+############################################################## Station rows (Setsmith)
+# Each frame sets station_bottom (the bottom of its text box) before including this file.
+# A row exists when its threshold is filled in. The last row leaves room for the P/T box.
+station_last := {
+	if card.station_2_threshold != "" then 2
+	else if card.station_1_threshold != "" then 1
+	else 0
+}
+# Font size for the row text. Printed cards set rules and rows in one size, so a card with more text in total
+# gets smaller rows too; the frame's own text box then shrinks to about the same size.
+station_size := {
+	t := length(remove_tags(card.rule_text)) + length(remove_tags(card.station_1_text)) + length(remove_tags(card.station_2_text))
+	if t > 420 then 11.5
+	else if t > 300 then 12.5
+	else if t > 200 then 13.5
+	else 14
+}
+# Rough characters per line for a row's text box (its width over an average letter width), used to size the
+# row before drawing it.
+station_cpl := { to_int((if input == station_last() and card.pt != "" then 228 else 286) / (station_size() * 0.43)) }
+# Height of row 1 or 2 (0 when unused): room for the badge, or as many lines as the text needs.
+station_h := {
+	if card["station_" + input + "_threshold"] == "" then 0
+	else max(34, 10 + station_size() * 1.25 * to_int((length(remove_tags(card["station_" + input + "_text"])) + station_cpl(input) - 1) / station_cpl(input)))
+}
+station_height := { station_h(1) + station_h(2) }
+station_top := { if input == 1 then station_bottom() - station_height() else station_bottom() - station_h(2) }

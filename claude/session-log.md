@@ -2,6 +2,14 @@
 
 Newest first. Keep each entry short: what changed, what was verified, what's next.
 
+## 2026-11-21 (alias line, station rows, for mtg-reskin)
+
+- **Alias line:** a filled-in `alias` prints the real Oracle name small under the title, on every Magic frame (patch in `make-slim-data.ps1`). Frames with their own alias box (Altered, adventure, DFC, planeswalker, tokens) have it replaced: the engine keeps the first box with a name.
+- **Station rows:** new `templates/setsmith-station.mse-include` (fields, layout script, bands, badges; PNGs from `tools/make-station-assets.ps1`), hooked into M15 and M15 Altered. Up to two rows; the text box shortens to fit; row font follows the card's total text. `/card` skill documents `alias` and the station fields.
+- **Render test:** `frames-test.mse-set` gained Rustbucket Skiff (two rows, alias) and Gilded Orrery (gold, one row, no P/T). Ashwood Pilgrim's hash regenerated on purpose: only its collector line changed (the set has two more cards).
+- **Verified:** `check.ps1` passes; every existing render unchanged before the new cards were added. Real Star Trek cards rendered and looked at: Oberth-Class Starship, D-7 Battle Cruiser (two rows), Borg Cube (gold), Deep Space 9 (no P/T), a saga and a token with aliases. One render takes about 2.7 s through the CLI, mostly startup.
+- **Next:** the mtg-reskin viewer renders through `card.ps1` or the CLI. Very wordy station cards squeeze the main text; tune `station_size` if real cards look off.
+
 ## 2026-11-12 (/card skill, more Magic frames, Character art fix)
 
 - **/card skill:** `.claude/skills/card/SKILL.md` + `tools/card.ps1`. Claude designs a Magic or UVS card from an idea (fields the user gives are kept), adds or replaces it by name in `Documents\Setsmith Cards\Claude Magic.mse-set` / `Claude UVS.mse-set` (with `.bak`), and renders a PNG next to it. Optional art is center-cropped to the art box; `-Art2` for a DFC back.

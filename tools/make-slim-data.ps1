@@ -234,6 +234,71 @@ foreach ($p in "magic-m15.mse-style", "magic-m15-showcase-etched-foil.mse-style"
 }
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of holo stamp)", "applied"
 
+# Alias line: a reskinned or Universes Within style card prints its real (Oracle) name in small italic text just
+# under the title bar, on the art. The game already has the "alias" field (the pack's Godzilla frame uses it);
+# this shows it on every Setsmith Magic frame when it is filled in. White with a dark shadow so it reads on any art.
+function Alias-Style([int]$Left, [int]$Top, [int]$Width) {
+  "`talias:`n`t`tleft: $Left`n`t`ttop: $Top`n`t`twidth: $Width`n`t`theight: 13`n`t`tz index: 950`n" +
+  "`t`tvisible: { card.alias != `"`" }`n`t`talignment: middle center shrink-overflow`n" +
+  "`t`tfont:`n`t`t`tname: MPlantin-Italic`n`t`t`tsize: 9.5`n`t`t`tscale down to: 6`n`t`t`tcolor: white`n" +
+  "`t`t`tshadow color: rgba(0,0,0,220)`n`t`t`tshadow displacement x: 0`n`t`t`tshadow displacement y: 0`n`t`t`tshadow blur: 2.5`n"
+}
+$aliasFrames = [ordered]@{
+  "magic-m15.mse-style"                        = @(40, 61, 295)
+  "magic-m15-altered.mse-style"                = @(40, 61, 295)
+  "magic-m15-adventure.mse-style"              = @(40, 61, 295)
+  "magic-m15-showcase-etched-foil.mse-style"   = @(40, 61, 295)
+  "magic-m15-mainframe-dfc.mse-style"          = @(40, 61, 295)
+  "magic-m15-mainframe-planeswalker.mse-style" = @(40, 53, 295)
+  "magic-m15-mainframe-tokens.mse-style"       = @(40, 64, 295)
+  # Saga art is the tall right-hand column, so the alias sits over that column.
+  "magic-m15-saga.mse-style"                   = @(190, 61, 152)
+}
+# Several frames already define an "alias" box that only shows with their "godzilla style alias" or "pokemon
+# evobar" option. The engine keeps the first box with a name and ignores later ones, so that box is replaced in
+# place (those two options no longer move the alias); frames without one get the box at the start of card style.
+foreach ($p in $aliasFrames.Keys) {
+  $a = $aliasFrames[$p]
+  $block = Alias-Style $a[0] $a[1] $a[2]
+  $styleText = [IO.File]::ReadAllText((Join-Path (Join-Path $Output $p) "style"))
+  $edit = if ($styleText -match '(?m)^\talias: ?\r?$') {
+    @{ Name = "alias line (replace)"; Count = 1; Pattern = '(?ms)^\talias: ?\r?\n.*?(?=^\t(?!\t))'; With = $block }
+  } else {
+    @{ Name = "alias line"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = '$1' + $block }
+  }
+  Patch-File $p "style" @($edit)
+}
+"{0,-48} {1,7}" -f "Setsmith patches (alias line)", "applied"
+
+# Station rows (Edge of Eternities and Star Trek Spacecraft): templates\setsmith-station.mse-include adds the
+# fields, bands and badges. Here the game gets the fields, and M15 and M15 Altered (gold cards) get the layout
+# and a text box shortened by the rows' height. station_bottom is the bottom of each frame's text box.
+$stationDepends = @{ Name = "station dependency"; Count = 1; Pattern = '(?m)(^version:[^\r\n]*\r?\n)'; With = "`$1depends on:`n`tpackage: setsmith-station.mse-include`n`tversion: 2026-11-21`n" }
+Patch-File "magic.mse-game" "game" @(
+  $stationDepends
+  @{ Name = "station fields"; Count = 1; Pattern = '(?m)(^include file: card_fields\r?\n)'; With = "`$1include file: /setsmith-station.mse-include/game_fields`r`n" }
+)
+$stationFrames = [ordered]@{
+  "magic-m15.mse-style" = @{
+    Bottom = "481"
+    Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\theight:\s*)154'; With = '${1}{ 154 - station_height() }' }
+  }
+  "magic-m15-altered.mse-style" = @{
+    Bottom = "bottom_of_textbox()"
+    Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tbottom:\s*)\{ bottom_of_textbox\(\) \}'; With = '${1}{ bottom_of_textbox() - station_height() }' }
+  }
+}
+foreach ($p in $stationFrames.Keys) {
+  $f = $stationFrames[$p]
+  Patch-File $p "style" @(
+    $stationDepends
+    @{ Name = "station script"; Count = 1; Pattern = '(?m)(^init script:\r?\n)'; With = "`$1`tstation_bottom := { $($f.Bottom) }`n`tinclude file: /setsmith-station.mse-include/script`n" }
+    @{ Name = "station layout"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = "include file: /setsmith-station.mse-include/card_fields`n`$1" }
+    $f.Text
+  )
+}
+"{0,-48} {1,7}" -f "Setsmith patches (station rows)", "applied"
+
 # Double-size M15 frames, crowns and P/T boxes from the pack's 744 x 1039 layer kit.
 & (Join-Path $PSScriptRoot "make-m15-hd.ps1") -Source $Source -Output $Output
 

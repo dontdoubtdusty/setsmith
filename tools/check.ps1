@@ -7,7 +7,7 @@
   2. Renders the test sets and compares each image with its reference hashes:
      - tools/slim-test.mse-set: M15 cards; hashes of Setsmith's accepted output (matched MSE 2.5.6 + the full
        M15 pack until 2026-11-15, when enlarged images became smooth instead of blocky).
-     - tools/frames-test.mse-set: saga, DFC, adventure, borderless and etched foil Magic frames; Setsmith's own accepted output.
+     - tools/frames-test.mse-set: saga, DFC, adventure, borderless, etched foil and station (with alias) Magic frames; Setsmith's own accepted output.
      - tools/uvs-test.mse-set: UniVersus cards; hashes of Setsmith's own accepted output
        (regenerate them on purpose when the UVS frame changes, and say so in the commit).
   3. Launches the GUI for a few seconds outside MSYS2 and fails if it prints any error.

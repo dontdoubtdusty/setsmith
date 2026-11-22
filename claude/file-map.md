@@ -8,6 +8,7 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 |---|---|
 | `tools/check.ps1` | Build, render test and GUI smoke test |
 | `tools/make-slim-data.ps1` | Copies M15, planeswalker, token and blend packages into `build/data` |
+| `tools/make-station-assets.ps1` | Draws the station badge and band PNGs into `templates/setsmith-station.mse-include` |
 | `tools/make-m15-hd.ps1` | Builds the 744 x 1039 M15 frames, crowns, P/T boxes and blend masks from the pack's layer kit (run by `make-slim-data.ps1`) |
 | `tools/slim-test.mse-set`, `slim-test.reference.txt` | Seven test cards and their render hashes |
 | `tools/frames-test.mse-set`, `frames-test.reference.txt` | Saga, DFC, adventure, borderless and etched foil test cards and their render hashes |
@@ -29,6 +30,7 @@ The places where Setsmith differs from upstream. Use `git diff upstream/master..
 | `templates/uvs-2026-common.mse-include/` | Shared layout (`card-style`), scripts, generated PNGs |
 | `templates/uvs-2026.mse-style/`, `uvs-2026-exact.mse-style/`, `uvs-2026-mpc.mse-style/` | Bleed (819 x 1114), exact (744 x 1039) and MPC (822 x 1122) stylesheets; headers only (size, `bleed_x`, `bleed_y`) |
 | `templates/uvs-symbols.mse-symbol-font/` | Inline label boxes and the commit icon |
+| `templates/setsmith-station.mse-include/` | Station rows for Magic frames: card fields (`game_fields`), layout scripts (`script`), field layout, bands and badges (`card_fields`), generated PNGs |
 | `templates/fonts/` | Figtree and Barlow (OFL) |
 
 ## Engine additions for UVS

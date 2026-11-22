@@ -1,0 +1,26 @@
+card field:
+	type: text
+	name: station 1 threshold
+	description: Charge counters for the first station row, for example 6+.
+	show statistics: false
+	card list visible: false
+card field:
+	type: text
+	name: station 1 text
+	description: Abilities the card has at the first station threshold.
+	multi line: true
+	show statistics: false
+	card list visible: false
+card field:
+	type: text
+	name: station 2 threshold
+	description: Charge counters for the second station row, for example 8+.
+	show statistics: false
+	card list visible: false
+card field:
+	type: text
+	name: station 2 text
+	description: Abilities the card has at the second station threshold.
+	multi line: true
+	show statistics: false
+	card list visible: false
