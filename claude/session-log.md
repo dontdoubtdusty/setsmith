@@ -2,6 +2,13 @@
 
 Newest first. Keep each entry short: what changed, what was verified, what's next.
 
+## 2026-11-22 (printed text size, margins and P/T shape, for mtg-reskin)
+
+- **Text:** M15 and M15 Altered rules text largest size 15.45 (was 14), measured line heights, padding left 4, holo-stamp margin 2 (was 12). Name and type fonts `scale down to: 6`. Picard renders within 1 px of the scan.
+- **Station:** badge and row sizes re-measured; station cards drop the P/T text mask; P/T box redrawn (straight edges, curved rounded ends), numerals centred.
+- **Verified:** `check.ps1` passes; slim-test and frames-test hashes regenerated on purpose (8 cards). Committed e7dad5e2, pushed.
+- **Next:** a full-width last flavor line can touch the holo-stamp arch; the mask only trims line ends.
+
 ## 2026-11-21 (alias line, station rows, for mtg-reskin)
 
 - **Alias line:** a filled-in `alias` prints the real Oracle name small under the title, on every Magic frame (patch in `make-slim-data.ps1`). Frames with their own alias box (Altered, adventure, DFC, planeswalker, tokens) have it replaced: the engine keeps the first box with a name.
