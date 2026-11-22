@@ -56,6 +56,7 @@ public:
   vector<KeywordP>         keywords;          ///< Additional keywords used in this set
   vector<PackTypeP>        pack_types;        ///< Additional/replacement pack types
   String                   apprentice_code;   ///< Code to use for apprentice (Magic only)
+  String                   tile_card;         ///< Setsmith: name of the card whose art is the set's dashboard tile (empty: the first card)
 
   ActionStack              actions;           ///< Actions performed on this set and the cards in it
   KeywordDatabase          keyword_db;        ///< Database for matching keywords, must be cleared when keywords change

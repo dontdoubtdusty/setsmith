@@ -102,6 +102,8 @@ int MSE::OnRun() {
       }
       if (!args.empty()) {
         const String& arg = args[0];
+        // Setsmith: command-line jobs (renders, exports, scripts) do not touch the recent sets
+        settings.remember_recent_sets = false;
         // Find the extension
         wxFileName f(arg.Mid(0,arg.find_last_not_of(_("\\/")) + 1));
         if (f.GetExt() == _("mse-symbol") || arg == _("--symbol-editor")) {
@@ -109,6 +111,7 @@ int MSE::OnRun() {
           throw Error(_("This build has no symbol editor."));
         } else if (f.GetExt() == _("mse-set") || f.GetExt() == _("set")) {
           // Show the set window
+          settings.remember_recent_sets = true;
           Window* wnd = new SetWindow(nullptr, import_set(arg));
           wnd->Show();
           return runGUI();
@@ -230,6 +233,7 @@ int MSE::OnRun() {
     }
     
     // no command line arguments, or error, show welcome window
+    settings.remember_recent_sets = true;
     (new WelcomeWindow())->Show();
     return runGUI();
     

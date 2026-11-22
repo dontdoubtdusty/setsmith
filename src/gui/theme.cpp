@@ -88,6 +88,19 @@ static void enable_dark_mode() {
   if (flush)    flush();
 }
 
+// Dark title bar for a top-level window (Windows 10 20H1 and later; attribute 19 on older builds).
+// Loaded by name from dwmapi.dll, so no extra link library is needed and older Windows simply keeps the light bar.
+static void set_dark_title_bar(wxWindow* w) {
+  HWND h = (HWND)w->GetHWND();
+  HMODULE dwm = LoadLibraryW(L"dwmapi.dll");
+  if (!h || !dwm) return;
+  typedef HRESULT (WINAPI *SetAttrFn)(HWND, DWORD, LPCVOID, DWORD);
+  SetAttrFn set_attr = (SetAttrFn)GetProcAddress(dwm, "DwmSetWindowAttribute");
+  if (!set_attr) return;
+  BOOL dark = TRUE;
+  if (FAILED(set_attr(h, 20, &dark, sizeof(dark)))) set_attr(h, 19, &dark, sizeof(dark));
+}
+
 static void set_native_theme(wxWindow* w, const wchar_t* name) {
   HWND h = (HWND)w->GetHWND();
   if (h) SetWindowTheme(h, name, nullptr);
@@ -124,6 +137,7 @@ static void apply_one(wxWindow* w) {
     w->SetFont(font());
   }
   #ifdef __WXMSW__
+    if (w->IsTopLevel()) set_dark_title_bar(w);
     if (dynamic_cast<wxListCtrl*>(w)) {
       set_native_theme(w, L"DarkMode_Explorer");
       HWND header = ListView_GetHeader((HWND)w->GetHWND());

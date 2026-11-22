@@ -213,6 +213,9 @@ IMPLEMENT_REFLECTION(Set) {
   // Setsmith: version control support was removed. Old sets still have this key, so read it and ignore it.
   REFLECT_IF_READING { IgnoredVersionControl ignored; REFLECT_N("version_control", ignored); }
   REFLECT(apprentice_code);
+  // Setsmith: only written when picked, so sets without a tile picture stay byte-for-byte the same.
+  REFLECT_IF_READING { REFLECT(tile_card); }
+  REFLECT_IF_NOT_READING { if (!tile_card.empty()) REFLECT(tile_card); }
 }
 
 // TODO: make this a more generic function to be used elsewhere

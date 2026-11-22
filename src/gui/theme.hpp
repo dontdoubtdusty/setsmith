@@ -6,7 +6,8 @@
 #pragma once
 
 // Setsmith: the look of the app. One place for the palette, so a color is changed once.
-// No animation and no custom drawing loops: colors are set once per window.
+// Colors are set once per window. The dashboard (welcome_window.cpp) is the one place with its own drawing
+// and light hover animation (owner's choice, 2026-11-22).
 
 #include <util/prec.hpp>
 

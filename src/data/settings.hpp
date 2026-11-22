@@ -123,9 +123,12 @@ public:
   
   /// Add a file to the list of recent files
   void addRecentFile(const String& filename);
+  /// Setsmith: false while running a command-line job, so CLI renders never show up as recent sets
+  bool remember_recent_sets = true;
   
   // --------------------------------------------------- : Files/directories
   String default_set_dir;    ///< Where to look for .mse-set files
+  vector<String> watched_folders; ///< Setsmith: extra folders the dashboard scans for sets (DocumentsSetsmith Cards is always scanned)
   String default_image_dir;  ///< Where to look for images to import
   String default_symbol_dir; ///< Where to look for .mse-symbol files
   String default_export_dir; ///< Where to export to by default

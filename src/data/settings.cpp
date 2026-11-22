@@ -161,6 +161,7 @@ Settings::Settings()
 {}
 
 void Settings::addRecentFile(const String& filename) {
+  if (!remember_recent_sets) return;
   // get absolute path
   wxFileName fn(filename);
   fn.Normalize();
@@ -223,6 +224,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
   REFLECT(locale);
   REFLECT(recent_sets);
   REFLECT(default_set_dir);
+  REFLECT(watched_folders);
   REFLECT(default_image_dir);
   REFLECT(default_symbol_dir);
   REFLECT(default_export_dir);

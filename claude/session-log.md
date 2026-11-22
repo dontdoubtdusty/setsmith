@@ -2,6 +2,14 @@
 
 Newest first. Keep each entry short: what changed, what was verified, what's next.
 
+## 2026-11-22 (MTGA-style dashboard)
+
+- **Dashboard:** the welcome window is rebuilt as an MTGA-style home screen (set tiles with art, New set tile, game filters, Folders and Open buttons, gold Continue button, hover lift and glow, picture fade-in, smooth scroll). New `src/gui/set_library.*` reads sets cheaply. New settings key `watched_folder`, new set key `tile card` (written only when picked).
+- **Dark title bars** for every window (DWM attribute 20, falling back to 19).
+- **CLI no longer touches recent sets** (`settings.remember_recent_sets`); the two mtg-reskin work folders were removed from the owner's recent list, and `mtg-reskin\build` was added as a watched folder.
+- Verified: check.ps1 passes (no render changes), dashboard screenshotted with hover on a tile and on Continue.
+- Next: Stage 5, the editor restyle to match.
+
 ## 2026-11-22 (printed text size, margins and P/T shape, for mtg-reskin)
 
 - **Text:** M15 and M15 Altered rules text largest size 15.45 (was 14), measured line heights, padding left 4, holo-stamp margin 2 (was 12). Name and type fonts `scale down to: 6`. Picard renders within 1 px of the scan.
