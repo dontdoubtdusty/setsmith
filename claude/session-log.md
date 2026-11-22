@@ -2,6 +2,15 @@
 
 Newest first. Keep each entry short: what changed, what was verified, what's next.
 
+## 2026-11-22 (editor restyle, speed and dead-code pass)
+
+- **Editor restyle (f1039e15):** editor and dashboard open full screen by default (F11, header buttons or double-clicking the header for a window; `set_window_fullscreen`). Header band (`gui/set/header_bar.*`) replaces the native toolbar, tab bar and status bar; menu button in full screen. Line icons drawn in code (`gui/icons.*`), blue-black palette, gold list selection. Added `resource/setsmith.manifest`: without it there were no visual styles, so the dark themes never applied.
+- **Speed (d168a837):** directory-package files were read one byte per system call (unbuffered `wxFileInputStream` in `Package::openIn`). Now buffered, and whole-file script includes read in 64 KB blocks: set open and CLI export about 1.3 s faster. Not changed: PNG level 3 (14% faster save, 6% bigger files).
+- **Dead code (d168a837):** keyword list, tree list, symbol editor actions, image-to-symbol import, 73 images, 95 window ids removed; undo/redo tooltips set only on change.
+- **White flash (c956f6fc):** windows are themed and full screen before the first show; editor frame erases dark; editor opens on the dashboard's monitor. Owner to confirm.
+- Verified: check.ps1 passes after each step, renders byte-identical.
+- Next: editor polish (search-box border, column header text, list and notes borders, notes panel), then the MTGA collection-style card grid.
+
 ## 2026-11-22 (MTGA-style dashboard)
 
 - **Dashboard:** the welcome window is rebuilt as an MTGA-style home screen (set tiles with art, New set tile, game filters, Folders and Open buttons, gold Continue button, hover lift and glow, picture fade-in, smooth scroll). New `src/gui/set_library.*` reads sets cheaply. New settings key `watched_folder`, new set key `tile card` (written only when picked).
