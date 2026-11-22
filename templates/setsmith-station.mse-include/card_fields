@@ -20,7 +20,7 @@ card style:
 	station 1 text:
 		left: 47
 		top: { station_top(1) }
-		width: { if station_last() == 1 and card.pt != "" then 236 else 294 }
+		width: { if station_last() == 1 and card.pt != "" then 248 else 294 }
 		height: { max(1, station_h(1)) }
 		z index: 905
 		visible: { card.station_1_threshold != "" }
@@ -55,7 +55,7 @@ card style:
 	station 2 text:
 		left: 47
 		top: { station_top(2) }
-		width: { if card.pt != "" then 236 else 294 }
+		width: { if card.pt != "" then 248 else 294 }
 		height: { max(1, station_h(2)) }
 		z index: 905
 		visible: { card.station_2_threshold != "" }
@@ -73,6 +73,12 @@ card style:
 			size: { station_size() }
 		line height hard: 1.2
 		line height soft: 0.9
+extra card field:
+	type: choice
+	name: station pt inner
+	choice: pill
+	editable: false
+	save value: false
 extra card field:
 	type: choice
 	name: station band 1
@@ -98,6 +104,16 @@ extra card field:
 	editable: false
 	save value: false
 extra card style:
+	# Dark centre of the P/T pill; the frame's own P/T box, masked to a pill, shows around it as the rim.
+	station pt inner:
+		left: 300
+		top: { station_pt_mid() - 12 }
+		width: 53
+		height: 24
+		z index: 956
+		visible: { station_pt() }
+		render style: image
+		image: { "/setsmith-station.mse-include/pt_inner.png" }
 	station band 1:
 		left: 29
 		top: { station_top(1) }

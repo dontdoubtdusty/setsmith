@@ -288,6 +288,38 @@ $stationFrames = [ordered]@{
     Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tbottom:\s*)\{ bottom_of_textbox\(\) \}'; With = '${1}{ bottom_of_textbox() - station_height() }' }
   }
 }
+# On a station card the P/T sits in the last station row, in a dark pill with a thin rim of the frame's own
+# P/T box, like printed Spacecraft. Each listed property of the frame's "pt" and "pt box" styles becomes
+# "if station_pt() then <station value> else <original>"; z index is not scriptable, so it is raised outright
+# to draw above the station bands (z 850-851). The P/T box keeps its own size (81 x 42) so its texture is not
+# squashed; the mask cuts it to a 57 x 28 pill in its middle, the rim of the pill, and
+# the include's "station pt inner" field draws the dark centre.
+function Patch-StationPt([string]$Package) {
+  $path = Join-Path (Join-Path $Output $Package) "style"
+  $text = [IO.File]::ReadAllText($path)
+  $plan = [ordered]@{
+    "pt"     = [ordered]@{ "z index" = "=960"; "left" = "298"; "top" = "station_pt_mid() - 14"; "width" = "57"; "`tcolor" = '"white"' }
+    "pt box" = [ordered]@{ "z index" = "=952"; "left" = "286"; "top" = "station_pt_mid() - 21"; "width" = "81"; "height" = "42" }
+  }
+  foreach ($block in $plan.Keys) {
+    $bm = [regex]::Matches($text, "(?ms)^\t$([regex]::Escape($block)):\r?\n.*?(?=^\S|^\t\S)")
+    if ($bm.Count -ne 1) { throw "Station P/T patch: block '$block' in $Package matched $($bm.Count) times, expected 1." }
+    $body = $bm[0].Value
+    foreach ($key in $plan[$block].Keys) {
+      $val = $plan[$block][$key]
+      $km = [regex]::Matches($body, "(?m)^(\t\t$([regex]::Escape($key)):[ \t]*)([^\r\n]+)")
+      if ($km.Count -ne 1) { throw "Station P/T patch: '$key' in '$block' of $Package matched $($km.Count) times, expected 1." }
+      $old = $km[0].Groups[2].Value.Trim()
+      if ($old -match '^\{(.*)\}$') { $old = $Matches[1].Trim() }
+      elseif ($old -notmatch '^-?[\d.]+$') { $old = '"' + $old + '"' }  # a plain value such as black becomes a string
+      $new = if ($val.StartsWith("=")) { $val.Substring(1) } else { "{ if station_pt() then $val else ($old) }" }
+      $body = $body.Remove($km[0].Groups[2].Index, $km[0].Groups[2].Length).Insert($km[0].Groups[2].Index, $new)
+    }
+    if ($block -eq "pt box") { $body = $body.TrimEnd("`r", "`n") + "`n`t`tmask: { if station_pt() then `"/setsmith-station.mse-include/pt_mask.png`" else `"`" }`n" }
+    $text = $text.Remove($bm[0].Index, $bm[0].Length).Insert($bm[0].Index, $body)
+  }
+  [IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding($false)))
+}
 foreach ($p in $stationFrames.Keys) {
   $f = $stationFrames[$p]
   Patch-File $p "style" @(
@@ -296,6 +328,7 @@ foreach ($p in $stationFrames.Keys) {
     @{ Name = "station layout"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = "include file: /setsmith-station.mse-include/card_fields`n`$1" }
     $f.Text
   )
+  Patch-StationPt $p
 }
 "{0,-48} {1,7}" -f "Setsmith patches (station rows)", "applied"
 
