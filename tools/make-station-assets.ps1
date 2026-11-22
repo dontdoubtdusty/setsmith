@@ -3,68 +3,107 @@
   Draws the images for the station frame (templates\setsmith-station.mse-include).
 
 .DESCRIPTION
-  badge.png: the round threshold badge ("6+") at the left edge of a station row: black disc, white ring,
-  light grey rim, like Edge of Eternities and Star Trek station cards.
-  band1.png, band2.png: the see-through grey bands behind the first and second station rows (the second
-  row is a little darker, like printed cards).
-  pt_mask.png: the pill-shaped mask that cuts the frame's own P/T box down to the rim of the station P/T pill
-  (white shows, black hides). pt_inner.png: the dark centre of the pill, drawn over it.
+  Shapes and colours are measured from printed Star Trek Spacecraft (Borg Cube, Romulan Bird-of-Prey and one
+  station card per colour), at 744 x 1040. <c> is the frame colour: w u b r g, m for multicolour, c for colourless.
+  badge-<c>.png: the round "N+" badge, a rim in the frame colour around a dark centre.
+  pt-<c>.png: the 57 x 28 rounded P/T box printed station cards use, same rim and centre.
+  band-<c>.png, band-<c>2.png: see-through tints behind the first and second station rows, measured as the
+  change from text box to band.
   Edit this script, not the images.
 #>
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Drawing
 $out = Join-Path $PSScriptRoot "..\templates\setsmith-station.mse-include"
+# Images are drawn at 8 pixels per frame unit.
+$k = 8
 
-# Draws the badge: three filled circles, largest first.
-$size = 128
-$bmp = New-Object Drawing.Bitmap $size, $size
-$g = [Drawing.Graphics]::FromImage($bmp)
-$g.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
-$g.Clear([Drawing.Color]::Transparent)
-foreach ($ring in @(@(0, "#C8C8C8"), @(7, "#FFFFFF"), @(13, "#141414"))) {
-  $inset = $ring[0]
-  $brush = New-Object Drawing.SolidBrush ([Drawing.ColorTranslator]::FromHtml($ring[1]))
-  $g.FillEllipse($brush, $inset, $inset, $size - 2 * $inset - 1, $size - 2 * $inset - 1)
+# Returns a rounded rectangle path (radius r) inside the given box.
+function New-RoundRect([double]$x, [double]$y, [double]$w, [double]$h, [double]$r) {
+  $p = New-Object Drawing.Drawing2D.GraphicsPath
+  $d = [Math]::Min(2 * $r, [Math]::Min($w, $h))
+  $p.AddArc([single]$x, [single]$y, [single]$d, [single]$d, 180, 90)
+  $p.AddArc([single]($x + $w - $d), [single]$y, [single]$d, [single]$d, 270, 90)
+  $p.AddArc([single]($x + $w - $d), [single]($y + $h - $d), [single]$d, [single]$d, 0, 90)
+  $p.AddArc([single]$x, [single]($y + $h - $d), [single]$d, [single]$d, 90, 90)
+  $p.CloseFigure()
+  return $p
+}
+
+# Fills a path with the dark centre gradient printed boxes use: darker at the top and bottom edges.
+function Fill-Centre($g, $path, [Drawing.RectangleF]$rect) {
+  $brush = New-Object Drawing.Drawing2D.LinearGradientBrush $rect, ([Drawing.Color]::Black), ([Drawing.Color]::Black), ([single]90)
+  $blend = New-Object Drawing.Drawing2D.ColorBlend 3
+  $blend.Colors = @([Drawing.ColorTranslator]::FromHtml("#242120"), [Drawing.ColorTranslator]::FromHtml("#363233"), [Drawing.ColorTranslator]::FromHtml("#221F1F"))
+  $blend.Positions = @([single]0, [single]0.5, [single]1)
+  $brush.InterpolationColors = $blend
+  $g.FillPath($brush, $path)
   $brush.Dispose()
 }
-$g.Dispose()
-$bmp.Save((Join-Path $out "badge.png"), [Drawing.Imaging.ImageFormat]::Png)
-$bmp.Dispose()
 
-# Draws a band: flat see-through black, with a slightly darker line along the top edge.
-function Save-Band([string]$name, [int]$alpha) {
-  $w = 64; $h = 64
-  $bmp = New-Object Drawing.Bitmap $w, $h
-  for ($y = 0; $y -lt $h; $y++) {
-    $a = if ($y -lt 1) { [Math]::Min(255, $alpha * 2) } else { $alpha }
-    for ($x = 0; $x -lt $w; $x++) { $bmp.SetPixel($x, $y, [Drawing.Color]::FromArgb($a, 0, 0, 0)) }
-  }
-  $bmp.Save((Join-Path $out $name), [Drawing.Imaging.ImageFormat]::Png)
-  $bmp.Dispose()
-}
-Save-Band "band1.png" 26
-Save-Band "band2.png" 46
-# Draws a pill (a rounded rectangle with fully round ends) filled with a vertical gradient.
-function Save-Pill([string]$name, [int]$w, [int]$h, [string]$top, [string]$bottom, [string]$back, [int]$cw = $w, [int]$ch = $h) {
-  $bmp = New-Object Drawing.Bitmap $cw, $ch
-  $ox = [int](($cw - $w) / 2); $oy = [int](($ch - $h) / 2)
+# Creates a canvas of w x h frame units (transparent unless a background colour is given) and its graphics.
+function New-Canvas([double]$w, [double]$h, [string]$back) {
+  $bmp = New-Object Drawing.Bitmap ([int][Math]::Round($w * $k)), ([int][Math]::Round($h * $k))
   $g = [Drawing.Graphics]::FromImage($bmp)
   $g.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
   if ($back) { $g.Clear([Drawing.ColorTranslator]::FromHtml($back)) } else { $g.Clear([Drawing.Color]::Transparent) }
-  $path = New-Object Drawing.Drawing2D.GraphicsPath
-  $d = $h - 1
-  $path.AddArc($ox, $oy, $d, $d, 90, 180)
-  $path.AddArc($ox + $w - 1 - $d, $oy, $d, $d, 270, 180)
-  $path.CloseFigure()
-  $rect = New-Object Drawing.Rectangle $ox, $oy, $w, $h
-  $brush = New-Object Drawing.Drawing2D.LinearGradientBrush $rect, ([Drawing.ColorTranslator]::FromHtml($top)), ([Drawing.ColorTranslator]::FromHtml($bottom)), 90.0
-  $g.FillPath($brush, $path)
-  $brush.Dispose(); $path.Dispose(); $g.Dispose()
-  $bmp.Save((Join-Path $out $name), [Drawing.Imaging.ImageFormat]::Png)
-  $bmp.Dispose()
+  return @($bmp, $g)
 }
-# Sizes are 4x the frame units. The mask covers the frame's whole 81 x 42 P/T box with a 57 x 28 pill in its
-# middle; the dark centre is 53 x 24.
-Save-Pill "pt_mask.png" 228 112 "#FFFFFF" "#FFFFFF" "#000000" 324 168
-Save-Pill "pt_inner.png" 212 96 "#2B2A28" "#0E0D0C" ""
+# Saves a canvas as a PNG in the include folder.
+function Save-Canvas($c, [string]$name) {
+  $c[1].Dispose()
+  $c[0].Save((Join-Path $out $name), [Drawing.Imaging.ImageFormat]::Png)
+  $c[0].Dispose()
+}
+
+$edge = New-Object Drawing.Pen ([Drawing.Color]::FromArgb(220, 20, 14, 6)), ([single](0.6 * $k))
+$innerEdge = New-Object Drawing.Pen ([Drawing.Color]::FromArgb(230, 34, 28, 10)), ([single](0.7 * $k))
+# Rim colours per frame colour, light (top) and dark (bottom), sampled from the printed badges and P/T boxes.
+$rims = [ordered]@{
+  w = @("#E0DDDC", "#B8B2B2"); u = @("#2A86B8", "#0E5A80"); b = @("#5A5454", "#3A3535"); r = @("#D4564A", "#A8343A")
+  g = @("#1F7A50", "#12523A"); m = @("#E2D18A", "#B09E55"); c = @("#D8D6D4", "#A8A3A2")
+}
+# Fills a path with a vertical gradient between two colours.
+function Fill-Rim($g, $path, [Drawing.RectangleF]$rect, [string]$top, [string]$bottom) {
+  $brush = New-Object Drawing.Drawing2D.LinearGradientBrush $rect, ([Drawing.ColorTranslator]::FromHtml($top)), ([Drawing.ColorTranslator]::FromHtml($bottom)), ([single]90)
+  $g.FillPath($brush, $path)
+  $brush.Dispose()
+}
+foreach ($key in $rims.Keys) {
+  $rim = $rims[$key]
+  # Badge: 29.5 units across, rim 2.4 units, measured on Borg Cube.
+  $bd = 29.5; $in = 2.4
+  $c = New-Canvas $bd $bd ""
+  $outer = New-Object Drawing.Drawing2D.GraphicsPath
+  $outer.AddEllipse([single](0.3 * $k), [single](0.3 * $k), [single](($bd - 0.6) * $k), [single](($bd - 0.6) * $k))
+  Fill-Rim $c[1] $outer (New-Object Drawing.RectangleF 0, 0, ([single]($bd * $k)), ([single]($bd * $k))) $rim[0] $rim[1]
+  $c[1].DrawPath($edge, $outer)
+  $disc = New-Object Drawing.Drawing2D.GraphicsPath
+  $disc.AddEllipse([single]($in * $k), [single]($in * $k), [single](($bd - 2 * $in) * $k), [single](($bd - 2 * $in) * $k))
+  Fill-Centre $c[1] $disc (New-Object Drawing.RectangleF ([single]($in * $k)), ([single]($in * $k)), ([single](($bd - 2 * $in) * $k)), ([single](($bd - 2 * $in) * $k)))
+  $c[1].DrawPath($innerEdge, $disc)
+  Save-Canvas $c "badge-$key.png"
+  # P/T box: 57 x 28, corner radius 6, dark centre 50 x 20.5 (corner radius 3.5), measured on Borg Cube.
+  $c = New-Canvas 57 28 ""
+  $outer = New-RoundRect (0.3 * $k) (0.3 * $k) (56.4 * $k) (27.4 * $k) (5.8 * $k)
+  Fill-Rim $c[1] $outer (New-Object Drawing.RectangleF 0, 0, ([single](57 * $k)), ([single](28 * $k))) $rim[0] $rim[1]
+  $c[1].DrawPath($edge, $outer)
+  $box = New-RoundRect (3.5 * $k) (3.75 * $k) (50 * $k) (20.5 * $k) (3.5 * $k)
+  Fill-Centre $c[1] $box (New-Object Drawing.RectangleF ([single](3.5 * $k)), ([single](3.75 * $k)), ([single](50 * $k)), ([single](20.5 * $k)))
+  $c[1].DrawPath($innerEdge, $box)
+  Save-Canvas $c "pt-$key.png"
+}
+
+# Bands: a flat tint per frame colour. Row 1 at alpha 64 (a quarter), row 2 a little stronger.
+$tints = [ordered]@{ w = "#765D4E"; u = "#2288BD"; b = "#505B51"; r = "#B4321C"; g = "#175F25"; m = "#A18C47"; c = "#778B99" }
+foreach ($key in $tints.Keys) {
+  $col = [Drawing.ColorTranslator]::FromHtml($tints[$key])
+  foreach ($row in @(@("", 64), @("2", 100))) {
+    $bmp = New-Object Drawing.Bitmap 16, 16
+    $g = [Drawing.Graphics]::FromImage($bmp)
+    $g.Clear([Drawing.Color]::FromArgb($row[1], $col.R, $col.G, $col.B))
+    $g.Dispose()
+    $bmp.Save((Join-Path $out "band-$key$($row[0]).png"), [Drawing.Imaging.ImageFormat]::Png)
+    $bmp.Dispose()
+  }
+}
 "station images -> $(Resolve-Path $out)"

@@ -1,0 +1,14 @@
+############################################################## Alias bar (Setsmith)
+# The frame colour as the letter the pack's alias bar images use: w u b r g, m for multicolour, a for artifact,
+# c for colourless.
+alias_bar_key := {
+	c := card.card_color
+	if contains(c, match:"multicolor") then "m"
+	else if contains(c, match:"white") then "w"
+	else if contains(c, match:"blue") then "u"
+	else if contains(c, match:"black") then "b"
+	else if contains(c, match:"red") then "r"
+	else if contains(c, match:"green") then "g"
+	else if contains(c, match:"artifact") then "a"
+	else "c"
+}

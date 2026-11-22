@@ -62,6 +62,7 @@ public:
 class TextLayout : public LineLayout {
 public:
   vector<double> separators;
+  double scale = 1.0; ///< Setsmith: the scale the text was fitted at (1 = full font size)
   TextLayout() : LineLayout(0,0,0,Type::ALL) {}
   void reflect(GetMember& gm) const;
 };

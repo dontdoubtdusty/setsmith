@@ -1,30 +1,60 @@
 ############################################################## Station rows (Setsmith)
-# Each frame sets station_bottom (the bottom of its text box) before including this file.
-# A row exists when its threshold is filled in. The last row leaves room for the P/T box.
+# Each frame sets station_bottom (the bottom of its text box) and station_rules_size (its rules text font size)
+# before including this file. A row exists when its threshold is filled in. Sizes measured from printed cards.
 station_last := {
 	if card.station_2_threshold != "" then 2
 	else if card.station_1_threshold != "" then 1
 	else 0
 }
-# Font size for the row text. Printed cards set rules and rows in one size, so a card with more text in total
-# gets smaller rows too; the frame's own text box then shrinks to about the same size.
-station_size := {
-	t := length(remove_tags(card.rule_text)) + length(remove_tags(card.station_1_text)) + length(remove_tags(card.station_2_text))
-	if t > 420 then 11.5
-	else if t > 300 then 12.5
-	else if t > 200 then 13.5
-	else 14
+# Line spacing inside a row, the same as the frame's rules text.
+station_line_soft := { 0.82 }
+# Font size of the "N+" badge text.
+station_badge_size := { 10.5 }
+# Estimated font size the whole text box (rules plus rows) will be set in, found before drawing so the rows
+# can be sized: the largest size, in steps of 0.25, at which the rules paragraphs and the rows fit the frame's
+# box (154 units). Letters average 0.405 of the size wide and lines are 0.94 of the size apart, measured on
+# printed cards. The rows then follow the size the rules text is actually fitted at (content_scale).
+station_lines := { to_int((length(remove_tags(input)) * 0.405 * size + width - 1) / width) }
+station_rows_h := {
+	h1 := if card.station_1_threshold == "" then 0 else max(41, 14 + station_lines(card.station_1_text, size: size, width: if station_last() == 1 and card.pt != "" then 244 else 291) * 0.94 * size)
+	h2 := if card.station_2_threshold == "" then 0 else max(41, 14 + station_lines(card.station_2_text, size: size, width: if card.pt != "" then 244 else 291) * 0.94 * size)
+	h1 + h2
 }
-# Rough characters per line for a row's text box (its width over an average letter width), used to size the
-# row before drawing it.
-station_cpl := { to_int((if input == station_last() and card.pt != "" then 240 else 286) / (station_size() * 0.43)) }
-# Height of row 1 or 2 (0 when unused): room for the badge, or as many lines as the text needs.
+station_rules_h := {
+	paras := split_text(match: "\n", remove_tags(card.rule_text))
+	lines := for each p in paras do station_lines(p, size: size, width: 300)
+	8 + lines * 0.94 * size + (number_of_items(in: paras) - 1) * 0.5 * size
+}
+# Size steps tried, as fractions of the frame's rules size (about a quarter point apart), largest first.
+station_fit_steps := [1, 0.985, 0.97, 0.955, 0.94, 0.925, 0.91, 0.895, 0.88, 0.865, 0.85, 0.835, 0.82, 0.805, 0.79, 0.775, 0.76, 0.745, 0.73, 0.715, 0.7, 0.685, 0.67, 0.655, 0.64, 0.625, 0.61, 0.595, 0.58, 0.565, 0.55, 0.535, 0.52, 0.505, 0.49, 0.475, 0.46, 0.445, 0.43, 0.415]
+station_fits := { station_rules_h(size: input) + station_rows_h(size: input) <= 154 }
+station_size := {
+	if station_last() == 0 then station_rules_size()
+	else (
+		fitting := filter_list(station_fit_steps, filter: { station_fits(station_rules_size() * input) })
+		station_rules_size() * (if number_of_items(in: fitting) > 0 then fitting[0] else 0.4)
+	)
+}
+# Height of row 1 or 2 (0 when unused): 41 units for one line, more when its text wraps at station_size.
 station_h := {
 	if card["station_" + input + "_threshold"] == "" then 0
-	else max(34, 10 + station_size() * 1.25 * to_int((length(remove_tags(card["station_" + input + "_text"])) + station_cpl(input) - 1) / station_cpl(input)))
+	else max(41, 14 + station_lines(card["station_" + input + "_text"], size: station_size(), width: if input == station_last() and card.pt != "" then 244 else 291) * 0.94 * station_size())
 }
 station_pt := { station_last() > 0 and card.pt != "" }
-# Vertical middle of the last row, where the P/T pill sits.
+# Vertical middle of the last row, where the P/T box sits.
 station_pt_mid := { if station_last() == 0 then 0 else station_top(station_last()) + station_h(station_last()) / 2 }
 station_height := { station_h(1) + station_h(2) }
 station_top := { if input == 1 then station_bottom() - station_height() else station_bottom() - station_h(2) }
+# The card's frame colour as one letter for the station images: w u b r g, m for multicolour, c for colourless.
+station_color := {
+	c := card.card_color
+	if contains(c, match:"multicolor") then "m"
+	else if contains(c, match:"white") then "w"
+	else if contains(c, match:"blue") then "u"
+	else if contains(c, match:"black") then "b"
+	else if contains(c, match:"red") then "r"
+	else if contains(c, match:"green") then "g"
+	else "c"
+}
+# The station P/T box image, used by the frame's own "pt box" field on station cards.
+station_pt_image := { "/setsmith-station.mse-include/pt-" + station_color() + ".png" }

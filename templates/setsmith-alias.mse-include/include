@@ -1,0 +1,14 @@
+mse version: 2.0.0
+short name: Setsmith alias bar
+full name: Setsmith Godzilla style alias bar for Magic frames
+version: 2026-11-22
+depends on:
+	package: magic-modules.mse-include
+	version: 2024-10-01
+
+# The alias (a card's real name on a reskinned or Godzilla series card) printed in a bar hanging under the
+# title bar, like printed Godzilla series cards: a see-through grey plate trimmed in the frame colour, the
+# name in white italic. The bar images are the M15 pack's own (magic-modules.mse-include/extras/alias).
+# Files:
+#   script       alias_bar_key, included in each frame's init script; the frame defines alias_bar_top
+#   card_fields  the bar, included at the top level of each frame (tools\make-slim-data.ps1 patches both in)

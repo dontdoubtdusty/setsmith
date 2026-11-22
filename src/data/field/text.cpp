@@ -109,6 +109,9 @@ void TextStyle::initDependencies(Context& ctx, const Dependency& dep) const {
 void TextStyle::checkContentDependencies(Context& ctx, const Dependency& dep) const {
   Style   ::checkContentDependencies(ctx, dep);
   alignment.initDependencies(ctx, dep);
+  // Setsmith: a font size may follow another field's fitted text (station rows use card_style.text.content_scale)
+  font.size.initDependencies(ctx, dep);
+  symbol_font.size.initDependencies(ctx, dep);
 }
 
 template <typename T> void reflect_layout(T& handler,         const TextLayoutP& layout) {}
@@ -118,6 +121,7 @@ template <>           void reflect_layout(GetMember& handler, const TextLayoutP&
   REFLECT_N("content_width",  layout->width);
   REFLECT_N("content_height", layout->height);
   REFLECT_N("content_lines",  layout->lines.size());
+  REFLECT_N("content_scale",  layout->scale); // Setsmith
 }
 
 template <> void GetMember::handle(LineLayout const& obj) { obj.reflect(*this); }

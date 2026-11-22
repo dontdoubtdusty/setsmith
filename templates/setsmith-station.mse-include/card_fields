@@ -1,84 +1,81 @@
 ############################################################## Station rows (Setsmith)
-# Layout for the station fields in game_fields. Positions are in 375 x 523 frame units.
-# Bands sit above the frame and below all text (z 850); the frame's own text box is shortened by
-# station_height() (patched into each frame by tools\make-slim-data.ps1).
+# Layout for the station fields in game_fields. Positions are in 375 x 523 frame units, measured from printed
+# Star Trek Spacecraft (Borg Cube, Romulan Bird-of-Prey). Bands sit above the frame and below all text (z 850);
+# the frame's own text box is shortened by station_height() (patched into each frame by tools\make-slim-data.ps1).
+# Row text is set in the same size as the fitted rules text, like printed cards.
 card style:
 	station 1 threshold:
-		left: 12
-		top: { station_top(1) + station_h(1) / 2 - 17 }
-		width: 34
-		height: 34
+		left: 10
+		top: { station_top(1) + station_h(1) / 2 - 14.75 }
+		width: 29.5
+		height: 29.5
 		z index: 960
 		visible: { card.station_1_threshold != "" }
 		alignment: middle center shrink-overflow
-		padding top: 1
+		padding bottom: 3
 		font:
 			name: Beleren Bold
-			size: 11
+			size: { station_badge_size() }
 			scale down to: 7
 			color: white
 	station 1 text:
-		left: 47
+		left: 40
 		top: { station_top(1) }
-		width: { if station_last() == 1 and card.pt != "" then 248 else 294 }
+		width: { if station_last() == 1 and card.pt != "" then 252 else 299 }
 		height: { max(1, station_h(1)) }
 		z index: 905
 		visible: { card.station_1_threshold != "" }
 		alignment: middle left
 		padding left: 4
 		padding right: 4
+		padding bottom: 3
 		font:
 			name: MPlantin
 			italic name: MPlantin-Italic
-			size: { station_size() }
+			size: { station_rules_size() * card_style.text.content_scale }
 			scale down to: 6
 			color: black
 		symbol font:
 			name: { styling.text_box_mana_symbols }
-			size: { station_size() }
+			size: { station_rules_size() * card_style.text.content_scale }
 		line height hard: 1.2
-		line height soft: 0.9
+		line height soft: { station_line_soft() }
 	station 2 threshold:
-		left: 12
-		top: { station_top(2) + station_h(2) / 2 - 17 }
-		width: 34
-		height: 34
+		left: 10
+		top: { station_top(2) + station_h(2) / 2 - 14.75 }
+		width: 29.5
+		height: 29.5
 		z index: 960
 		visible: { card.station_2_threshold != "" }
 		alignment: middle center shrink-overflow
-		padding top: 1
+		padding bottom: 3
 		font:
 			name: Beleren Bold
-			size: 11
+			size: { station_badge_size() }
 			scale down to: 7
 			color: white
 	station 2 text:
-		left: 47
+		left: 40
 		top: { station_top(2) }
-		width: { if card.pt != "" then 248 else 294 }
+		width: { if card.pt != "" then 252 else 299 }
 		height: { max(1, station_h(2)) }
 		z index: 905
 		visible: { card.station_2_threshold != "" }
 		alignment: middle left
 		padding left: 4
 		padding right: 4
+		padding bottom: 3
 		font:
 			name: MPlantin
 			italic name: MPlantin-Italic
-			size: { station_size() }
+			size: { station_rules_size() * card_style.text.content_scale }
 			scale down to: 6
 			color: black
 		symbol font:
 			name: { styling.text_box_mana_symbols }
-			size: { station_size() }
+			size: { station_rules_size() * card_style.text.content_scale }
 		line height hard: 1.2
-		line height soft: 0.9
-extra card field:
-	type: choice
-	name: station pt inner
-	choice: pill
-	editable: false
-	save value: false
+		line height soft: { station_line_soft() }
 extra card field:
 	type: choice
 	name: station band 1
@@ -94,26 +91,16 @@ extra card field:
 extra card field:
 	type: choice
 	name: station badge 1
-	choice: badge
+	script: card.card_color
 	editable: false
 	save value: false
 extra card field:
 	type: choice
 	name: station badge 2
-	choice: badge
+	script: card.card_color
 	editable: false
 	save value: false
 extra card style:
-	# Dark centre of the P/T pill; the frame's own P/T box, masked to a pill, shows around it as the rim.
-	station pt inner:
-		left: 300
-		top: { station_pt_mid() - 12 }
-		width: 53
-		height: 24
-		z index: 956
-		visible: { station_pt() }
-		render style: image
-		image: { "/setsmith-station.mse-include/pt_inner.png" }
 	station band 1:
 		left: 29
 		top: { station_top(1) }
@@ -122,7 +109,7 @@ extra card style:
 		z index: 850
 		visible: { card.station_1_threshold != "" }
 		render style: image
-		image: { "/setsmith-station.mse-include/band1.png" }
+		image: { "/setsmith-station.mse-include/band-" + station_color() + ".png" }
 	station band 2:
 		left: 29
 		top: { station_top(2) }
@@ -131,22 +118,23 @@ extra card style:
 		z index: 851
 		visible: { card.station_2_threshold != "" }
 		render style: image
-		image: { "/setsmith-station.mse-include/band2.png" }
+		image: { "/setsmith-station.mse-include/band-" + station_color() + "2.png" }
+	# The round "N+" badge, its rim in the card's colour.
 	station badge 1:
-		left: 12
-		top: { station_top(1) + station_h(1) / 2 - 17 }
-		width: 34
-		height: 34
+		left: 10
+		top: { station_top(1) + station_h(1) / 2 - 14.75 }
+		width: 29.5
+		height: 29.5
 		z index: 955
 		visible: { card.station_1_threshold != "" }
 		render style: image
-		image: { "/setsmith-station.mse-include/badge.png" }
+		image: { "/setsmith-station.mse-include/badge-" + station_color() + ".png" }
 	station badge 2:
-		left: 12
-		top: { station_top(2) + station_h(2) / 2 - 17 }
-		width: 34
-		height: 34
+		left: 10
+		top: { station_top(2) + station_h(2) / 2 - 14.75 }
+		width: 29.5
+		height: 29.5
 		z index: 955
 		visible: { card.station_2_threshold != "" }
 		render style: image
-		image: { "/setsmith-station.mse-include/badge.png" }
+		image: { "/setsmith-station.mse-include/badge-" + station_color() + ".png" }

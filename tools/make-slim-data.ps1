@@ -234,46 +234,70 @@ foreach ($p in "magic-m15.mse-style", "magic-m15-showcase-etched-foil.mse-style"
 }
 "{0,-48} {1,7}" -f "Setsmith patches (text clear of holo stamp)", "applied"
 
-# Alias line: a reskinned or Universes Within style card prints its real (Oracle) name in small italic text just
-# under the title bar, on the art. The game already has the "alias" field (the pack's Godzilla frame uses it);
-# this shows it on every Setsmith Magic frame when it is filled in. White with a dark shadow so it reads on any art.
-function Alias-Style([int]$Left, [int]$Top, [int]$Width) {
-  "`talias:`n`t`tleft: $Left`n`t`ttop: $Top`n`t`twidth: $Width`n`t`theight: 13`n`t`tz index: 950`n" +
+# Rules text set like printed M15 cards (measured on Star Trek scans: Borg Cube, Romulan Bird-of-Prey, Deep
+# Space 9, Rogue Artificial Intelligence, Command Subadjunct). Printed text starts 4 units in from the box,
+# not 6, and its lines sit closer (soft line height 0.82, not 0.9). The largest size stays the pack's 14: short
+# printed text (Command Subadjunct) is set at about that size.
+$textBlock = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?'
+foreach ($p in "magic-m15.mse-style", "magic-m15-altered.mse-style") {
+  Patch-File $p "style" @(
+    @{ Name = "text padding left"; Count = 1; Pattern = $textBlock + '\t\tpadding left:\s*)6'; With = '${1}4' }
+    @{ Name = "text line height";  Count = 1; Pattern = $textBlock + '\t\tline height soft:\s*)0\.9'; With = '${1}0.82' }
+  )
+}
+"{0,-48} {1,7}" -f "Setsmith patches (printed text setting)", "applied"
+
+# Alias bar: a reskinned or Godzilla series card prints its real (Oracle) name in a bar hanging under the title
+# bar, like printed Godzilla series cards. templates\setsmith-alias.mse-include draws the bar (the pack's own
+# images, a see-through grey plate trimmed in the frame colour); here every Setsmith Magic frame gets the bar,
+# its top (alias_bar_top) and the alias text in white italic centred in it. The frames' own "godzilla style
+# alias" option stays off; its box is replaced so the alias always uses this bar.
+function Alias-Style([double]$Top) {
+  "`talias:`n`t`tleft: 45`n`t`ttop: $($Top + 1)`n`t`twidth: 284`n`t`theight: 19`n`t`tz index: 950`n" +
   "`t`tvisible: { card.alias != `"`" }`n`t`talignment: middle center shrink-overflow`n" +
-  "`t`tfont:`n`t`t`tname: MPlantin-Italic`n`t`t`tsize: 9.5`n`t`t`tscale down to: 6`n`t`t`tcolor: white`n" +
-  "`t`t`tshadow color: rgba(0,0,0,220)`n`t`t`tshadow displacement x: 0`n`t`t`tshadow displacement y: 0`n`t`t`tshadow blur: 2.5`n"
+  "`t`tfont:`n`t`t`tname: MPlantin-Italic`n`t`t`tsize: 9.5`n`t`t`tscale down to: 6`n`t`t`tcolor: white`n"
 }
+# Bar top per frame: under the title bar (planeswalker and token title bars sit a little higher or lower).
 $aliasFrames = [ordered]@{
-  "magic-m15.mse-style"                        = @(40, 61, 295)
-  "magic-m15-altered.mse-style"                = @(40, 61, 295)
-  "magic-m15-adventure.mse-style"              = @(40, 61, 295)
-  "magic-m15-showcase-etched-foil.mse-style"   = @(40, 61, 295)
-  "magic-m15-mainframe-dfc.mse-style"          = @(40, 61, 295)
-  "magic-m15-mainframe-planeswalker.mse-style" = @(40, 53, 295)
-  "magic-m15-mainframe-tokens.mse-style"       = @(40, 64, 295)
-  # Saga art is the tall right-hand column, so the alias sits over that column.
-  "magic-m15-saga.mse-style"                   = @(190, 61, 152)
+  "magic-m15.mse-style"                        = 57
+  "magic-m15-altered.mse-style"                = 57
+  "magic-m15-adventure.mse-style"              = 57
+  "magic-m15-showcase-etched-foil.mse-style"   = 57
+  "magic-m15-mainframe-dfc.mse-style"          = 57
+  "magic-m15-mainframe-planeswalker.mse-style" = 49
+  "magic-m15-mainframe-tokens.mse-style"       = 60
+  "magic-m15-saga.mse-style"                   = 57
 }
+$aliasDepends = @{ Name = "alias dependency"; Count = 1; Pattern = '(?m)(^version:[^\r\n]*\r?\n)'; With = "`$1depends on:`n`tpackage: setsmith-alias.mse-include`n`tversion: 2026-11-22`n" }
 # Several frames already define an "alias" box that only shows with their "godzilla style alias" or "pokemon
 # evobar" option. The engine keeps the first box with a name and ignores later ones, so that box is replaced in
-# place (those two options no longer move the alias); frames without one get the box at the start of card style.
+# place; frames without one get the box at the start of card style.
 foreach ($p in $aliasFrames.Keys) {
-  $a = $aliasFrames[$p]
-  $block = Alias-Style $a[0] $a[1] $a[2]
+  $top = $aliasFrames[$p]
+  $block = Alias-Style $top
   $styleText = [IO.File]::ReadAllText((Join-Path (Join-Path $Output $p) "style"))
   $edit = if ($styleText -match '(?m)^\talias: ?\r?$') {
     @{ Name = "alias line (replace)"; Count = 1; Pattern = '(?ms)^\talias: ?\r?\n.*?(?=^\t(?!\t))'; With = $block }
   } else {
     @{ Name = "alias line"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = '$1' + $block }
   }
-  Patch-File $p "style" @($edit)
+  Patch-File $p "style" @(
+    $edit
+    $aliasDepends
+    @{ Name = "alias bar script"; Count = 1; Pattern = '(?m)(^init script:\r?\n)'; With = "`$1`talias_bar_top := { $top }`n`tinclude file: /setsmith-alias.mse-include/script`n" }
+    @{ Name = "alias bar layout"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = "include file: /setsmith-alias.mse-include/card_fields`n`$1" }
+  )
 }
+# A saga's reminder text starts right under the title bar, so with an alias it starts under the bar instead.
+Patch-File "magic-m15-saga.mse-style" "style" @(
+  @{ Name = "saga text under alias bar"; Count = 1; Pattern = '(?m)(^\tchapter text:\r?\n\t\tleft:[^\r\n]*\r?\n\t\ttop: )60'; With = '${1}{ if card.alias != "" then 78 else 60 }' }
+)
 "{0,-48} {1,7}" -f "Setsmith patches (alias line)", "applied"
 
 # Station rows (Edge of Eternities and Star Trek Spacecraft): templates\setsmith-station.mse-include adds the
 # fields, bands and badges. Here the game gets the fields, and M15 and M15 Altered (gold cards) get the layout
 # and a text box shortened by the rows' height. station_bottom is the bottom of each frame's text box.
-$stationDepends = @{ Name = "station dependency"; Count = 1; Pattern = '(?m)(^version:[^\r\n]*\r?\n)'; With = "`$1depends on:`n`tpackage: setsmith-station.mse-include`n`tversion: 2026-11-21`n" }
+$stationDepends = @{ Name = "station dependency"; Count = 1; Pattern = '(?m)(^version:[^\r\n]*\r?\n)'; With = "`$1depends on:`n`tpackage: setsmith-station.mse-include`n`tversion: 2026-11-22`n" }
 Patch-File "magic.mse-game" "game" @(
   $stationDepends
   @{ Name = "station fields"; Count = 1; Pattern = '(?m)(^include file: card_fields\r?\n)'; With = "`$1include file: /setsmith-station.mse-include/game_fields`r`n" }
@@ -281,25 +305,25 @@ Patch-File "magic.mse-game" "game" @(
 $stationFrames = [ordered]@{
   "magic-m15.mse-style" = @{
     Bottom = "481"
+    Size   = "14"
     Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\theight:\s*)154'; With = '${1}{ 154 - station_height() }' }
   }
   "magic-m15-altered.mse-style" = @{
     Bottom = "bottom_of_textbox()"
+    Size   = "body_font_size()"
     Text   = @{ Name = "station text box"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tbottom:\s*)\{ bottom_of_textbox\(\) \}'; With = '${1}{ bottom_of_textbox() - station_height() }' }
   }
 }
-# On a station card the P/T sits in the last station row, in a dark pill with a thin rim of the frame's own
-# P/T box, like printed Spacecraft. Each listed property of the frame's "pt" and "pt box" styles becomes
-# "if station_pt() then <station value> else <original>"; z index is not scriptable, so it is raised outright
-# to draw above the station bands (z 850-851). The P/T box keeps its own size (81 x 42) so its texture is not
-# squashed; the mask cuts it to a 57 x 28 pill in its middle, the rim of the pill, and
-# the include's "station pt inner" field draws the dark centre.
+# On a station card the P/T sits in the last station row, in a smaller dark rounded box (57 x 28) with a rim
+# in the card's colour, like printed Spacecraft. Each listed property of the frame's "pt" and "pt box" styles
+# becomes "if station_pt() then <station value> else <original>"; z index is not scriptable, so it is raised
+# outright to draw above the station bands (z 850-851). The box image comes from the station include.
 function Patch-StationPt([string]$Package) {
   $path = Join-Path (Join-Path $Output $Package) "style"
   $text = [IO.File]::ReadAllText($path)
   $plan = [ordered]@{
-    "pt"     = [ordered]@{ "z index" = "=960"; "left" = "298"; "top" = "station_pt_mid() - 14"; "width" = "57"; "`tcolor" = '"white"' }
-    "pt box" = [ordered]@{ "z index" = "=952"; "left" = "286"; "top" = "station_pt_mid() - 21"; "width" = "81"; "height" = "42" }
+    "pt"     = [ordered]@{ "z index" = "=960"; "left" = "298"; "top" = "station_pt_mid() - 14"; "width" = "57"; "`tsize" = "12.2"; "`tcolor" = '"white"' }
+    "pt box" = [ordered]@{ "z index" = "=952"; "left" = "298"; "top" = "station_pt_mid() - 14"; "width" = "57"; "height" = "28"; "image" = "station_pt_image()" }
   }
   foreach ($block in $plan.Keys) {
     $bm = [regex]::Matches($text, "(?ms)^\t$([regex]::Escape($block)):\r?\n.*?(?=^\S|^\t\S)")
@@ -315,7 +339,6 @@ function Patch-StationPt([string]$Package) {
       $new = if ($val.StartsWith("=")) { $val.Substring(1) } else { "{ if station_pt() then $val else ($old) }" }
       $body = $body.Remove($km[0].Groups[2].Index, $km[0].Groups[2].Length).Insert($km[0].Groups[2].Index, $new)
     }
-    if ($block -eq "pt box") { $body = $body.TrimEnd("`r", "`n") + "`n`t`tmask: { if station_pt() then `"/setsmith-station.mse-include/pt_mask.png`" else `"`" }`n" }
     $text = $text.Remove($bm[0].Index, $bm[0].Length).Insert($bm[0].Index, $body)
   }
   [IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding($false)))
@@ -324,9 +347,11 @@ foreach ($p in $stationFrames.Keys) {
   $f = $stationFrames[$p]
   Patch-File $p "style" @(
     $stationDepends
-    @{ Name = "station script"; Count = 1; Pattern = '(?m)(^init script:\r?\n)'; With = "`$1`tstation_bottom := { $($f.Bottom) }`n`tinclude file: /setsmith-station.mse-include/script`n" }
+    @{ Name = "station script"; Count = 1; Pattern = '(?m)(^init script:\r?\n)'; With = "`$1`tstation_bottom := { $($f.Bottom) }`n`tstation_rules_size := { $($f.Size) }`n`tinclude file: /setsmith-station.mse-include/script`n" }
     @{ Name = "station layout"; Count = 1; Pattern = '(?m)(^card style:\r?\n)'; With = "include file: /setsmith-station.mse-include/card_fields`n`$1" }
     $f.Text
+    # The holo stamp sits under the station band, so the rules text only keeps a small margin above the band.
+    @{ Name = "station text margin"; Count = 1; Pattern = '(?m)(^\ttext:\r?\n\t\tpadding bottom: )12'; With = '${1}{ if station_height() > 0 then 4 else 12 }' }
   )
   Patch-StationPt $p
 }

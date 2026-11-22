@@ -1,0 +1,19 @@
+############################################################## Alias bar (Setsmith)
+# Drawn above the art and frame, below the alias text (z 950). 596 x 39 images at 298 x 21, as the pack's
+# own Godzilla style option draws them.
+extra card field:
+	type: choice
+	name: setsmith alias bar
+	script: card.card_color
+	editable: false
+	save value: false
+extra card style:
+	setsmith alias bar:
+		left: 38
+		top: { alias_bar_top() }
+		width: 298
+		height: 21
+		z index: 940
+		visible: { card.alias != "" }
+		render style: image
+		image: { "/magic-modules.mse-include/extras/alias/" + alias_bar_key() + "alias.png" }

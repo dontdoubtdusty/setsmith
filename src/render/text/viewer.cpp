@@ -355,6 +355,7 @@ void update_size(LineLayout& layout, TextViewer::Line const& l) {
 TextLayoutP TextViewer::extractLayoutInfo() const {
   // store information about the content/layout
   TextLayoutP layout = make_intrusive<TextLayout>();
+  layout->scale = scale; // Setsmith: lets other fields match this text's fitted size
   LineLayoutP paragraph, block;
   for (auto const& l : lines) {
     LineLayoutP line = make_intrusive<LineLayout>(l.width(), l.top, l.line_height, LineLayout::Type::LINE);
