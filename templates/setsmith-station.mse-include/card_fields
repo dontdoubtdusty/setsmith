@@ -12,8 +12,8 @@ card style:
 		z index: 960
 		visible: { card.station_1_threshold != "" }
 		alignment: middle center shrink-overflow
-		padding left: 1.4
-		padding bottom: 3
+		padding left: 2.4
+		padding bottom: 2
 		font:
 			name: Beleren Bold
 			size: { station_badge_size() }
@@ -49,8 +49,8 @@ card style:
 		z index: 960
 		visible: { card.station_2_threshold != "" }
 		alignment: middle center shrink-overflow
-		padding left: 1.4
-		padding bottom: 3
+		padding left: 2.4
+		padding bottom: 2
 		font:
 			name: Beleren Bold
 			size: { station_badge_size() }

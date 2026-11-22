@@ -261,6 +261,17 @@ foreach ($p in "magic-m15.mse-style", "magic-m15-altered.mse-style") {
     }
   )
 }
+# The type line box is 25 tall (the whole bar, 296 to 321) instead of 20: at 20 shrink-overflow set the type line
+# about 9% smaller than printed Star Trek cards and too high. In the full bar the size is 12.4, which matches the
+# printed width, height and centre (Andromedan Automatons); M15 Altered scales its font swap size the same way.
+Patch-File "magic-m15.mse-style" "style" @(
+  @{ Name = "type height"; Count = 1; Pattern = '(?ms)(^card style:\r?\n.*?^\ttype:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\theight:[ \t]*)20(?=\r?$)'; With = '${1}25' }
+  @{ Name = "type size"; Count = 1; Pattern = '(?ms)(^card style:\r?\n.*?^\ttype:\r?\n(?:\t\t[^\r\n]*\r?\n)*?\t\tfont:\r?\n(?:\t\t\t[^\r\n]*\r?\n)*?\t\t\tsize:[ \t]*)13(?=\r?$)'; With = '${1}12.4' }
+)
+Patch-File "magic-m15-altered.mse-style" "style" @(
+  @{ Name = "type height"; Count = 1; Pattern = '(?m)(^\t\theight:[ \t]*\{ \(if is_map\(\) then 18 else )20(\) - shrink_type\(\) \})'; With = '${1}25$2' }
+  @{ Name = "type size"; Count = 1; Pattern = '(?m)(^\t\t\tsize:[ \t]*)\{ type_font_size\(\) \}'; With = '${1}{ type_font_size() * 12.4 / 13 }' }
+)
 # M15 Altered keeps its font swap option: its size is scaled from the swap default (13) instead of replaced.
 Patch-File "magic-m15-altered.mse-style" "style" @($printedText + @(
   @{ Name = "text size";        Count = 1; Pattern = $textBlock + '\t\t\tsize:\s*)\{ ?body_font_size\(\) ?\}'; With = '${1}{ body_font_size() * 15.45 / 13 }' }
@@ -382,6 +393,21 @@ foreach ($p in $stationFrames.Keys) {
   Patch-StationPt $p
 }
 "{0,-48} {1,7}" -f "Setsmith patches (station rows)", "applied"
+
+# Keep full-width text lines off the holo stamp arch. Printed cards end a full-width last line about 12 units
+# above the text box bottom (Lieutenant Commander Data: descenders at 468 of 481), while a short last line may
+# run lower beside the stamp (Captain Jean-Luc Picard: 476.5). The engine's mask can only trim lines from the
+# left or right, so stamp-mask.png blocks the arch and everything right of it (x 163 on, y 470 down): a line
+# reaching that far wraps or the text shrinks, and a short line still fits beside the stamp. pt-stamp-mask.png
+# is the same plus the P/T corner. Station cards keep no mask: their rows cover the stamp area.
+foreach ($p in "magic-m15.mse-style", "magic-m15-altered.mse-style") {
+  Copy-Item -Force (Join-Path $PSScriptRoot "patches\*stamp-mask.png") (Join-Path $Output $p)
+  Patch-File $p "style" @(
+    @{ Name = "stamp mask"; Count = 1; Pattern = '(?m)\{ if \(card\.pt != ""\) and station_height\(\) == 0 and (card_style\.text\.width >= 1 and card_style\.text\.height >= 1) then crop\(input: "pt-mask\.png",'
+       With = '{ if (card.pt != "" or card.card_stamp != "none") and station_height() == 0 and $1 then crop(input: (if card.card_stamp == "none" then "pt-mask.png" else if card.pt != "" then "pt-stamp-mask.png" else "stamp-mask.png"),' }
+  )
+}
+"{0,-48} {1,7}" -f "Setsmith patches (text clear of stamp arch)", "applied"
 
 # Double-size M15 frames, crowns and P/T boxes from the pack's 744 x 1039 layer kit.
 & (Join-Path $PSScriptRoot "make-m15-hd.ps1") -Source $Source -Output $Output

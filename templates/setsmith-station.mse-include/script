@@ -9,15 +9,20 @@ station_last := {
 # Line spacing inside a row, the same as the frame's rules text.
 station_line_soft := { 0.827 }
 # Font size of the "N+" badge text.
-station_badge_size := { 12.5 }
+station_badge_size := { 10.5 }
 # Estimated font size the whole text box (rules plus rows) will be set in, found before drawing so the rows
 # can be sized: the largest size, in steps of 0.25, at which the rules paragraphs and the rows fit the frame's
 # box (154 units). Letters average 0.405 of the size wide, lines are 1.0 of the size apart and paragraphs 0.37 more, measured on
 # printed cards. The rows then follow the size the rules text is actually fitted at (content_scale).
 station_lines := { to_int((length(remove_tags(input)) * 0.405 * size + width - 1) / width) }
+# Lines a station row takes: its paragraphs wrap separately, with the paragraph gap counted as part of a line.
+station_row_lines := {
+	paras := split_text(match: "\n", remove_tags(input))
+	(for each p in paras do station_lines(p, size: size, width: width)) + (number_of_items(in: paras) - 1) * 0.37
+}
 station_rows_h := {
-	h1 := if card.station_1_threshold == "" then 0 else max(39, 12 + station_lines(card.station_1_text, size: size, width: if station_last() == 1 and card.pt != "" then 244 else 291) * 1.0 * size)
-	h2 := if card.station_2_threshold == "" then 0 else max(39, 12 + station_lines(card.station_2_text, size: size, width: if card.pt != "" then 244 else 291) * 1.0 * size)
+	h1 := if card.station_1_threshold == "" then 0 else max(39, 12 + station_row_lines(card.station_1_text, size: size, width: if station_last() == 1 and card.pt != "" then 244 else 291) * 1.0 * size)
+	h2 := if card.station_2_threshold == "" then 0 else max(39, 12 + station_row_lines(card.station_2_text, size: size, width: if card.pt != "" then 244 else 291) * 1.0 * size)
 	h1 + h2
 }
 station_rules_h := {
@@ -38,7 +43,7 @@ station_size := {
 # Height of row 1 or 2 (0 when unused): 39 units for one line, more when its text wraps at station_size.
 station_h := {
 	if card["station_" + input + "_threshold"] == "" then 0
-	else max(39, 12 + station_lines(card["station_" + input + "_text"], size: station_size(), width: if input == station_last() and card.pt != "" then 244 else 291) * 1.0 * station_size())
+	else max(39, 12 + station_row_lines(card["station_" + input + "_text"], size: station_size(), width: if input == station_last() and card.pt != "" then 244 else 291) * 1.0 * station_size())
 }
 station_pt := { station_last() > 0 and card.pt != "" }
 # Vertical middle of the last row, where the P/T box sits.
