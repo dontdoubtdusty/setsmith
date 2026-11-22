@@ -46,8 +46,8 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 {
   SetIcon(load_resource_icon(_("app")));
 
-  // avoid flicker
-  SetBackgroundStyle(wxBG_STYLE_PAINT);
+  // Setsmith: any gap between panels is erased dark, never white (the old paint-only style left it unpainted)
+  SetBackgroundColour(theme::backdrop());
 
   // initialize menu bar
   auto menuBar = new wxMenuBar();
@@ -239,14 +239,14 @@ wxToolBar* SetWindow::toolBar() const {
 // ----------------------------------------------------------------------------- : Full screen, status, menu bar
 
 // Setsmith: the editor opens full screen unless the user left it as a window last time.
+// Themed and sized before it is first visible, so it never flashes as a white window
 bool SetWindow::Show(bool show) {
-  bool changed = wxFrame::Show(show);
   if (show && !shown_once) {
     shown_once = true;
-    // after the window is on screen, so Windows knows which monitor to fill
-    if (settings.set_window_fullscreen) CallAfter([this] { setFullscreen(true); });
+    theme::apply(this);
+    if (settings.set_window_fullscreen) setFullscreen(true);
   }
-  return changed;
+  return wxFrame::Show(show);
 }
 
 void SetWindow::setFullscreen(bool on) {

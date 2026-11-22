@@ -107,8 +107,8 @@ WelcomeWindow::WelcomeWindow()
   keys[2].Set(wxACCEL_NORMAL, WXK_F11, ID_WINDOW_FULLSCREEN);
   SetAcceleratorTable(wxAcceleratorTable(3, keys));
   rescan();
-  // Setsmith: open full screen like the editor, once the window is on screen (owner's choice, 2026-11-22)
-  if (settings.set_window_fullscreen) CallAfter([this] { setFullscreen(true); });
+  // Setsmith: open full screen like the editor, before the first show so it never flashes (owner's choice, 2026-11-22)
+  if (settings.set_window_fullscreen) setFullscreen(true);
 }
 
 // ----------------------------------------------------------------------------- : Data
@@ -685,7 +685,10 @@ void WelcomeWindow::showTileMenu(size_t set_index) {
 
 void WelcomeWindow::close(const SetP& set) {
   if (!set) return;
-  (new SetWindow(nullptr, set))->Show();
+  // the editor opens on the same monitor as the dashboard
+  SetWindow* editor = new SetWindow(nullptr, set);
+  editor->Move(GetPosition());
+  editor->Show();
   Close();
 }
 
