@@ -24,10 +24,8 @@ enum MenuID {
   ID_FILE_SAVE = wxID_SAVE,
   ID_FILE_SAVE_AS = wxID_SAVEAS,
   ID_FILE_SAVE_AS_DIRECTORY = 12,
-  ID_FILE_STORE = 1,
   ID_FILE_EXIT = wxID_EXIT,
   ID_FILE_EXPORT = 2,
-  ID_FILE_EXPORT_HTML = 3,
   ID_FILE_EXPORT_IMAGE = 4,
   ID_FILE_EXPORT_IMAGES = 5,
   ID_FILE_PRINT = wxID_PRINT,
@@ -36,8 +34,6 @@ enum MenuID {
   ID_FILE_RELOAD = 9,
   ID_FILE_RECENT = wxID_FILE1,
   ID_FILE_RECENT_MAX = wxID_FILE9,
-  ID_FILE_CHECK_UPDATES = 10,
-  ID_FILE_PROFILER = 11,
 
   // Edit menu
   ID_EDIT_UNDO = wxID_UNDO,
@@ -46,7 +42,6 @@ enum MenuID {
   ID_EDIT_COPY = wxID_COPY,
   ID_EDIT_PASTE = wxID_PASTE,
   ID_EDIT_SELECT_ALL = wxID_SELECTALL,
-  ID_EDIT_DELETE = wxID_DELETE,
   ID_EDIT_FIND = wxID_FIND,
   ID_EDIT_FIND_NEXT = 103,
   ID_EDIT_REPLACE = wxID_REPLACE,
@@ -62,29 +57,16 @@ enum MenuID {
   // Setsmith: Keywords, Statistics and Random Pack panels removed.
   ID_WINDOW_MAX = 220,
 
-  // Help menu (MainWindow)
-  ID_HELP_DOCUMENTATION,
+  // Window menu: full screen
   ID_WINDOW_FULLSCREEN, // Setsmith: F11 turns full screen on and off
   ID_HELP_ABOUT = wxID_ABOUT,
 
-  // Mode menu (SymbolWindow)
-  ID_MODE_MIN= 401,
-  ID_MODE_SELECT= ID_MODE_MIN,
-  ID_MODE_ROTATE,
-  ID_MODE_POINTS,
-  ID_MODE_SHAPES,
-  ID_MODE_SYMMETRY,
-  ID_MODE_PAINT,
-  ID_MODE_MAX,
-
-  // Welcome Window
-  ID_SELECT_LANGUAGE,
 };
 
 
 // ----------------------------------------------------------------------------- : Child ids
 
-/// Ids for menus on child panels (MainWindowPanel / SymbolEditorBase)
+/// Ids for menus on child panels (SetWindowPanel)
 enum ChildMenuID {
   ID_CHILD_MIN = 6000,
   ID_CHILD_MAX = 16999,
@@ -104,13 +86,6 @@ enum ChildMenuID {
   // CardList
   ID_SELECT_COLUMNS,
 
-  // Keyword menu
-  ID_KEYWORD_ADD = 6101,
-  ID_KEYWORD_REMOVE,
-  ID_KEYWORD_PREV,
-  ID_KEYWORD_NEXT,
-  ID_KEYWORD_SEARCH,
-
   // Format menu
   ID_FORMAT_BOLD = 6201,
   ID_FORMAT_ITALIC,
@@ -125,58 +100,6 @@ enum ChildMenuID {
   ID_SPELLING_SUGGEST,
   ID_SPELLING_SUGGEST_MAX = 6399,
 
-  // Graph menu
-  ID_GRAPH_PIE = 6401, // corresponds to GraphType
-  ID_GRAPH_BAR,
-  ID_GRAPH_STACK,
-  ID_GRAPH_SCATTER,
-  ID_GRAPH_SCATTER_PIE,
-
-  // SymbolSelectEditor toolbar/menu
-  ID_SYMBOL_COMBINE = 7001,
-
-  ID_SYMBOL_COMBINE_MERGE        = ID_SYMBOL_COMBINE + 0, //SYMBOL_COMBINE_MERGE
-  ID_SYMBOL_COMBINE_SUBTRACT     = ID_SYMBOL_COMBINE + 1, //SYMBOL_COMBINE_SUBTRACT
-  ID_SYMBOL_COMBINE_INTERSECTION = ID_SYMBOL_COMBINE + 2, //SYMBOL_COMBINE_INTERSECTION
-  ID_SYMBOL_COMBINE_DIFFERENCE   = ID_SYMBOL_COMBINE + 3, //SYMBOL_COMBINE_DIFFERENCE
-  ID_SYMBOL_COMBINE_OVERLAP      = ID_SYMBOL_COMBINE + 4, //SYMBOL_COMBINE_OVERLAP
-  ID_SYMBOL_COMBINE_BORDER       = ID_SYMBOL_COMBINE + 5, //SYMBOL_COMBINE_BORDER
-  ID_SYMBOL_COMBINE_MAX,
-  ID_EDIT_DUPLICATE, // duplicating symbol parts
-  ID_EDIT_GROUP,
-  ID_EDIT_UNGROUP,
-  ID_VIEW_GRID,
-  ID_VIEW_GRID_SNAP,
-
-  // SymbolPointEditor toolbar/menu
-  ID_SEGMENT = 7101,
-  ID_SEGMENT_LINE  = ID_SEGMENT + 0, //SEGMENT_LINE
-  ID_SEGMENT_CURVE = ID_SEGMENT + 1, //SEGMENT_CURVE
-  ID_SEGMENT_MAX,
-  ID_LOCK = 7151,
-  ID_LOCK_FREE = ID_LOCK + 0, //LOCK_FREE
-  ID_LOCK_DIR  = ID_LOCK + 1, //LOCK_DIR
-  ID_LOCK_SIZE = ID_LOCK + 2, //LOCK_SIZE
-  ID_LOCK_MAX,
-
-  // SymbolBasicShapeEditor toolbar/menu
-  ID_SHAPE = 7201,
-  ID_SHAPE_CIRCLE = ID_SHAPE,
-  ID_SHAPE_RECTANGLE,
-  ID_SHAPE_POLYGON,
-  ID_SHAPE_STAR,
-  ID_SHAPE_MAX,
-  ID_SIDES,
-  
-  // SymbolSymmetryEditor toolbar/menu
-  ID_SYMMETRY = 7301,
-  ID_SYMMETRY_ROTATION = ID_SYMMETRY,
-  ID_SYMMETRY_REFLECTION,
-  ID_SYMMETRY_MAX,
-  ID_ADD_SYMMETRY,
-  ID_REMOVE_SYMMETRY,
-  ID_COPIES,
-  
   // On cards panel
   ID_COLLAPSE_NOTES = 8001,
   ID_CARD_FILTER,
@@ -185,30 +108,8 @@ enum ChildMenuID {
   ID_STYLE_USE_FOR_ALL = 8011,
   ID_STYLE_USE_CUSTOM,
 
-  // Keywords panel
-  ID_KEYWORD_ADD_PARAM = 8021,
-  ID_KEYWORD_REF_PARAM,
-  ID_KEYWORD_MODE,
-  ID_KEYWORD_FILTER,
-  ID_PARAM_TYPE_MIN = 8101,
-  ID_PARAM_TYPE_MAX = 8200,
-  ID_PARAM_REF_MIN = 8201,
-  ID_PARAM_REF_MAX = 8300,
-  
   // Statistics panel
   ID_FIELD_LIST = 8301,
-  
-  // Random pack panel
-  ID_PACK_AMOUNT = 8111,
-  ID_PACK_TYPE,
-  ID_SEED_RANDOM,
-  ID_SEED_FIXED,
-  ID_GENERATE_PACK,
-  ID_CUSTOM_PACK,
-  
-  // Console panel
-  ID_EVALUATE,
-  ID_CLEAR_CONSOLE,
   
   // SymbolFont (Format menu)
   ID_INSERT_SYMBOL_MENU_MIN =  9001,
@@ -234,20 +135,10 @@ enum ControlID {
   // Controls
   ID_VIEWER = 1001,
   ID_EDITOR,
-  ID_CONTROL,
-  ID_TAB_BAR,
   ID_CARD_LIST,
-  ID_PART_LIST,
   ID_GAME_LIST,
   ID_STYLESHEET_LIST,
-  ID_KEYWORD_LIST,
-  ID_EXPORT_LIST,
   ID_NOTES,
-  ID_KEYWORD,
-  ID_MATCH,
-  ID_REMINDER,
-  ID_RULES,
-  ID_MESSAGE_LIST,
   // Card list column select
   ID_MOVE_UP,
   ID_MOVE_DOWN,
@@ -261,7 +152,6 @@ enum ControlID {
   ID_SELECT_NONE,
   // Settings
   ID_NOTEBOOK,
-  ID_CHECK_UPDATES_NOW,
   // Image slicer
   ID_PREVIEW,
   ID_SELECTOR,
@@ -278,18 +168,10 @@ enum ControlID {
   ID_ZOOM_X,
   ID_ZOOM_Y,
   ID_EXPORT_ZOOM,
-  ID_EXPORT_ZOOM_X,
-  ID_EXPORT_ZOOM_Y,
   ID_SHARPEN,
   ID_SHARPEN_AMOUNT,
   // Internal window
   ID_INTERNAL_SCALE,
-  // Updates window
-  ID_PACKAGE_LIST,
-  ID_KEEP,
-  ID_INSTALL,
-  ID_UPGRADE,
-  ID_REMOVE,
   // Auto replace window
   ID_USE_AUTO_REPLACE,
   ID_ITEM_VALUE,

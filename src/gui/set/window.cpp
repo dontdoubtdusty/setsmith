@@ -483,6 +483,11 @@ void SetWindow::switchSet(const SetP& new_set) {
 
 // ----------------------------------------------------------------------------- : Window events - update UI
 
+// Set a tool's tooltip only when it changed (update UI events arrive many times a second)
+static void set_tool_help(wxToolBar* tb, int id, const String& help) {
+  if (tb && tb->GetToolShortHelp(id) != help) tb->SetToolShortHelp(id, help);
+}
+
 void SetWindow::onUpdateUI(wxUpdateUIEvent& ev) {
   switch (ev.GetId()) {
     // file menu
@@ -497,13 +502,13 @@ void SetWindow::onUpdateUI(wxUpdateUIEvent& ev) {
       ev.Enable(set->actions.canUndo());
       String label = set->actions.undoName();
       ev.SetText(_MENU_1_("undo", label));
-      toolBar()->SetToolShortHelp(ID_EDIT_UNDO, _TOOLTIP_1_("undo", label));
+      set_tool_help(toolBar(), ID_EDIT_UNDO, _TOOLTIP_1_("undo", label));
       break;
     } case ID_EDIT_REDO: {
       ev.Enable(set->actions.canRedo());
       String label = set->actions.redoName();
       ev.SetText(_MENU_1_("redo", label));
-      toolBar()->SetToolShortHelp(ID_EDIT_REDO, _TOOLTIP_1_("redo", label));
+      set_tool_help(toolBar(), ID_EDIT_REDO, _TOOLTIP_1_("redo", label));
       break;
     }
     // copy & paste & find

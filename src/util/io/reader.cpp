@@ -158,6 +158,22 @@ bool eat_utf8_bom(wxInputStream& input) {
  */
 String read_utf8_line(wxInputStream& input, bool until_eof = false);
 String read_utf8_line(wxInputStream& input, bool until_eof) {
+  // Setsmith: a whole file (script includes) is read in blocks, not one byte per call
+  if (until_eof) {
+    std::string bytes;
+    char block[65536];
+    while (true) {
+      input.Read(block, sizeof(block));
+      size_t n = input.LastRead();
+      if (n == 0) break;
+      bytes.append(block, n);
+    }
+    if (bytes.empty()) return _("");
+    if (wxConvUTF8.ToWChar(nullptr, 0, bytes.data(), bytes.size()) == size_t(-1)) {
+      throw ParseError(_("Invalid UTF-8 sequence"));
+    }
+    return wxString::FromUTF8(bytes.data(), bytes.size());
+  }
   LocalVector<char> buffer;
   while (true) {
     int c = input.GetC();
