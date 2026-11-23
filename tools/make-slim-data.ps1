@@ -400,12 +400,8 @@ foreach ($p in $stationFrames.Keys) {
 # left or right, so stamp-mask.png blocks the arch and everything right of it (x 163 on, y 470 down): a line
 # reaching that far wraps or the text shrinks, and a short line still fits beside the stamp. pt-stamp-mask.png
 # is the same plus the P/T corner. Station cards keep no mask: their rows cover the stamp area.
-# The engine places a line by its middle, so with text at printed size a last line whose middle sat just above the
-# stock P/T corner (y 464) still dropped its descenders onto the P/T box (Georgiou, Terran Emperor). In these two
-# frames the P/T corner starts at y 452 (printed-pt-mask.png replaces pt-mask.png; pt-stamp-mask.png likewise).
 foreach ($p in "magic-m15.mse-style", "magic-m15-altered.mse-style") {
   Copy-Item -Force (Join-Path $PSScriptRoot "patches\*stamp-mask.png") (Join-Path $Output $p)
-  Copy-Item -Force (Join-Path $PSScriptRoot "patches\printed-pt-mask.png") (Join-Path $Output "$p\pt-mask.png")
   Patch-File $p "style" @(
     @{ Name = "stamp mask"; Count = 1; Pattern = '(?m)\{ if \(card\.pt != ""\) and station_height\(\) == 0 and (card_style\.text\.width >= 1 and card_style\.text\.height >= 1) then crop\(input: "pt-mask\.png",'
        With = '{ if (card.pt != "" or card.card_stamp != "none") and station_height() == 0 and $1 then crop(input: (if card.card_stamp == "none" then "pt-mask.png" else if card.pt != "" then "pt-stamp-mask.png" else "stamp-mask.png"),' }

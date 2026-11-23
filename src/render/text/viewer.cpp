@@ -409,6 +409,18 @@ void TextViewer::prepareLines(RotatedDC& dc, const String& text, TextStyle& styl
       chars.clear();
       prepareLinesTryScales(dc, text, style, chars);
     }
+    // Setsmith: the passes can flip between two layouts (a line that fits when checked high makes the text
+    // shorter, so it is drawn lower, into the P/T corner). Never draw lower than the mask was checked:
+    // while the final layout would sit lower, check again at that lower position. Checking lower only adds
+    // wraps, so the text grows and the drawn position rises until it is at or above the checked one.
+    for (int pass = 0 ; pass < 8 && !lines.empty() ; ++pass) {
+      double used = lines.back().bottom() - (style.padding_top + mask_top_offset);
+      double offset = max(0.0, align_delta_y(style.alignment(), avail, used));
+      if (offset <= mask_top_offset + 0.5) break;
+      mask_top_offset = offset;
+      chars.clear();
+      prepareLinesTryScales(dc, text, style, chars);
+    }
   }
   
   // no text, find a dummy height for the single line we have
